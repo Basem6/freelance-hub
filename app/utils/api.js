@@ -1,0 +1,12 @@
+import axios from 'axios';
+
+// إنشاء instance
+const api = axios.create({
+    baseURL: process.env.REACT_APP_API_URL || 'http://localhost:8080',
+    withCredentials: true,
+    headers: {
+        'Content-Type': 'application/json'
+    } 
+});
+
+export default api;
