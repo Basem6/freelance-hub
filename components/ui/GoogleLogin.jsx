@@ -15,11 +15,7 @@ function GoogleLoginComponent() {
                 redirectUri: window.location.origin
         });
 
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.message || 'Google auth failed');
-        }
+        const data = response.data;
     
         // ✨ NEW USER - redirect to choose role
         if (data.isNewUser) {
@@ -36,7 +32,7 @@ function GoogleLoginComponent() {
         }
 
         // ✅ EXISTING USER - login and redirect
-        dispatch(setUser(response.data.user));
+        dispatch(setUser(data.user));
         router.push('/profile');
 
     } catch (error) {

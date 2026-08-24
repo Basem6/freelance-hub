@@ -42,19 +42,6 @@ export default function RootLayoutContent({ children }) {
             checkAuth()
         }
     }, [dispatch, isAuthenticated])
-    useEffect(() => {
-    const getMe = async () => {
-        try {
-            const res = await api.get("/api/auth/me", {
-                withCredentials: true,
-            });
-        } catch (err) {
-            console.log("Not logged in");
-        }
-    };
-
-    getMe();
-}, []);
     return (
         <>
             <Navbar></Navbar>

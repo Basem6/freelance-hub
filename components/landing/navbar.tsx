@@ -36,13 +36,13 @@ useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const code = params.get('code');
     if (code) {
-    fetch('https://hemma-production-fbbd.up.railway.app/api/auth/google', {
+    fetch('/api/auth/google', {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
         code,
-        redirectUri: "https://freelance-hub-c7ws.vercel.app"
+        redirectUri: window.location.origin
         })
     })
     .then(res => res.json())

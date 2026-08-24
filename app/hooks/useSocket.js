@@ -6,7 +6,7 @@ export const useSocket = (userId) => {
     const [isConnected, setIsConnected] = useState(false);
 
     useEffect(() => {
-        const client = io(process.env.NEXT_PUBLIC_API_URL || "https://hemma-production-fbbd.up.railway.app", {
+        const client = io(process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080", {
             withCredentials: true,
             reconnection: true,
             reconnectionDelay: 1000,

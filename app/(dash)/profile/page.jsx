@@ -39,7 +39,8 @@ export default function ProfilePage() {
     api.get('/api/auth/me')
       .then(res => {
         console.log(res)
-        if (!res.data.success) { dispatch(logout()); router.push('/login'); }
+        if (!res.data.success) { 
+          dispatch(logout()); router.push('/login'); }
       })
       .catch((er) => { 
         console.log(er)

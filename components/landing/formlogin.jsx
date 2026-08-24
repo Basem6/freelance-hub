@@ -75,7 +75,7 @@ const handleSubmit = async (e) => {
     setLoading(true);
 
     try {
-        const res = await fetch(`https://hemma-production-fbbd.up.railway.app/api/auth/login`, {
+        const res = await fetch('/api/auth/login', {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -125,7 +125,7 @@ const handleGoogleLogin = () => {
     window.location.href = 
     `https://accounts.google.com/o/oauth2/v2/auth?` +
     `client_id=206275470398-ks60mr8ume6jqmeckebfl7q36elrq9g2.apps.googleusercontent.com&` +
-    `redirect_uri=https://freelance-hub-c7ws.vercel.app&` +
+    `redirect_uri=${encodeURIComponent(window.location.origin)}&` +
     `response_type=code&` +
     `scope=openid email profile`;
 };

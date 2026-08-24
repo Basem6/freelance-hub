@@ -67,7 +67,7 @@ const Formsign = () => {
       console.log(data)
       setLoading(true);
       try {
-      const res = await fetch("https://hemma-production-fbbd.up.railway.app/api/auth/register", {
+      const res = await fetch('/api/auth/register', {
           method: "POST",
           headers: {
           'Content-Type': 'application/json',
@@ -106,7 +106,7 @@ const Formsign = () => {
     window.location.href = 
     `https://accounts.google.com/o/oauth2/v2/auth?` +
     `client_id=206275470398-ks60mr8ume6jqmeckebfl7q36elrq9g2.apps.googleusercontent.com&` +
-    `redirect_uri=http://localhost:3000&` +
+    `redirect_uri=${encodeURIComponent(window.location.origin)}&` +
     `response_type=code&` +
     `scope=openid email profile`;
 };

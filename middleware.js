@@ -25,6 +25,10 @@ export function middleware(request) {
     try {
     const decoded = jwtDecode(token);
 
+    if (decoded.exp && decoded.exp * 1000 <= Date.now()) {
+        throw new Error('Expired token');
+    }
+
     const userRole = decoded.role;
 
     // Client → Freelancer pages
