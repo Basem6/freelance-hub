@@ -4,10 +4,10 @@ import { io } from "socket.io-client";
 export const useSocket = (userId) => {
     const [socket, setSocket] = useState(null);
     const [isConnected, setIsConnected] = useState(false);
-
     useEffect(() => {
-        const client = io(process.env.API_URL || "http://localhost:8080", {
+        const client = io(process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080", {
             withCredentials: true,
+            transports: ["websocket", "polling"],
             reconnection: true,
             reconnectionDelay: 1000,
             reconnectionDelayMax: 5000,
@@ -16,7 +16,7 @@ export const useSocket = (userId) => {
 
         const handleConnect = () => {
             setIsConnected(true);
-            client.emit("userOnline", userId);
+            if (userId) client.emit("userOnline", userId);
         };
         const handleDisconnect = () => setIsConnected(false);
 
