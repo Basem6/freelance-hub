@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // إنشاء instance
 const api = axios.create({
-    baseURL: 'https://hemma-e.up.railway.app',
+    baseURL: '',
     withCredentials: true,
     headers: {
         'Content-Type': 'application/json'
