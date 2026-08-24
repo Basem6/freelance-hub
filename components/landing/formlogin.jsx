@@ -75,7 +75,7 @@ const handleSubmit = async (e) => {
     setLoading(true);
 
     try {
-        const res = await fetch(`http://localhost:8080/api/auth/login`, {
+        const res = await fetch(`https://hemma-psi.vercel.app/api/auth/login`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },

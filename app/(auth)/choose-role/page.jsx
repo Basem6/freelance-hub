@@ -56,7 +56,7 @@ const handleRoleSelect = async (role) => {
     try {
         let endpoint, body;
             console.log(`🔄 Creating Google account with role: ${role}`);
-            endpoint = 'http://localhost:8080/api/auth/google/complete';
+            endpoint = 'https://hemma-psi.vercel.app/api/auth/google/complete';
             body = {
                 fullName: roleData.fullName,
                 email: roleData.email,
