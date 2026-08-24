@@ -41,7 +41,10 @@ export default function ProfilePage() {
         console.log(res)
         if (!res.data.success) { dispatch(logout()); router.push('/login'); }
       })
-      .catch(() => { dispatch(logout()); router.push('/login'); })
+      .catch((er) => { 
+        console.log(er)
+        dispatch(logout()); router.push('/login'); }
+      )
       .finally(() => setLoading(false));
   }, []);
   
