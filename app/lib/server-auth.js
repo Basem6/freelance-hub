@@ -11,7 +11,7 @@ function getTokenFromSetCookie(setCookie) {
   const match = setCookie.match(/(?:^|,\s*)authToken=([^;]+)/);
   return match?.[1] || null;
 }
-
+//f
 function cookieOptions() {
   return {
     httpOnly: true,
