@@ -1,9 +1,10 @@
 'use client';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { 
     Briefcase, MessageSquare, DollarSign, Settings, LogOut, 
-    CircleUserRound, FolderOpen, ChevronRight, Users
+    CircleUserRound, FolderOpen, ChevronRight, Users, Menu, X
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAppDispatch, useAppSelector } from '../../app/lib/hooks';
@@ -13,6 +14,7 @@ import api from '../../app/utils/api';
 export default function DashboardSidebar({ activePage = 'dashboard' }) {
     
     const pathname = usePathname();
+    const [isMobileOpen, setIsMobileOpen] = useState(false);
     const dispatch = useAppDispatch()
     const user = useAppSelector((state)=> state.auth.user)
     const router = useRouter();
@@ -56,7 +58,29 @@ export default function DashboardSidebar({ activePage = 'dashboard' }) {
         }
     };
     return (
-        <aside className="hidden md:flex flex-col w-64 bg-white border-r border-gray-100 h-screen fixed left-0 top-0 overflow-y-auto">
+        <>
+            <button
+                type="button"
+                aria-label="Open dashboard navigation"
+                aria-expanded={isMobileOpen}
+                onClick={() => setIsMobileOpen(true)}
+                className="fixed left-4 top-4 z-40 flex h-11 w-11 items-center justify-center rounded-xl bg-white text-gray-700 shadow-md ring-1 ring-gray-200 md:hidden"
+            >
+                <Menu size={21} />
+            </button>
+
+            {isMobileOpen && (
+                <button
+                    type="button"
+                    aria-label="Close dashboard navigation"
+                    onClick={() => setIsMobileOpen(false)}
+                    className="fixed inset-0 z-40 bg-gray-900/30 md:hidden"
+                />
+            )}
+
+        <aside className={`fixed left-0 top-0 z-50 flex h-screen w-72 max-w-[85vw] flex-col overflow-y-auto border-r border-gray-100 bg-white shadow-xl transition-transform duration-200 md:z-auto md:w-64 md:translate-x-0 md:shadow-none ${
+            isMobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+        }`}>
             {/* Logo */}
             <div className="p-6 flex items-center space-x-3 border-b border-gray-50">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#FF7A00] to-orange-400 flex items-center justify-center text-white font-bold text-lg shadow-sm shadow-orange-200">
@@ -68,6 +92,14 @@ export default function DashboardSidebar({ activePage = 'dashboard' }) {
                         <p className="text-xs text-gray-500 uppercase tracking-[0.18em] mt-1">{user.role}</p>
                     )}
                 </div>
+                <button
+                    type="button"
+                    aria-label="Close dashboard navigation"
+                    onClick={() => setIsMobileOpen(false)}
+                    className="ml-auto rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-700 md:hidden"
+                >
+                    <X size={20} />
+                </button>
             </div>
             
             {/* Nav links */}
@@ -76,7 +108,7 @@ export default function DashboardSidebar({ activePage = 'dashboard' }) {
                     const Icon = item.icon;
                     const active = isActive(item);
                     return (
-                        <Link key={item.id} href={item.href}>
+                        <Link key={item.id} href={item.href} onClick={() => setIsMobileOpen(false)}>
                             <motion.div
                                 whileHover={{ x: 2 }}
                                 transition={{ duration: 0.15 }}
@@ -110,7 +142,7 @@ export default function DashboardSidebar({ activePage = 'dashboard' }) {
             {/* User footer */}
             {user && (
                 <div className="p-4 border-t border-gray-100">
-                    <Link href="/">
+                    <Link href="/" onClick={() => setIsMobileOpen(false)}>
                         <div className="flex items-center space-x-3 mb-3 px-2 py-2 rounded-xl hover:bg-gray-50 transition-colors cursor-pointer group">
                             <img 
                                 src={user?.image || "/avatars/avatar-1.png"}   
@@ -133,5 +165,6 @@ export default function DashboardSidebar({ activePage = 'dashboard' }) {
                 </div>
             )}
         </aside>
+        </>
     );
 }

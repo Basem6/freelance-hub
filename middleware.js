@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server'
 import { jwtDecode } from "jwt-decode";
 export function middleware(request) {
     const token = request.cookies.get('authToken')?.value
-    console.log(token)
     const { pathname } = request.nextUrl
     
     // الصفحات الخاصة بـ freelancer فقط
@@ -27,11 +26,7 @@ export function middleware(request) {
     try {
     const decoded = jwtDecode(token);
 
-    console.log("JWT:", decoded);
-
     const userRole = decoded.role;
-
-    console.log("USER ROLE:", userRole);
 
     // Client → Freelancer pages
     if (userRole === "client" && isFreelancerRoute) {

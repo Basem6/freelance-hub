@@ -4,7 +4,9 @@ export default function RootLayout({ children }) {
 return (
         <div className="font-sans antialiased relative min-h-screen">
                 <DashboardSidebar />
-                {children}
+                <div className="pt-20 md:pt-0">
+                        {children}
+                </div>
         </div>
 
 )

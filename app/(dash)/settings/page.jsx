@@ -48,14 +48,14 @@ export default function SettingsPage() {
 
   return (
     <div className="min-h-screen bg-[#F8F9FA] flex md:ml-64">
-      <main className="flex-1 p-6 lg:p-8">
+      <main className="flex-1 p-4 sm:p-6 lg:p-8">
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col gap-6">
             <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-gray-100 bg-white/90 p-2 shadow-sm backdrop-blur">
               <button
                 type="button"
                 onClick={() => setSettingsType('personal')}
-                className={`rounded-lg px-4 py-2.5 text-sm font-semibold transition-all ${settingsType === 'personal'
+                className={`w-full rounded-lg px-4 py-2.5 text-left text-sm font-semibold transition-all sm:w-auto ${settingsType === 'personal'
                   ? 'bg-[#FF7A00] text-white shadow-sm shadow-orange-500/20'
                   : 'bg-transparent text-gray-600 hover:bg-gray-50 hover:text-[#111111]'}`}
               >
@@ -65,7 +65,7 @@ export default function SettingsPage() {
               <button
                 type="button"
                 onClick={() => setSettingsType('technical')}
-                className={`rounded-lg px-4 py-2.5 text-sm font-semibold transition-all ${settingsType === 'technical'
+                className={`w-full rounded-lg px-4 py-2.5 text-left text-sm font-semibold transition-all sm:w-auto ${settingsType === 'technical'
                   ? 'bg-[#FF7A00] text-white shadow-sm shadow-orange-500/20'
                   : 'bg-transparent text-gray-600 hover:bg-gray-50 hover:text-[#111111]'}`}
               >
@@ -275,12 +275,12 @@ function ProfileTab({ user, onSave, saveFlash , loading }) {
   };
   console.log(loading)
   return (
-    <div className="bg-white rounded-2xl shadow-sm p-6 lg:p-8 ">
+    <div className="bg-white rounded-2xl shadow-sm p-6 lg:p-8 overflow-hidden max-w-full">
       <h2 className="text-xl font-bold text-[#111111] mb-6">Profile Information</h2>
       
       <form onSubmit={onSave} className="space-y-6">
         {/* Photo Upload */}
-        <div className="flex items-center gap-6 pb-6 border-b border-gray-100">
+        <div className="flex items-center gap-6 pb-6 border-b border-gray-100 md:justify-start  justify-center">
           <div className="relative">
             <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-[#FF7A00] to-orange-300 flex items-center justify-center text-white text-3xl font-bold shadow-md">
               {user ? (
@@ -296,7 +296,8 @@ function ProfileTab({ user, onSave, saveFlash , loading }) {
             </label>
             
           </div>
-          <div>
+          
+          <div className='hidden md:block'>
             <h3 className="font-semibold text-gray-900">Profile Photo</h3>
             <p className="text-sm text-gray-500 mb-3">JPG, GIF or PNG. Max size of 5MB.</p>
             <input type="file" id="profile-photo"  accept="image/*" onChange={handleImage}  className="px-4 py-2 bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-lg text-sm font-medium transition-colors border border-gray-200"/>

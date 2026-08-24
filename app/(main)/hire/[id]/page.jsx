@@ -9,12 +9,13 @@ import SkillTags from '@/components/profile/SkillTags';
 import PortfolioGrid from '@/components/profile/PortfolioGrid';
 import ReviewCard from '@/components/profile/ReviewCard';
 import ServiceCard from '@/components/profile/ServiceCard';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import api from '../../../utils/api';
 import Link from 'next/link';
 
 export default function Page() {
     const user = useAppSelector(state => state.auth.user);
+    const router = useRouter();
     const [person, setperson] = useState(null);
     const [loading, setLoading] = useState(true);
     const { id } = useParams();
@@ -175,7 +176,11 @@ export default function Page() {
 
           {/* Right side: Action Buttons */}
           <div className="flex items-center gap-3 mt-6 md:mt-0 pb-2">
-            <button className="px-6 py-3 border border-gray-300 text-gray-700 font-semibold  rounded-lg hover:bg-gray-50 transition-colors shadow-sm">
+            <button
+              onClick={() => router.push(`/messages?userId=${person?._id || person?.id}`)}
+              disabled={!person?._id && !person?.id}
+              className="px-6 py-3 border border-gray-300 text-gray-700 font-semibold  rounded-lg hover:bg-gray-50 transition-colors shadow-sm disabled:opacity-50"
+            >
               Message
             </button>
             <a

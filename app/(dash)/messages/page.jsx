@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAppSelector, useAppDispatch } from '@/app/lib/hooks';
 import { logout } from '@/app/lib/Features/authSlice';
 import { useSocket } from "../../hooks/useSocket";
@@ -12,28 +12,41 @@ import {
   ChevronLeft, Circle, Check, CheckCheck, MessageSquare,
   Smile, Image as ImageIcon, X, Star, Archive, Trash2
 } from 'lucide-react';
+const getEntityId = (entity) => entity?.id || entity?._id || entity?.userId || entity?.user?._id || entity?.user?.id;
 
-const normalizeMessage = (message) => ({
+const normalizeMessage = (message, currentUserId) => {
+  const senderId = getEntityId(message.sender) || message.senderId || message.from;
+
+  return {
   ...message,
   id: message.id || message._id || `m${Date.now()}-${Math.random()}`,
-  text: message.text || message.content || message.message || '',
-  from: message.from || (message.senderId === 'me' ? 'me' : message.sender?._id === 'me' ? 'me' : 'other'),
+  text: message.body || message.content || message.message || '',
+  from: senderId && currentUserId && String(senderId) === String(currentUserId) ? 'me' : 'other',
   time: message.time || (message.createdAt
     ? new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     : 'Now'),
-});
+  };
+};
 
-const normalizeConversation = (conversation) => ({
+const normalizeConversation = (conversation, currentUserId) => {
+  const participants = Array.isArray(conversation.participants) ? conversation.participants : [];
+  const otherParticipant = participants.find((participant) => (
+    String(getEntityId(participant)) !== String(currentUserId)
+  ));
+
+  return {
   ...conversation,
-  id: conversation.id || conversation._id,
-  name: conversation.name || conversation.otherUser?.name || conversation.participant?.name || 'Conversation',
-  avatar: conversation.avatar || conversation.otherUser?.avatar || conversation.participant?.avatar || '/avatars/default.png',
+  id: conversation.id || conversation._id || conversation.conversationId,
+  participantId: getEntityId(conversation.otherUser) || getEntityId(conversation.participant) || getEntityId(otherParticipant) || conversation.participantId,
+  name: conversation.name || conversation.otherUser?.name || conversation.otherUser?.fullName || conversation.participant?.name || conversation.participant?.fullName || otherParticipant?.name || otherParticipant?.fullName || 'Conversation',
+  avatar: conversation.avatar || conversation.otherUser?.avatar || conversation.otherUser?.image || conversation.participant?.avatar || conversation.participant?.image || otherParticipant?.avatar || otherParticipant?.image || '/avatars/avatar-1.png',
   lastMessage: conversation.lastMessage?.text || conversation.lastMessage || '',
   time: conversation.time || (conversation.updatedAt ? new Date(conversation.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''),
   unread: conversation.unread || conversation.unreadCount || 0,
   online: Boolean(conversation.online || conversation.otherUser?.online),
-  messages: (conversation.messages || []).map(normalizeMessage),
-});
+  messages: (conversation.messages || []).map((message) => normalizeMessage(message, currentUserId)),
+  };
+};
 
 /* ─────────────── Components ─────────────── */
 function ConversationItem({ conv, isActive, onClick }) {
@@ -47,7 +60,7 @@ function ConversationItem({ conv, isActive, onClick }) {
     >
       <div className="relative flex-shrink-0">
         <img
-          src={conv.avatar}
+          src={conv.avatar||"/avatars/avatar-1.png"}
           alt={conv.name}
           className={`w-11 h-11 rounded-full object-cover ring-2 ${isActive ? 'ring-orange-200' : 'ring-gray-100'}`}
         />
@@ -103,6 +116,7 @@ function MessageBubble({ msg, isMe }) {
 /* ─────────────── Main Page ─────────────── */
 export default function MessagesPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.auth.user);
   const [loading, setLoading] = useState(true);
@@ -113,14 +127,18 @@ export default function MessagesPage() {
   const [showMobileList, setShowMobileList] = useState(true);
   const [sending, setSending] = useState(false);
   const messagesEndRef = useRef(null);
+  const typingTimeoutRef = useRef(null);
+  const [isOtherUserTyping, setIsOtherUserTyping] = useState(false);
   const { socket, isConnected } = useSocket(user?.id || user?._id);
-
-  const activeConv = conversations.find((c) => c.id === activeConvId);
+  const currentUserId = user?.id || user?._id;
+  const requestedUserId = searchParams.get('userId');
+  const activeConv = conversations.find((c) => c._id === activeConvId);
   const filteredConvs = conversations.filter((c) =>
     c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     c.lastMessage.toLowerCase().includes(searchQuery.toLowerCase())
   );
-
+  console.log(conversations)
+  
   useEffect(() => {
     const init = async () => {
       try {
@@ -130,10 +148,27 @@ export default function MessagesPage() {
           router.push('/login');
           return;
         }
-        const conversationsResponse = await api.get('/api/messages/conversations');
-        const nextConversations = (conversationsResponse.data.conversations || conversationsResponse.data.data || conversationsResponse.data || []).map(normalizeConversation);
+        const conversationsResponse = await api.get('/api/chat/conversations');
+        const rawConversations = conversationsResponse.data.conversations || conversationsResponse.data.data || conversationsResponse.data || [];
+        const nextConversations = (Array.isArray(rawConversations) ? rawConversations : []).map((conversation) => normalizeConversation(conversation, currentUserId));
+        let selectedConversation = nextConversations.find((conversation) => (
+          requestedUserId && String(conversation.participantId) === String(requestedUserId)
+        ));
+
+        if (requestedUserId && !selectedConversation) {
+          const createResponse = await api.post('/api/chat/conversations', { participantId: requestedUserId });
+          const created = normalizeConversation(
+            createResponse.data.conversation || createResponse.data.data || createResponse.data,
+            currentUserId
+          );
+          if (created.id) {
+            selectedConversation = created;
+            nextConversations.unshift(created);
+          }
+        }
+
         setConversations(nextConversations);
-        setActiveConvId(nextConversations[0]?.id || null);
+        setActiveConvId(selectedConversation?.id || nextConversations[0]?.id || null);
       } catch (er){
         console.log(er)
       } finally {
@@ -141,15 +176,16 @@ export default function MessagesPage() {
       }
     };
     init();
-  }, [dispatch, router]);
+  }, [currentUserId, dispatch, requestedUserId, router]);
 
   useEffect(() => {
     if (!activeConvId) return undefined;
 
     const loadMessages = async () => {
       try {
-        const response = await api.get(`/api/messages/conversations/${activeConvId}/messages`);
-        const messages = (response.data.messages || response.data.data || response.data || []).map(normalizeMessage);
+        const response = await api.get(`/api/chat/conversations/${activeConvId}/messages`);
+        const rawMessages = response.data.messages || response.data.data || response.data || [];
+        const messages = (Array.isArray(rawMessages) ? rawMessages : []).map((message) => normalizeMessage(message, currentUserId));
         setConversations((previous) => previous.map((conversation) => (
           conversation.id === activeConvId ? { ...conversation, messages, unread: 0 } : conversation
         )));
@@ -161,59 +197,109 @@ export default function MessagesPage() {
     loadMessages();
     socket?.emit('joinConversation', activeConvId);
     return () => socket?.emit('leaveConversation', activeConvId);
-  }, [activeConvId, socket]);
+  }, [activeConvId, currentUserId, socket]);
 
   useEffect(() => {
-    if (!socket) return undefined;
-
-    const handleIncomingMessage = (payload) => {
-      const message = normalizeMessage(payload.message || payload);
-      const conversationId = payload.conversationId || payload.conversation?._id || payload.conversation?.id || activeConvId;
-      if (!conversationId) return;
-
-      setConversations((previous) => previous.map((conversation) => (
-        conversation.id === conversationId
-          ? {
-              ...conversation,
-              messages: conversation.messages.some((item) => item.id === message.id)
-                ? conversation.messages
-                : [...conversation.messages, message],
-              lastMessage: message.text,
-              time: message.time,
-              unread: conversationId === activeConvId ? 0 : conversation.unread + 1,
-            }
-          : conversation
-      )));
+    if (!socket) return;
+    const handleUserTyping = ({ userId }) => {
+      if (String(userId) !== String(currentUserId)) {
+        setIsOtherUserTyping(true);
+      }
+    };
+    const handleUserStopTyping = ({ userId }) => {
+      if (String(userId) !== String(currentUserId)) {
+        setIsOtherUserTyping(false);
+      }
     };
 
-    ['message', 'newMessage', 'receiveMessage'].forEach((event) => socket.on(event, handleIncomingMessage));
-    return () => ['message', 'newMessage', 'receiveMessage'].forEach((event) => socket.off(event, handleIncomingMessage));
-  }, [activeConvId, socket]);
+    socket.on("user-typing", handleUserTyping);
+    socket.on("user-stop-typing", handleUserStopTyping);
+    const handleIncomingMessage = (messageData) => {
+        const message = normalizeMessage(
+            messageData,
+            currentUserId
+        );
+
+        const conversationId =
+            messageData.conversationId ||
+            messageData.conversation?._id ||
+            messageData.conversation?.id;
+
+        if (!conversationId) return;
+
+        setConversations((previous) =>
+            previous.map((conversation) =>
+                conversation.id === String(conversationId)
+                    ? {
+                        ...conversation,
+
+                        messages: conversation.messages.some(
+                            (item) => item.id === message.id
+                        )
+                            ? conversation.messages
+                            : [...conversation.messages, message],
+
+                        lastMessage: message.body,
+                        time: message.time,
+
+                        unread:
+                            String(conversationId) === String(activeConvId)
+                                ? 0
+                                : conversation.unread + 1,
+                    }
+                    : conversation
+            )
+        );
+    };
+
+    socket.on("message:new", handleIncomingMessage);
+
+    return () => {
+        socket.off("message:new", handleIncomingMessage);
+        socket.off("user-typing", handleUserTyping);
+        socket.off("user-stop-typing", handleUserStopTyping);
+      setIsOtherUserTyping(false);
+    };
+}, [socket, currentUserId, activeConvId]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [activeConvId, conversations]);
 
-  const handleSend = async () => {
+  const handleSend = () => {
     const text = messageInput.trim();
-    if (!text || !activeConvId || sending) return;
 
+    if (!text || !activeConvId || sending || !socket?.connected) return;
+
+    clearTimeout(typingTimeoutRef.current);
+    socket.emit("stop-typing", {
+        conversationId: activeConvId,
+    });
+    
     setSending(true);
-    try {
-      const response = await api.post(`/api/messages/conversations/${activeConvId}/messages`, { text });
-      const newMessage = normalizeMessage(response.data.message || response.data.data || response.data);
-      setConversations((previous) => previous.map((conversation) => (
-        conversation.id === activeConvId
-          ? { ...conversation, messages: [...conversation.messages, { ...newMessage, from: 'me' }], lastMessage: text, time: 'Just now', unread: 0 }
-          : conversation
-      )));
-      setMessageInput('');
-    } catch (error) {
-      console.error('Unable to send message', error);
-    } finally {
-      setSending(false);
-    }
-  };
+
+    console.log("📤 Sending via socket");
+
+    socket.emit(
+        "send-message",
+        {
+            conversationId: activeConvId,
+            body: text,
+        },
+        (response) => {
+            console.log("📥 Server response:", response);
+
+            if (!response?.success) {
+                console.error("Send failed:", response?.message);
+                setSending(false);
+                return;
+            }
+
+            setMessageInput("");
+            setSending(false);
+        }
+    );
+};
 
   const handleSelectConv = (id) => {
     setActiveConvId(id);
@@ -222,7 +308,25 @@ export default function MessagesPage() {
     );
     setShowMobileList(false);
   };
+  const handleMessageChange = (e) => {
+    const value = e.target.value;
 
+    setMessageInput(value);
+
+    if (!socket?.connected || !activeConvId) return;
+
+    socket.emit("typing", {
+        conversationId: activeConvId,
+    });
+
+    clearTimeout(typingTimeoutRef.current);
+
+    typingTimeoutRef.current = setTimeout(() => {
+        socket.emit("stop-typing", {
+            conversationId: activeConvId,
+        });
+    }, 1000);
+};
   if (loading) {
     return (
       <div className="min-h-screen bg-[#F8F8F8] flex items-center justify-center md:ml-64">
@@ -299,7 +403,7 @@ export default function MessagesPage() {
                   </button>
                   <div className="relative">
                     <img
-                      src={activeConv.avatar}
+                      src={activeConv.avatar||"/avatars/avatar-1.png"}
                       alt={activeConv.name}
                       className="w-10 h-10 rounded-full object-cover ring-2 ring-orange-100"
                     />
@@ -343,6 +447,16 @@ export default function MessagesPage() {
                     <MessageBubble key={msg.id} msg={msg} isMe={msg.from === 'me'} />
                   ))}
                 </AnimatePresence>
+                {isOtherUserTyping && (
+                  <div className="flex items-center gap-2 text-sm text-gray-500">
+                    <span>Typing</span>
+                    <span className="flex gap-1">
+                      <span className="h-1.5 w-1.5 rounded-full bg-gray-600 animate-bounce" />
+                      <span className="h-1.5 w-1.5 rounded-full bg-gray-600 animate-bounce [animation-delay:150ms]" />
+                      <span className="h-1.5 w-1.5 rounded-full bg-gray-600 animate-bounce [animation-delay:300ms]" />
+                    </span>
+                  </div>
+                )}
                 <div ref={messagesEndRef} />
               </div>
 
@@ -355,7 +469,7 @@ export default function MessagesPage() {
                   <div className="flex-1 relative">
                     <textarea
                       value={messageInput}
-                      onChange={(e) => setMessageInput(e.target.value)}
+                      onChange={handleMessageChange}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter' && !e.shiftKey) {
                           e.preventDefault();
