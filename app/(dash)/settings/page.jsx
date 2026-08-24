@@ -155,7 +155,7 @@ function ProfileTab({ user, onSave, saveFlash , loading }) {
     const imageUrl = cloudinaryData.secure_url;
     // 3️⃣ Update في Backend
     const apiRes = await fetch(
-      "https://hemma-psi.vercel.app/api/auth/profile/image",
+      "https://hemma-production-fbbd.up.railway.app/api/auth/profile/image",
       {
         method: "PATCH",
         credentials: "include",
@@ -220,7 +220,7 @@ function ProfileTab({ user, onSave, saveFlash , loading }) {
       }
 
       // 3️⃣ API Request
-      const res = await fetch("https://hemma-psi.vercel.app/ubdate/personal", {
+      const res = await fetch("https://hemma-production-fbbd.up.railway.app/ubdate/personal", {
         method: "PATCH",
         credentials: "include",
         headers: {
@@ -477,7 +477,7 @@ function TechnicalSettings() {
       console.log("Sending payload:", payload);
 
       const response = await fetch(
-        `https://hemma-psi.vercel.app/freelance/update/technical`, // ✅ استخدم env
+        `https://hemma-production-fbbd.up.railway.app/freelance/update/technical`, // ✅ استخدم env
         {
           method: "PATCH",
           credentials: "include",

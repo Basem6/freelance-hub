@@ -6,7 +6,7 @@ export const useSocket = (userId) => {
     const [isConnected, setIsConnected] = useState(false);
 
     useEffect(() => {
-        const client = io(process.env.NEXT_PUBLIC_API_URL || "https://hemma-psi.vercel.app", {
+        const client = io(process.env.NEXT_PUBLIC_API_URL || "https://hemma-production-fbbd.up.railway.app", {
             withCredentials: true,
             reconnection: true,
             reconnectionDelay: 1000,

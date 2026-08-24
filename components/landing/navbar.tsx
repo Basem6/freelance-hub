@@ -36,7 +36,7 @@ useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const code = params.get('code');
     if (code) {
-    fetch('https://hemma-psi.vercel.app/api/auth/google', {
+    fetch('https://hemma-production-fbbd.up.railway.app/api/auth/google', {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },

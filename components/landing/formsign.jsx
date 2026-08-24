@@ -67,7 +67,7 @@ const Formsign = () => {
       console.log(data)
       setLoading(true);
       try {
-      const res = await fetch("https://hemma-psi.vercel.app/api/auth/register", {
+      const res = await fetch("https://hemma-production-fbbd.up.railway.app/api/auth/register", {
           method: "POST",
           headers: {
           'Content-Type': 'application/json',

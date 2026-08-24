@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // إنشاء instance
 const api = axios.create({
-    baseURL: process.env.REACT_APP_API_URL || 'https://hemma-psi.vercel.app',
+    baseURL: process.env.NEXT_PUBLIC_API_URL || 'https://hemma-production-fbbd.up.railway.app',
     withCredentials: true,
     headers: {
         'Content-Type': 'application/json'
