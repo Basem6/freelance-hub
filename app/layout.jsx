@@ -44,7 +44,7 @@ export default function RootLayout({ children }) {
                 />
             </head>
             <body className="font-sans antialiased">
-                <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}>
+                <GoogleOAuthProvider clientId={process.env.NEXT_APP_GOOGLE_CLIENT_ID}>
                 <StoreProvider>
                     <SocketProvider>
                     <Toast/>
