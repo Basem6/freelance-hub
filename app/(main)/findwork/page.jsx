@@ -318,6 +318,7 @@ export default function FindWorkPage() {
     const alldata = async function () {
       try {
           const response = await api.get('/projects');
+          console.log(response)
           const data = response.data.projects
           console.log(data[0])
           setMOCK_PROJECTS(data)
