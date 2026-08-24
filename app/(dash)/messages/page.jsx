@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAppSelector, useAppDispatch } from '@/app/lib/hooks';
-import { logout } from '@/app/lib/Features/authSlice';
+import { logout, setUser } from '@/app/lib/Features/authSlice';
 import { useSocket } from "../../hooks/useSocket";
 import api from '@/app/utils/api';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -15,11 +15,12 @@ import {
 const getEntityId = (entity) => entity?.id || entity?._id || entity?.userId || entity?.user?._id || entity?.user?.id;
 
 const normalizeMessage = (message, currentUserId) => {
+  message = message || {};
   const senderId = getEntityId(message.sender) || message.senderId || message.from;
 
   return {
   ...message,
-  id: message.id || message._id || `m${Date.now()}-${Math.random()}`,
+  id: String(message.id || message._id || `m${Date.now()}-${Math.random()}`),
   text: message.body || message.content || message.message || '',
   from: senderId && currentUserId && String(senderId) === String(currentUserId) ? 'me' : 'other',
   time: message.time || (message.createdAt
@@ -29,6 +30,7 @@ const normalizeMessage = (message, currentUserId) => {
 };
 
 const normalizeConversation = (conversation, currentUserId) => {
+  conversation = conversation || {};
   const participants = Array.isArray(conversation.participants) ? conversation.participants : [];
   const otherParticipant = participants.find((participant) => (
     String(getEntityId(participant)) !== String(currentUserId)
@@ -36,11 +38,11 @@ const normalizeConversation = (conversation, currentUserId) => {
 
   return {
   ...conversation,
-  id: conversation.id || conversation._id || conversation.conversationId,
+  id: String(conversation.id || conversation._id || conversation.conversationId || ''),
   participantId: getEntityId(conversation.otherUser) || getEntityId(conversation.participant) || getEntityId(otherParticipant) || conversation.participantId,
   name: conversation.name || conversation.otherUser?.name || conversation.otherUser?.fullName || conversation.participant?.name || conversation.participant?.fullName || otherParticipant?.name || otherParticipant?.fullName || 'Conversation',
   avatar: conversation.avatar || conversation.otherUser?.avatar || conversation.otherUser?.image || conversation.participant?.avatar || conversation.participant?.image || otherParticipant?.avatar || otherParticipant?.image || '/avatars/avatar-1.png',
-  lastMessage: conversation.lastMessage?.text || conversation.lastMessage || '',
+  lastMessage: conversation.lastMessage?.text || conversation.lastMessage?.body || conversation.lastMessage || '',
   time: conversation.time || (conversation.updatedAt ? new Date(conversation.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''),
   unread: conversation.unread || conversation.unreadCount || 0,
   online: Boolean(conversation.online || conversation.otherUser?.online),
@@ -58,7 +60,7 @@ function ConversationItem({ conv, isActive, onClick }) {
         isActive ? 'bg-orange-50 border border-orange-100' : 'hover:bg-gray-50'
       }`}
     >
-      <div className="relative flex-shrink-0">
+      <div className="relative shrink-0">
         <img
           src={conv.avatar||"/avatars/avatar-1.png"}
           alt={conv.name}
@@ -74,12 +76,12 @@ function ConversationItem({ conv, isActive, onClick }) {
           <span className={`text-sm font-semibold truncate ${isActive ? 'text-[#FF7A00]' : 'text-gray-900'}`}>
             {conv.name}
           </span>
-          <span className="text-xs text-gray-400 flex-shrink-0 ml-1">{conv.time}</span>
+          <span className="text-xs text-gray-400 shrink-0 ml-1">{conv.time}</span>
         </div>
         <div className="flex justify-between items-center">
           
           {conv.unread > 0 && (
-            <span className="flex-shrink-0 w-5 h-5 bg-[#FF7A00] text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+            <span className="shrink-0 w-5 h-5 bg-[#FF7A00] text-white text-[10px] font-bold rounded-full flex items-center justify-center">
               {conv.unread}
             </span>
           )}
@@ -99,7 +101,7 @@ function MessageBubble({ msg, isMe }) {
       <div
         className={`max-w-[72%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed shadow-sm ${
           isMe
-            ? 'bg-gradient-to-br from-[#FF7A00] to-orange-500 text-white rounded-br-md'
+            ? 'bg-linear-to-br from-[#FF7A00] to-orange-500 text-white rounded-br-md'
             : 'bg-white text-gray-800 border border-gray-100 rounded-bl-md'
         }`}
       >
@@ -132,7 +134,7 @@ export default function MessagesPage() {
   const { socket, isConnected } = useSocket(user?.id || user?._id);
   const currentUserId = user?.id || user?._id;
   const requestedUserId = searchParams.get('userId');
-  const activeConv = conversations.find((c) => c._id === activeConvId);
+  const activeConv = conversations.find((c) => String(c.id) === String(activeConvId));
   const filteredConvs = conversations.filter((c) =>
     c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     c.lastMessage.toLowerCase().includes(searchQuery.toLowerCase())
@@ -147,6 +149,9 @@ export default function MessagesPage() {
           dispatch(logout());
           router.push('/login');
           return;
+        }
+        if (res.data.user) {
+          dispatch(setUser(res.data.user));
         }
         const conversationsResponse = await api.get('/api/chat/conversations');
         const rawConversations = conversationsResponse.data.conversations || conversationsResponse.data.data || conversationsResponse.data || [];
@@ -187,7 +192,7 @@ export default function MessagesPage() {
         const rawMessages = response.data.messages || response.data.data || response.data || [];
         const messages = (Array.isArray(rawMessages) ? rawMessages : []).map((message) => normalizeMessage(message, currentUserId));
         setConversations((previous) => previous.map((conversation) => (
-          conversation.id === activeConvId ? { ...conversation, messages, unread: 0 } : conversation
+          String(conversation.id) === String(activeConvId) ? { ...conversation, messages, unread: 0 } : conversation
         )));
       } catch (error) {
         console.error('Unable to load conversation messages', error);
@@ -214,13 +219,15 @@ export default function MessagesPage() {
 
     socket.on("user-typing", handleUserTyping);
     socket.on("user-stop-typing", handleUserStopTyping);
-    const handleIncomingMessage = (messageData) => {
+    const handleIncomingMessage = (payload) => {
+      const messageData = payload?.message || payload?.data?.message || payload || {};
         const message = normalizeMessage(
             messageData,
             currentUserId
         );
 
         const conversationId =
+            payload?.conversationId ||
             messageData.conversationId ||
             messageData.conversation?._id ||
             messageData.conversation?.id;
@@ -229,7 +236,7 @@ export default function MessagesPage() {
 
         setConversations((previous) =>
             previous.map((conversation) =>
-                conversation.id === String(conversationId)
+                String(conversation.id) === String(conversationId)
                     ? {
                         ...conversation,
 
@@ -239,7 +246,7 @@ export default function MessagesPage() {
                             ? conversation.messages
                             : [...conversation.messages, message],
 
-                        lastMessage: message.body,
+                        lastMessage: message.text,
                         time: message.time,
 
                         unread:
@@ -252,10 +259,14 @@ export default function MessagesPage() {
         );
     };
 
-    socket.on("message:new", handleIncomingMessage);
+    ['message:new', 'message', 'newMessage', 'receiveMessage'].forEach((event) => {
+      socket.on(event, handleIncomingMessage);
+    });
 
     return () => {
-        socket.off("message:new", handleIncomingMessage);
+        ['message:new', 'message', 'newMessage', 'receiveMessage'].forEach((event) => {
+          socket.off(event, handleIncomingMessage);
+        });
         socket.off("user-typing", handleUserTyping);
         socket.off("user-stop-typing", handleUserStopTyping);
       setIsOtherUserTyping(false);
@@ -304,7 +315,7 @@ export default function MessagesPage() {
   const handleSelectConv = (id) => {
     setActiveConvId(id);
     setConversations((prev) =>
-      prev.map((c) => (c.id === id ? { ...c, unread: 0 } : c))
+      prev.map((c) => (String(c.id) === String(id) ? { ...c, unread: 0 } : c))
     );
     setShowMobileList(false);
   };
@@ -344,7 +355,7 @@ export default function MessagesPage() {
 
         {/* ── Conversation List ── */}
         <div
-          className={`w-full md:w-80 lg:w-96 bg-white border-r border-gray-100 flex flex-col flex-shrink-0 ${
+          className={`w-full md:w-80 lg:w-96 bg-white border-r border-gray-100 flex flex-col shrink-0 ${
             !showMobileList ? 'hidden md:flex' : 'flex'
           }`}
         >
@@ -380,7 +391,7 @@ export default function MessagesPage() {
                 <ConversationItem
                   key={conv.id}
                   conv={conv}
-                  isActive={conv.id === activeConvId}
+                  isActive={String(conv.id) === String(activeConvId)}
                   onClick={() => handleSelectConv(conv.id)}
                 />
               ))
@@ -393,7 +404,7 @@ export default function MessagesPage() {
           {activeConv ? (
             <>
               {/* Chat Header */}
-              <div className="bg-white border-b border-gray-100 px-5 py-4 flex items-center justify-between flex-shrink-0 shadow-sm">
+              <div className="bg-white border-b border-gray-100 px-5 py-4 flex items-center justify-between shrink-0 shadow-sm">
                 <div className="flex items-center space-x-3">
                   <button
                     onClick={() => setShowMobileList(true)}
@@ -461,9 +472,9 @@ export default function MessagesPage() {
               </div>
 
               {/* Message Input */}
-              <div className="bg-white border-t border-gray-100 px-4 py-3 flex-shrink-0">
+              <div className="bg-white border-t border-gray-100 px-4 py-3 shrink-0">
                 <div className="flex items-end space-x-3">
-                  <button className="p-2 rounded-xl hover:bg-gray-100 text-gray-400 flex-shrink-0 transition-colors">
+                  <button className="p-2 rounded-xl hover:bg-gray-100 text-gray-400 shrink-0 transition-colors">
                     <Paperclip size={20} />
                   </button>
                   <div className="flex-1 relative">
@@ -482,7 +493,7 @@ export default function MessagesPage() {
                       style={{ minHeight: '48px' }}
                     />
                   </div>
-                  <button className="p-2 rounded-xl hover:bg-gray-100 text-gray-400 flex-shrink-0 transition-colors">
+                  <button className="p-2 rounded-xl hover:bg-gray-100 text-gray-400 shrink-0 transition-colors">
                     <Smile size={20} />
                   </button>
                   <motion.button
@@ -490,7 +501,7 @@ export default function MessagesPage() {
                     whileTap={{ scale: 0.95 }}
                     onClick={handleSend}
                     disabled={!messageInput.trim() || sending}
-                    className="flex-shrink-0 w-11 h-11 bg-gradient-to-br from-[#FF7A00] to-orange-500 text-white rounded-xl flex items-center justify-center shadow-md shadow-orange-200 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                    className="shrink-0 w-11 h-11 bg-linear-to-br from-[#FF7A00] to-orange-500 text-white rounded-xl flex items-center justify-center shadow-md shadow-orange-200 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
                   >
                     <Send size={18} />
                   </motion.button>
