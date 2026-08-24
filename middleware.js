@@ -3,7 +3,6 @@ import { jwtDecode } from "jwt-decode";
 export function middleware(request) {
     const token = request.cookies.get('authToken')?.value
     const { pathname } = request.nextUrl
-    
     // الصفحات الخاصة بـ freelancer فقط
     const freelancerOnly = ['/my-works', '/earnings']
     

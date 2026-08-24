@@ -42,7 +42,7 @@ useEffect(() => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
         code,
-        redirectUri: "https://freelance-hub-c7ws.vercel.app/"
+        redirectUri: "https://freelance-hub-kohl.vercel.app"
         })
     })
     .then(res => res.json())
