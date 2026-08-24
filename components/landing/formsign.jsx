@@ -88,6 +88,7 @@ const Formsign = () => {
       if (res.ok) {
           showToast({message:"Account created successfully",type:"sucess"});
           dispatch(setUser(response.user));
+          console.log(response.token)
           setTimeout(() => {
           router.push("/");
           }, 200);
