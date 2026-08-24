@@ -69,3 +69,7 @@ export function clearAuthCookie(response) {
   response.cookies.set('authToken', '', { ...cookieOptions(), maxAge: 0 });
   return response;
 }
+
+export function getAuthToken(request) {
+  return request.cookies.get('authToken')?.value || null;
+}

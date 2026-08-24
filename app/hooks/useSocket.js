@@ -5,29 +5,53 @@ export const useSocket = (userId) => {
     const [socket, setSocket] = useState(null);
     const [isConnected, setIsConnected] = useState(false);
     useEffect(() => {
-        const client = io(process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080", {
-            withCredentials: true,
-            transports: ["websocket", "polling"],
-            reconnection: true,
-            reconnectionDelay: 1000,
-            reconnectionDelayMax: 5000,
-            reconnectionAttempts: Infinity,
-        });
+        let disposed = false;
+        let client;
 
-        const handleConnect = () => {
-            setIsConnected(true);
-            if (userId) client.emit("userOnline", userId);
+        const connect = async () => {
+            try {
+                const response = await fetch('/api/auth/socket-token', {
+                    credentials: 'include',
+                    cache: 'no-store',
+                });
+                if (!response.ok || disposed) return;
+
+                const { token } = await response.json();
+                if (!token || disposed) return;
+
+                client = io(process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080", {
+                    auth: { token },
+                    withCredentials: true,
+                    transports: ["polling", "websocket"],
+                    reconnection: true,
+                    reconnectionDelay: 1000,
+                    reconnectionDelayMax: 5000,
+                    reconnectionAttempts: Infinity,
+                });
+
+                const handleConnect = () => {
+                    setIsConnected(true);
+                    if (userId) client.emit("userOnline", userId);
+                };
+                const handleDisconnect = () => setIsConnected(false);
+                const handleConnectError = (error) => {
+                    console.error("Socket connection error:", error.message);
+                };
+
+                client.on("connect", handleConnect);
+                client.on("disconnect", handleDisconnect);
+                client.on("connect_error", handleConnectError);
+                setSocket(client);
+            } catch (error) {
+                if (!disposed) console.error("Socket authentication error:", error.message);
+            }
         };
-        const handleDisconnect = () => setIsConnected(false);
 
-        client.on("connect", handleConnect);
-        client.on("disconnect", handleDisconnect);
-        setSocket(client);
+        connect();
 
         return () => {
-            client.off("connect", handleConnect);
-            client.off("disconnect", handleDisconnect);
-            client.disconnect();
+            disposed = true;
+            client?.disconnect();
             setSocket(null);
             setIsConnected(false);
         };
