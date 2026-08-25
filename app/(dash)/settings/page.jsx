@@ -283,7 +283,7 @@ function ProfileTab({ user, onSave, saveFlash , loading }) {
 
     console.log("PAYLOAD:", payload);
 
-    const res = await fetch("/api/backend/ubdate/personal", {
+    const res = await fetch("api/backend/ubdate/personal", {
       method: "PATCH",
       credentials: "include",
       headers: {
@@ -291,7 +291,6 @@ function ProfileTab({ user, onSave, saveFlash , loading }) {
       },
       body: JSON.stringify(payload),
     });
-
     const result = await res.json();
 
     console.log("STATUS:", res.status);
