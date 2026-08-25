@@ -71,7 +71,6 @@ useEffect(() => {
     })
     }
 }, []);
-
 //gsap
 const openNav = (ref, id) => {
   
@@ -154,12 +153,12 @@ return (
             >
               <a
                 href={link.href}
-                className="flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-medium text-gray-800  hover:text-gray-800/60 duration-300"
+                className="flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-medium   duration-300"
               >
                 <span className="mr-1">{link.label}</span>
 
                 {hasDropdown && (
-                  <i className="fa-solid fa-angle-down text-xs text-gray-500 duration-300 group-hover:-rotate-180 group-hover:text-black" />
+                  <i className="fa-solid fa-angle-down text-xs text-gray-500 dark:text-gray-500 duration-300 group-hover:-rotate-180 group-hover:text-black dark:group-hover:text-white" />
                 )}
               </a>
 
