@@ -58,7 +58,7 @@ useEffect(() => {
                 JSON.stringify(data.googleData)
             );
             //f
-            window.history.replaceState({}, '', '/');
+
             router.push('/choose-role');
             return;
         }
