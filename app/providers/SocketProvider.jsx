@@ -2,20 +2,32 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 import { useSocket } from "../hooks/useSocket";
-import { useAppSelector } from "../lib/hooks";
+import { useAppDispatch, useAppSelector } from "../lib/hooks";
+import { hideShow, setShow } from "../lib/Features/showSlice";
 
 const SocketContext = createContext(null);
 
 export default function SocketProvider({ children }) {
+    const dispatch = useAppDispatch();
     const user = useAppSelector((state) => state.auth.user);
     const userId = user?.id || user?._id;
     const [notifications, setNotifications] = useState([]);
-
+    function showToast(message){
+      dispatch(setShow(message))
+      setTimeout(() => {
+          dispatch(hideShow())
+      }, 3000);
+    } 
     // هنا هات userId من Redux أو auth state
     // مثال:
     // const user = useSelector((state) => state.auth.user);
     // const userId = user?._id;
+    const playMessageSound = () => {
+    const audio = new Audio("/sounds/universfield-message-notification-124467.mp3");
+    audio.volume = 0.4;
 
+    audio.play().catch(() => {});
+  };
     const { socket, isConnected } = useSocket(userId);
 
     useEffect(() => {
@@ -23,7 +35,8 @@ export default function SocketProvider({ children }) {
 
         const handleNotification = (data) => {
             console.log("🔔 New notification:", data);
-
+            playMessageSound ()
+            showToast({ message: `New Message from ${data.message.sender.fullName}`, type: "info" });
             setNotifications((prev) => [
                 ...prev,
                 data,
