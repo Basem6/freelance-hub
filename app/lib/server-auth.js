@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-const API_URL = process.env.API_URL || 'http://localhost:8080';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 
 // ── Extract a JWT token from the backend's JSON payload ─────────────────────
 function getToken(payload) {
@@ -77,12 +77,12 @@ export async function proxyAuth(
   console.log(logLabel, {
     hasToken: !!token,
     hasBody: !!body,
-    target: `${API_URL}${backendPath}`,
+    target: `${NEXT_PUBLIC_API_URL}${backendPath}`,
   });
 
   let backendResponse;
   try {
-    backendResponse = await fetch(`${API_URL}${backendPath}`, {
+    backendResponse = await fetch(`${NEXT_PUBLIC_API_URL}${backendPath}`, {
       method: request.method,
       headers,
       body,
