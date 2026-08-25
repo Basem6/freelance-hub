@@ -23,11 +23,19 @@ export default function SocketProvider({ children }) {
     // const user = useSelector((state) => state.auth.user);
     // const userId = user?._id;
     const playMessageSound = () => {
-    const audio = new Audio("/sounds/universfield-message-notification-124467.mp3");
-    audio.volume = 0.4;
-
-    audio.play().catch(() => {});
-  };
+        const audio = new Audio("/sounds/universfield-message-notification-124467.mp3");
+    
+        audio.volume = 0.5;
+    
+        audio
+            .play()
+            .then(() => {
+                console.log("🔊 SOUND PLAYED");
+            })
+            .catch((error) => {
+                console.error("❌ SOUND ERROR:", error);
+            });
+    };
     const { socket, isConnected } = useSocket(userId);
 
     useEffect(() => {
@@ -35,7 +43,7 @@ export default function SocketProvider({ children }) {
 
         const handleNotification = (data) => {
             console.log("🔔 New notification:", data);
-            playMessageSound ()
+            playMessageSound  ()
             showToast({ message: `New Message from ${data.message.sender.fullName}`, type: "info" });
             setNotifications((prev) => [
                 ...prev,

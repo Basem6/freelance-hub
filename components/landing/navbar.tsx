@@ -23,6 +23,7 @@ const NAV_LINKS = [
 ]
 
 export function Navbar() {  
+
 const [activeMenu, setActiveMenu] = useState(null);
 const nav1Ref = useRef(null);
 const nav2Ref = useRef(null);
@@ -33,6 +34,7 @@ const {user}= useAppSelector((state) => {
 });
 const dispatch = useAppDispatch();
 useEffect(() => {
+  
     const params = new URLSearchParams(window.location.search);
     const code = params.get('code');
     if (code) {
