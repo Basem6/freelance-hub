@@ -154,7 +154,7 @@ return (
             >
               <a
                 href={link.href}
-                className="flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-medium text-gray-800 hover:text-gray-800/60 duration-300"
+                className="flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-medium text-gray-800  hover:text-gray-800/60 duration-300"
               >
                 <span className="mr-1">{link.label}</span>
 
