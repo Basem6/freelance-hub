@@ -119,155 +119,229 @@ function ProfileTab({ user, onSave, saveFlash , loading }) {
 
   const uploadImage = async () => {
   try {
-    // 1️⃣ Compress image أولاً
+    // 1. Check image
     if (!image) {
       throw new Error("اختر صورة أولاً");
     }
-    
+
+    const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+    const uploadPreset =
+      process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
+
+    if (!cloudName || !uploadPreset) {
+      throw new Error("إعدادات Cloudinary غير موجودة");
+    }
+
+    // 2. Compress image
     const compressedImage = await compressImage(image);
-    
-    // 2️⃣ Upload لـ Cloudinary
-    const formData = new FormData();
-    formData.append("file", compressedImage);
-    formData.append(
-      "upload_preset",
-      process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET
-    );
-    
+
+    // 3. Upload to Cloudinary
+    const cloudinaryFormData = new FormData();
+
+    cloudinaryFormData.append("file", compressedImage);
+    cloudinaryFormData.append("upload_preset", uploadPreset);
+
     const cloudinaryRes = await fetch(
-      `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
+      `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
       {
         method: "POST",
-        body: formData,
+        body: cloudinaryFormData,
       }
     );
-    
-    if (!cloudinaryRes.ok) {
-      throw new Error(`Cloudinary error: ${cloudinaryRes.statusText}`);
+
+    const cloudinaryText = await cloudinaryRes.text();
+
+    let cloudinaryData;
+
+    try {
+      cloudinaryData = JSON.parse(cloudinaryText);
+    } catch {
+      throw new Error("استجابة Cloudinary غير صحيحة");
     }
-    
-    const cloudinaryData = await cloudinaryRes.json();
-    
+
+    if (!cloudinaryRes.ok) {
+      throw new Error(
+        cloudinaryData?.error?.message ||
+          `Cloudinary error: ${cloudinaryRes.status}`
+      );
+    }
+
     if (!cloudinaryData.secure_url) {
       throw new Error("لم نحصل على رابط الصورة من Cloudinary");
     }
-    
+
     const imageUrl = cloudinaryData.secure_url;
-    // 3️⃣ Update في Backend
-    const apiRes = await fetch(
-      "/api/auth/profile/image",
-      {
-        method: "PATCH",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ image: imageUrl }),
-      }
-    );
-    
+
+    console.log("Cloudinary image:", imageUrl);
+
+    // 4. Update image through Next.js API
+    const apiRes = await fetch("api/backend/api/auth/profile/image", {
+      method: "PATCH",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        image: imageUrl,
+      }),
+    });
+
+    const apiText = await apiRes.text();
+
+    let result;
+
+    try {
+      result = JSON.parse(apiText);
+    } catch {
+      throw new Error("استجابة السيرفر غير صحيحة");
+    }
+
+    console.log("Image API response:", result);
+
     if (!apiRes.ok) {
-      throw new Error(`Backend error: ${apiRes.statusText}`);
+      throw new Error(
+        result?.message ||
+          `Backend error: ${apiRes.status}`
+      );
     }
-    
-    const result = await apiRes.json();
-    console.log(result)
+
     if (!result.success) {
-      throw new Error(result.message || "فشل تحديث الصورة");
+      throw new Error(
+        result.message || "فشل تحديث الصورة"
+      );
     }
-    
-    // 4️⃣ Success
-    dispatch(updateUser({ image: imageUrl }));
+
+    // 5. Update Redux
+    dispatch(
+      updateUser({
+        image: imageUrl,
+      })
+    );
+
+    // 6. Reset image preview/input state
+    setImage(null);
     setPreview(null);
-    setshow(true);
-    
-    setTimeout(() => setshow(null), 1000);
-    
+
+    // 7. Success message
+    setshow("تم تحديث الصورة بنجاح ✅");
+
+    setTimeout(() => {
+      setshow(null);
+    }, 2000);
+
+    return imageUrl;
+
   } catch (error) {
-    console.error("Upload error:", error);
+    console.error("Upload image error:", error);
+
     setshow("خطأ: " + error.message);
-    
-    setTimeout(() => setshow(null), 3000);
+
+    setTimeout(() => {
+      setshow(null);
+    }, 3000);
+
+    throw error;
   }
 };
 
   const updateUserProfile = async (updatedData) => {
-    console.log(updatedData)
-    try {
-      // 1️⃣ Validation
-      if (!updatedData.fullName?.trim()) {
-        throw new Error("الاسم مطلوب");
-      }
-      if (updatedData.age && (updatedData.age < 13 || updatedData.age > 120)) {
-        throw new Error("العمر غير صحيح");
-      }
-      if (updatedData.password && updatedData.password.length < 6) {
-        throw new Error("كلمة المرور يجب أن تكون 6 أحرف على الأقل");
-      }
+  console.log("FORM DATA:", updatedData);
 
-      // 2️⃣ Prepare payload
-      const payload = {
+  try {
+    if (!updatedData.fullName?.trim()) {
+      throw new Error("الاسم مطلوب");
+    }
+
+    const age = updatedData.age
+      ? Number(updatedData.age)
+      : undefined;
+
+    console.log("AGE:", age, typeof age);
+
+    if (
+      age !== undefined &&
+      (!Number.isInteger(age) || age < 13 || age > 120)
+    ) {
+      throw new Error("العمر غير صحيح");
+    }
+
+    if (updatedData.password && updatedData.password.length < 6) {
+      throw new Error("كلمة المرور يجب أن تكون 6 أحرف على الأقل");
+    }
+
+    const payload = {
+      fullName: updatedData.fullName.trim(),
+      age,
+      phone: updatedData.phone,
+      country: updatedData.country,
+      email: updatedData.email,
+    };
+
+    if (updatedData.password) {
+      payload.password = updatedData.password;
+    }
+
+    console.log("PAYLOAD:", payload);
+
+    const res = await fetch("/api/backend/ubdate/personal", {
+      method: "PATCH",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const result = await res.json();
+
+    console.log("STATUS:", res.status);
+    console.log("RESULT:", result);
+
+    if (!res.ok) {
+      throw new Error(
+        result.message || `خطأ الخادم: ${res.status}`
+      );
+    }
+
+    if (!result.success) {
+      throw new Error(result.message || "فشل تحديث البيانات");
+    }
+
+    dispatch(
+      updateUser({
         fullName: updatedData.fullName,
-        age: updatedData.age,
+        age,
         phone: updatedData.phone,
         country: updatedData.country,
-        email:updatedData.email
-      };
+        email: updatedData.email,
+      })
+    );
 
-      // إضف password بس لو موجودة
-      if (updatedData.password) {
-        payload.password = updatedData.password;
-      }
+    setshow("تم تحديث البيانات بنجاح ✅");
 
-      // 3️⃣ API Request
-      const res = await fetch("/api/backend/ubdate/personal", {
-        method: "PATCH",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (!res.ok) {
-        throw new Error(`خطأ الخادم: ${res.statusText}`);
-      }
-
-      const result = await res.json();
-
-      if (!result.success) {
-        throw new Error(result.message || "فشل تحديث البيانات");
-      }
-
-      // 4️⃣ Update Redux
-      dispatch(updateUser({
-        fullName: updatedData.fullName,
-        age: updatedData.age,
-        phone: updatedData.phone,
-        country: updatedData.country,
-        password:updatedData.password
-      }));
-
-      // 5️⃣ Success message
-      setshow("تم تحديث البيانات بنجاح ✅");
-
-    } catch (error) {
-      console.error("Update error:", error);
-      setshow("خطأ: " + error.message);
-    }
-  };
-  const onsubmit = async (event) => {
-    event.preventDefault();
-    dispatch(setLoading(true));
-    try {
-      await Promise.all([
-        image ? uploadImage() : Promise.resolve(),
-        updateUserProfile(formData),
-      ]);
-    } finally {
-      dispatch(setLoading(false));
-    }
+  } catch (error) {
+    console.error("Update error:", error);
+    setshow("خطأ: " + error.message);
   }
+};
+  const onsubmit = async (event) => {
+  event.preventDefault();
+
+  dispatch(setLoading(true));
+
+  try {
+    if (image) {
+      await uploadImage();
+    }
+
+    await updateUserProfile(formData);
+
+  } catch (error) {
+    console.error("Submit error:", error);
+  } finally {
+    dispatch(setLoading(false));
+  }
+};
   const handleImage = (e) => {  
     setImage(e.target.files[0])
     const url = URL.createObjectURL(e.target.files[0]);
