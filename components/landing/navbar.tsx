@@ -42,11 +42,13 @@ useEffect(() => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
         code,
-        redirectUri: window.location.origin
+        redirectUri: "https://freelance-hub-c7ws.vercel.app"
         })
     })
     .then(res => res.json())
     .then(data => {
+        console.log("##########")
+        console.log(data)
         if (data.isNewUser) {
             console.log('📝 New user detected, redirecting to choose role...');
             

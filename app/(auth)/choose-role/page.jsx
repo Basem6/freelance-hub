@@ -78,6 +78,7 @@ const handleRoleSelect = async (role) => {
         console.log('✅ Account created:', data.user);
         // 🔹 تنظيف البيانات المؤقتة
         sessionStorage.removeItem('googleData');
+        console.log(data.token)
         // 🔹 حفظ المستخدم في Context
         dispatch(setUser(data.user));
         // 🔹 الذهاب للـ Dashboard
