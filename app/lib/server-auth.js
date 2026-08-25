@@ -77,12 +77,12 @@ export async function proxyAuth(
   console.log(logLabel, {
     hasToken: !!token,
     hasBody: !!body,
-    target: `${NEXT_PUBLIC_API_URL}${backendPath}`,
+    target: `${API_URL}${backendPath}`,
   });
 
   let backendResponse;
   try {
-    backendResponse = await fetch(`${NEXT_PUBLIC_API_URL}${backendPath}`, {
+    backendResponse = await fetch(`${API_URL}${backendPath}`, {
       method: request.method,
       headers,
       body,

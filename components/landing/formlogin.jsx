@@ -201,8 +201,6 @@ const StyledWrapper = styled.div`
     box-sizing: border-box;
     width: 80px;
     height: 80px;
-    background: linear-gradient(180deg, rgba(248, 248, 248, 0) 50%, #F8F8F888 100%);
-    border: 1px solid #F7F7F8;
     filter: drop-shadow(0px 0.5px 0.5px #EFEFEF) drop-shadow(0px 1px 0.5px rgba(239, 239, 239, 0.5));
     border-radius: 11px;
 }
@@ -219,7 +217,7 @@ const StyledWrapper = styled.div`
     margin: 0;
     font-size: 1.25rem;
     font-weight: 700;
-    color: #212121;
+    
 }
 
 .subtitle {
@@ -227,7 +225,6 @@ const StyledWrapper = styled.div`
     max-width: 80%;
     text-align: center;
     line-height: 1.1rem;
-    color: #8B8E98
 }
 
 .input_container {
@@ -249,7 +246,7 @@ const StyledWrapper = styled.div`
 
 .input_label {
     font-size: 0.75rem;
-    color: #8B8E98;
+   
     font-weight: 600;
 }
 
@@ -266,9 +263,6 @@ const StyledWrapper = styled.div`
 }
 
 .input_field:focus {
-    border: 1px solid transparent;
-    box-shadow: 0px 0px 0px 2px #242424;
-    background-color: transparent;
 }
 
 .sign-in_btn {
@@ -299,22 +293,6 @@ const StyledWrapper = styled.div`
     cursor: pointer;
 }
 
-.sign-in_apl {
-    width: 100%;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    background: #212121;
-    border-radius: 7px;
-    outline: none;
-    color: #ffffff;
-    border: 1px solid #e5e5e5;
-    filter: drop-shadow(0px 1px 0px #efefef)
-    drop-shadow(0px 1px 0.5px rgba(239, 239, 239, 0.5));
-    cursor: pointer;
-}
 
 .separator {
     width: 100%;
@@ -322,7 +300,6 @@ const StyledWrapper = styled.div`
     align-items: center;
     justify-content: center;
     gap: 30px;
-    color: #8B8E98;
 }
 
 .separator .line {
@@ -330,12 +307,10 @@ const StyledWrapper = styled.div`
     width: 100%;
     height: 1px;
     border: 0;
-    background-color: #e8e8e8;
 }
 
 .note {
     font-size: 0.75rem;
-    color: #8B8E98;
     text-decoration: underline;
 }`;
 
