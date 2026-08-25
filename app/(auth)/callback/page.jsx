@@ -106,7 +106,7 @@ export default function CallbackPage() {
     }
 
     // ── The redirect_uri must match exactly what was sent to Google ──────────
-    const redirectUri = `${window.location.origin}/auth/callback`;
+    const redirectUri = `${window.location.origin}/callback`;
 
     console.log("[Callback] Exchanging code with backend…");
 

@@ -125,7 +125,7 @@ const handleGoogleLogin = () => {
     window.location.href =
     `https://accounts.google.com/o/oauth2/v2/auth?` +
     `client_id=206275470398-ks60mr8ume6jqmeckebfl7q36elrq9g2.apps.googleusercontent.com&` +
-    `redirect_uri=${encodeURIComponent(`${window.location.origin}/auth/callback`)}&` +
+    `redirect_uri=${encodeURIComponent(`${window.location.origin}/callback`)}&` +
     `response_type=code&` +
     `scope=openid email profile`;
 };
