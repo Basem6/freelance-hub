@@ -78,11 +78,11 @@ const handleRoleSelect = async (role) => {
         console.log('✅ Account created:', data.user);
         // 🔹 تنظيف البيانات المؤقتة
         sessionStorage.removeItem('googleData');
-        console.log(data.token)
-        // 🔹 حفظ المستخدم في Context
+        // 🔹 حفظ المستخدم في Redux
         dispatch(setUser(data.user));
-        // 🔹 الذهاب للـ Dashboard
-        router.push('/');
+        // 🔹 Hard redirect → forces browser to commit the Set-Cookie header
+        //    before the next page load reads the authToken cookie.
+        window.location.replace('/');
     } catch (error) {
         console.error('❌ Error:', error);
         setError(error.message);

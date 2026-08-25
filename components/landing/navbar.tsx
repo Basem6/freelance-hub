@@ -42,7 +42,7 @@ useEffect(() => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
         code,
-        redirectUri: "https://freelance-hub-c7ws.vercel.app"
+        redirectUri: window.location.origin
         })
     })
     .then(res => res.json())
@@ -58,7 +58,7 @@ useEffect(() => {
                 JSON.stringify(data.googleData)
             );
             //f
-            
+            window.history.replaceState({}, '', '/');
             router.push('/choose-role');
             return;
         }

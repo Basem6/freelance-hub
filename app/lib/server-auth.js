@@ -2,16 +2,34 @@ import { NextResponse } from 'next/server';
 
 const API_URL = process.env.API_URL || 'http://localhost:8080';
 
+// ── Extract a JWT token from the backend's JSON payload ─────────────────────
 function getToken(payload) {
-  return payload?.token || payload?.authToken || payload?.accessToken || payload?.data?.token || payload?.data?.authToken || null;
+  return (
+    payload?.token ||
+    payload?.authToken ||
+    payload?.accessToken ||
+    payload?.data?.token ||
+    payload?.data?.authToken ||
+    null
+  );
 }
 
-function getTokenFromSetCookie(setCookie) {
-  if (!setCookie) return null;
-  const match = setCookie.match(/(?:^|,\s*)authToken=([^;]+)/);
-  return match?.[1] || null;
+// ── Strip the raw token from the payload before sending to the browser ───────
+// The cookie is HttpOnly; the browser JS must never see the bare token string.
+function sanitizePayload(payload) {
+  if (!payload || typeof payload !== 'object') return payload;
+  const sanitized = { ...payload };
+  delete sanitized.token;
+  delete sanitized.authToken;
+  delete sanitized.accessToken;
+  if (sanitized.data) {
+    sanitized.data = { ...sanitized.data };
+    delete sanitized.data.token;
+    delete sanitized.data.authToken;
+  }
+  return sanitized;
 }
-//f
+
 function cookieOptions() {
   return {
     httpOnly: true,
@@ -32,13 +50,31 @@ async function readResponse(response) {
   }
 }
 
-export async function proxyAuth(request, backendPath, { clearOnUnauthorized = true } = {}) {
+// ── Main proxy helper ────────────────────────────────────────────────────────
+export async function proxyAuth(
+  request,
+  backendPath,
+  { clearOnUnauthorized = true } = {}
+) {
   const body = request.method === 'GET' ? undefined : await request.text();
   const token = request.cookies.get('authToken')?.value;
-  const headers = {};
 
-  if (body) headers['Content-Type'] = request.headers.get('content-type') || 'application/json';
-  if (token) headers.Authorization = `Bearer ${token}`;
+  const headers = {};
+  if (body) {
+    headers['Content-Type'] =
+      request.headers.get('content-type') || 'application/json';
+  }
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  // ── Logging (helps diagnose Railway issues) ──────────────────────────────
+  const logLabel = `[proxyAuth] ${request.method} ${backendPath}`;
+  console.log(logLabel, {
+    hasToken: !!token,
+    hasBody: !!body,
+    target: `${API_URL}${backendPath}`,
+  });
 
   let backendResponse;
   try {
@@ -48,17 +84,38 @@ export async function proxyAuth(request, backendPath, { clearOnUnauthorized = tr
       body,
       cache: 'no-store',
     });
-  } catch {
-    return NextResponse.json({ success: false, message: 'Authentication service unavailable' }, { status: 502 });
+  } catch (err) {
+    console.error(logLabel, 'fetch error →', err.message);
+    return NextResponse.json(
+      { success: false, message: 'Authentication service unavailable' },
+      { status: 502 }
+    );
   }
 
-  const payload = await readResponse(backendResponse);
-  const response = NextResponse.json(payload, { status: backendResponse.status });
-  const responseToken = getToken(payload) || getTokenFromSetCookie(backendResponse.headers.get('set-cookie'));
+  const rawPayload = await readResponse(backendResponse);
+
+  // ── Log backend result ───────────────────────────────────────────────────
+  console.log(logLabel, '← backend status', backendResponse.status, {
+    success: rawPayload?.success,
+    isNewUser: rawPayload?.isNewUser,
+    hasToken: !!getToken(rawPayload),
+  });
+
+  // ── Extract token before sanitising ─────────────────────────────────────
+  const responseToken = getToken(rawPayload);
+
+  // ── Never send the raw token to the browser ──────────────────────────────
+  const safePayload = sanitizePayload(rawPayload);
+
+  const response = NextResponse.json(safePayload, {
+    status: backendResponse.status,
+  });
 
   if (backendResponse.ok && responseToken) {
+    console.log(logLabel, '→ setting authToken cookie');
     response.cookies.set('authToken', responseToken, cookieOptions());
   } else if (clearOnUnauthorized && backendResponse.status === 401) {
+    console.log(logLabel, '→ clearing authToken cookie (401)');
     response.cookies.delete('authToken');
   }
 
