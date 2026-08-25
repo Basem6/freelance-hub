@@ -19,7 +19,7 @@ export const useSocket = (userId) => {
                 const { token } = await response.json();
                 if (!token || disposed) return;
 
-                client = io(process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080", {
+                client = io(process.env.API_URL || "http://localhost:8080", {
                     auth: { token },
                     withCredentials: true,
                     transports: ["polling", "websocket"],
