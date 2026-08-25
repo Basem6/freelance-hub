@@ -12,6 +12,7 @@ import {
   ChevronLeft, Circle, Check, CheckCheck, MessageSquare,
   Smile, Image as ImageIcon, X, Star, Archive, Trash2
 } from 'lucide-react';
+import { useSocketContext } from '../../providers/SocketProvider';
 const getEntityId = (entity) => entity?.id || entity?._id || entity?.userId || entity?.user?._id || entity?.user?.id;
 
 const normalizeMessage = (message, currentUserId) => {
@@ -131,7 +132,7 @@ export default function MessagesPage() {
   const messagesEndRef = useRef(null);
   const typingTimeoutRef = useRef(null);
   const [isOtherUserTyping, setIsOtherUserTyping] = useState(false);
-  const { socket, isConnected } = useSocket(user?.id || user?._id);
+  const { socket, isConnected } = useSocketContext();
   const currentUserId = user?.id || user?._id;
   const requestedUserId = searchParams.get('userId');
   const activeConv = conversations.find((c) => String(c.id) === String(activeConvId));
