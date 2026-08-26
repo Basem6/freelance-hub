@@ -11,11 +11,11 @@ export function ThemeToggle() {
   useEffect(() => {
     setMounted(true)
     const stored = localStorage.getItem('fh-theme')
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-    const dark = stored ? stored === 'dark' : prefersDark
-    setIsDark(dark)
-    document.documentElement.classList.toggle('dark', dark)
-    document.documentElement.classList.toggle('light', !dark)
+    // const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+    // const dark = stored ? stored === 'dark' : "light";
+    // setIsDark(dark)
+    // document.documentElement.classList.toggle('dark', dark)
+    // document.documentElement.classList.toggle('light', !dark)
   }, [])
 
   function toggle() {
