@@ -261,12 +261,12 @@ export default function ProfilePage() {
                     <Link href={user?.role==="freelancer"?"/my-works":"/projects"}>
                     <button className="text-sm font-medium text-[#FF7A00] hover:text-orange-600 flex items-center gap-1 transition-colors">
                       {user?.role === "freelancer" &&
-                        (user?.portfolio.length != 0
+                        (user?.portfolio?.length != 0
                           ? "View All Works"
                           : "Add First Work")}
 
                       {user?.role === "client" &&
-                        (user?.postedProjects.length != 0
+                        (user?.postedProjects?.length != 0
                           ? "View All Projects"
                           : "Add First Project")}
                     </button>

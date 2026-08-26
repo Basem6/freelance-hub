@@ -10,7 +10,7 @@ export function middleware(request) {
     const clientOnly = ['/projects']
     
     // الصفحات المحمية (محتاج توكن)
-    const protectedRoutes = ['/dashboard', '/profile', '/projects', '/settings', '/my-works', '/messages', '/earnings' ]
+    const protectedRoutes = ['/dashboard', '/profile', '/projects', '/settings', '/my-works', '/messages', '/earnings', "/hire" ]
     
     const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route))
     const isFreelancerRoute = freelancerOnly.some(route => pathname.startsWith(route))
