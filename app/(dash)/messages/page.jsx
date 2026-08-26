@@ -74,18 +74,17 @@ function ConversationItem({ conv, isActive, onClick }) {
 
       <div className="flex-1 min-w-0">
         <div className="flex justify-between items-center mb-0.5">
-          <span className={`text-sm font-semibold truncate ${isActive ? 'text-[#FF7A00]' : 'text-gray-900'}`}>
-            {conv.name}
-          </span>
+          <div className='flex flex-col gap-1'>
+            <span className={`text-sm font-semibold truncate ${isActive ? 'text-[#FF7A00]' : 'text-gray-900'}`}>
+              {conv.name}
+            </span>
+            <span className="text-xs text-gray-400 shrink-0 ml-1">{conv.lastMessage}</span>
+          </div>
+          
           <span className="text-xs text-gray-400 shrink-0 ml-1">{conv.time}</span>
         </div>
         <div className="flex justify-between items-center">
           
-          {conv.unread > 0 && (
-            <span className="shrink-0 w-5 h-5 bg-[#FF7A00] text-white text-[10px] font-bold rounded-full flex items-center justify-center">
-              {conv.unread}
-            </span>
-          )}
         </div>
       </div>
     </motion.div>
@@ -132,7 +131,7 @@ export default function MessagesPage() {
   const messagesEndRef = useRef(null);
   const typingTimeoutRef = useRef(null);
   const [isOtherUserTyping, setIsOtherUserTyping] = useState(false);
-  const { socket, isConnected } = useSocketContext();
+  const { notifications, setNotifications , socket ,isConnected } = useSocketContext();
   const currentUserId = user?.id || user?._id;
   const requestedUserId = searchParams.get('userId');
   const activeConv = conversations.find((c) => String(c.id) === String(activeConvId));
@@ -221,44 +220,84 @@ export default function MessagesPage() {
     socket.on("user-typing", handleUserTyping);
     socket.on("user-stop-typing", handleUserStopTyping);
     const handleIncomingMessage = (payload) => {
-      const messageData = payload?.message || payload?.data?.message || payload || {};
-        const message = normalizeMessage(
-            messageData,
-            currentUserId
-        );
+  const messageData = payload || {};
 
-        const conversationId =
-            payload?.conversationId ||
-            messageData.conversationId ||
-            messageData.conversation?._id ||
-            messageData.conversation?.id;
+  const message = normalizeMessage(
+    messageData,
+    currentUserId
+  );
 
-        if (!conversationId) return;
+  const conversationId =
+    payload?.conversationId ||
+    messageData.conversationId ||
+    messageData.conversation?._id ||
+    messageData.conversation?.id;
 
-        setConversations((previous) =>
-            previous.map((conversation) =>
-                String(conversation.id) === String(conversationId)
-                    ? {
-                        ...conversation,
+  if (!conversationId) return;
 
-                        messages: conversation.messages.some(
-                            (item) => item.id === message.id
-                        )
-                            ? conversation.messages
-                            : [...conversation.messages, message],
+  setConversations((previous) => {
+    const index = previous.findIndex(
+      (conversation) =>
+        String(conversation.id) === String(conversationId)
+    );
 
-                        lastMessage: message.text,
-                        time: message.time,
+    // 🆕 المحادثة غير موجودة
+    if (index === -1) {
+      const sender = messageData.sender;
 
-                        unread:
-                            String(conversationId) === String(activeConvId)
-                                ? 0
-                                : conversation.unread + 1,
-                    }
-                    : conversation
-            )
-        );
+      if (!sender) {
+        console.log("❌ No sender data", messageData);
+        return previous;
+      }
+
+      const newConversation = normalizeConversation(
+        {
+          id: conversationId,
+          participants: [sender, user],
+          lastMessage: messageData.body || messageData.text || "",
+          updatedAt: messageData.createdAt,
+          messages: [message],
+          unread: 1,
+        },
+        currentUserId
+      );
+
+      // 🔥 أضف المحادثة في أول القائمة
+      return [
+        newConversation,
+        ...previous,
+      ];
+    }
+
+    // 💬 المحادثة موجودة
+    const conversation = previous[index];
+
+    const updatedConversation = {
+      ...conversation,
+
+      messages: conversation.messages.some(
+        (item) => String(item.id) === String(message.id)
+      )
+        ? conversation.messages
+        : [...conversation.messages, message],
+
+      lastMessage: messageData.body || messageData.text || "",
+      time: message.time,
+
+      unread:
+        String(conversationId) === String(activeConvId)
+          ? 0
+          : (conversation.unread || 0) + 1,
     };
+
+    // 🔥 نقل المحادثة لأول القائمة
+    return [
+      updatedConversation,
+      ...previous.slice(0, index),
+      ...previous.slice(index + 1),
+    ];
+  });
+};
 
     ['message:new', 'message', 'newMessage', 'receiveMessage'].forEach((event) => {
       socket.on(event, handleIncomingMessage);
@@ -273,7 +312,86 @@ export default function MessagesPage() {
       setIsOtherUserTyping(false);
     };
 }, [socket, currentUserId, activeConvId]);
+  useEffect(() => {
+  if (!socket) return;
 
+  const handleNewNotification = (data) => {
+    if (data?.type !== "message") return;
+
+    const conversationId = String(data.conversationId);
+    const messageData = data.message;
+
+    if (!conversationId || !messageData) return;
+
+    const message = normalizeMessage(
+      messageData,
+      currentUserId
+    );
+
+    setConversations((prev) => {
+      const index = prev.findIndex(
+        (conv) => String(conv.id) === conversationId
+      );
+
+      // 🆕 الشخص مش موجود في المحادثات
+      if (index === -1) {
+        const sender = messageData.sender;
+
+        if (!sender) return prev;
+
+        const newConversation = normalizeConversation(
+          {
+            id: conversationId,
+            participants: [sender],
+            lastMessage: messageData.body || messageData.text || "",
+            updatedAt: messageData.createdAt,
+            messages: [message],
+            unread: 1,
+          },
+          currentUserId
+        );
+
+        // 🔥 يظهر أول القائمة فورًا
+        return [
+          newConversation,
+          ...prev,
+        ];
+      }
+
+      // 💬 المحادثة موجودة
+      const conversation = prev[index];
+
+      const updatedConversation = {
+        ...conversation,
+        lastMessage: messageData.body || messageData.text || "",
+        time: message.time,
+
+        messages: conversation.messages.some(
+          (item) => String(item.id) === String(message.id)
+        )
+          ? conversation.messages
+          : [...conversation.messages, message],
+
+        unread:
+          String(conversationId) === String(activeConvId)
+            ? 0
+            : (conversation.unread || 0) + 1,
+      };
+
+      return [
+        updatedConversation,
+        ...prev.slice(0, index),
+        ...prev.slice(index + 1),
+      ];
+    });
+  };
+
+  socket.on("notification:new", handleNewNotification);
+
+  return () => {
+    socket.off("notification:new", handleNewNotification);
+  };
+}, [socket, currentUserId, activeConvId]);
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [activeConvId, conversations]);
@@ -364,7 +482,7 @@ export default function MessagesPage() {
           <div className="p-5 border-b border-gray-100">
             <div className="flex justify-between items-center mb-4">
               <h1 className="text-xl font-bold text-gray-900">Messages</h1>
-              <span className="text-xs font-semibold bg-[#FF7A00] text-white px-2 py-0.5 rounded-full">
+              <span className={`text-xs font-semibold bg-[#FF7A00] transition-transform origin-center ${conversations.reduce((s, c) => s + c.unread, 0)==0 ?"scale-0":"scale-100"} text-white px-2 py-0.5 rounded-full`}>
                 {conversations.reduce((s, c) => s + c.unread, 0)} New
               </span>
             </div>

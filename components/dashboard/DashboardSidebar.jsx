@@ -3,26 +3,38 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { 
-    Briefcase, MessageSquare, DollarSign, Settings, LogOut, 
+    Briefcase, MessageSquare, DollarSign, Settings, LogOut,Home ,
     CircleUserRound, FolderOpen, ChevronRight, Users, Menu, X
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAppDispatch, useAppSelector } from '../../app/lib/hooks';
 import { logout } from '../../app/lib/Features/authSlice';
 import api from '../../app/utils/api';
+import {useSocketContext} from "../../app/providers/SocketProvider"
+import { useEffect } from 'react';
 
 export default function DashboardSidebar({ activePage = 'dashboard' }) {
     
     const pathname = usePathname();
+    const { notifications, setNotifications} = useSocketContext();
+    useEffect(() => {
+    if (pathname.startsWith("/messages")) {
+        setNotifications([]);
+    }
+    }, [pathname, setNotifications]);
     const [isMobileOpen, setIsMobileOpen] = useState(false);
-    const dispatch = useAppDispatch()
-    const user = useAppSelector((state)=> state.auth.user)
+
+    const dispatch = useAppDispatch();
+
+    const user = useAppSelector((state) => state.auth.user);
+
     const router = useRouter();
-    
+
+    console.log(pathname);
     const clientNavItems = [
         { id: 'profile',    label: 'My Profile',  icon: CircleUserRound,  href: '/profile' },
         { id: 'projects',   label: 'My Projects',    icon: Briefcase,        href: '/projects' },
-        { id: 'messages',   label: 'Messages',    icon: MessageSquare,    href: '/messages', badge: 3 },
+        { id: 'messages',   label: 'Messages',    icon: MessageSquare,    href: '/messages', badge: notifications.length },
         { id: 'hire',       label: 'Find Freelancers', icon: Users,       href: '/freelancers' },
         { id: 'settings',   label: 'Settings',    icon: Settings,         href: '/settings' },
     ];
@@ -31,7 +43,7 @@ export default function DashboardSidebar({ activePage = 'dashboard' }) {
         { id: 'profile',    label: 'My Profile',  icon: CircleUserRound,  href: '/profile' },
         { id: 'works',      label: 'My Works',    icon: FolderOpen,       href: '/my-works' },
         { id: 'offers',   label: 'My Offers',    icon: Briefcase,        href: '/my-offers' },
-        { id: 'messages',   label: 'Messages',    icon: MessageSquare,    href: '/messages', badge: 3 },
+        { id: 'messages',   label: 'Messages',    icon: MessageSquare,    href: '/messages', badge:notifications.length},
         { id: 'earnings',   label: 'Earnings',    icon: DollarSign,       href: '/earnings' },
         { id: 'settings',   label: 'Settings',    icon: Settings,         href: '/settings' },
     ];
@@ -82,15 +94,21 @@ export default function DashboardSidebar({ activePage = 'dashboard' }) {
             isMobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
         }`}>
             {/* Logo */}
-            <div className="p-6 flex items-center space-x-3 border-b border-gray-50">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#FF7A00] to-orange-400 flex items-center justify-center text-white font-bold text-lg shadow-sm shadow-orange-200">
-                    FH
-                </div>
-                <div>
-                    <span className="font-bold text-xl text-gray-900 tracking-tight">{user?.role[0] + user?.role.slice(1)} Hub</span>
-                    {user?.role && (
-                        <p className="text-xs text-gray-500 uppercase tracking-[0.18em] mt-1">{user.role}</p>
-                    )}
+            <div className="py-6 px-3 flex  bg items-center space-x-3 border-b border-gray-50">
+                <div className="flex items-center gap-1.5 space-x-3 mb-3 px-2 py-2 rounded-xl hover:bg-gray-50 transition-colors cursor-pointer group">
+                    <div>
+                        <img 
+                                src={user?.image || "/avatars/avatar-1.png"}   
+                                alt={user?.fullName || 'User'} 
+                                className="w-13 h-13 rounded-full object-cover ring-2 ring-orange-100" 
+                        />  
+                    </div> 
+                    <div>
+                        <p className="font-semibold text-gray-900 truncate">{user?.fullName || 'User Name'}</p>
+                        {user?.role && (
+                            <p className="text-xs text-gray-500 uppercase tracking-[0.18em] mt-1">{user.role}</p>
+                        )}
+                    </div>
                 </div>
                 <button
                     type="button"
@@ -112,7 +130,7 @@ export default function DashboardSidebar({ activePage = 'dashboard' }) {
                             <motion.div
                                 whileHover={{ x: 2 }}
                                 transition={{ duration: 0.15 }}
-                                className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all duration-200 cursor-pointer group relative ${
+                                className={`w-full flex items-center relative space-x-3 px-3 py-2.5 rounded-xl transition-all duration-200 cursor-pointer group relative ${
                                     active 
                                     ? 'bg-orange-50 text-[#FF7A00]' 
                                     : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900 border-l-[3px] border-transparent'
@@ -125,8 +143,8 @@ export default function DashboardSidebar({ activePage = 'dashboard' }) {
                                 <span className={`font-medium text-sm flex-1 ${active ? 'text-[#FF7A00]' : ''}`}>
                                     {item.label}
                                 </span>
-                                {item.badge && (
-                                    <span className="bg-[#FF7A00] text-white text-xs font-bold px-1.5 py-0.5 rounded-full min-w-[20px] text-center">
+                                {(
+                                    <span className={`bg-[#FF7A00] text-white absolute right-7 text-xs font-bold px-1.5 py-0.5 transition-transform duration-300 ${notifications.length!=0 && item.badge  ? "scale-100":"scale-0"} rounded-full min-w-[20px] text-center`}>
                                         {item.badge}
                                     </span>
                                 )}
@@ -143,17 +161,12 @@ export default function DashboardSidebar({ activePage = 'dashboard' }) {
             {user && (
                 <div className="p-4 border-t border-gray-100">
                     <Link href="/" onClick={() => setIsMobileOpen(false)}>
-                        <div className="flex items-center space-x-3 mb-3 px-2 py-2 rounded-xl hover:bg-gray-50 transition-colors cursor-pointer group">
-                            <img 
-                                src={user?.image || "/avatars/avatar-1.png"}   
-                                alt={user?.fullName || 'User'} 
-                                className="w-9 h-9 rounded-full object-cover ring-2 ring-orange-100" 
-                            />
-                            <div className="flex-1 min-w-0">
-                                <p className="text-sm font-semibold text-gray-900 truncate">{user?.fullName || 'User Name'}</p>
-                                <p className="text-xs text-gray-400 truncate">{user?.email || 'user@example.com'}</p>
-                            </div>
-                        </div>
+                        <button 
+                        className="w-full flex items-center justify-center space-x-2 px-4 py-2.5 text-sm text-gray-500 hover:text-green-400 hover:bg-green-50 rounded-xl transition-all duration-200 border border-transparent hover:border-red-100"
+                    >
+                        <Home size={15} />
+                        <span className="font-medium ">Home</span>
+                    </button>
                     </Link>
                     <button 
                         onClick={handlelogout}

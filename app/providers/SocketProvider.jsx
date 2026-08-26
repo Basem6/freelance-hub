@@ -4,10 +4,12 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { useSocket } from "../hooks/useSocket";
 import { useAppDispatch, useAppSelector } from "../lib/hooks";
 import { hideShow, setShow } from "../lib/Features/showSlice";
+import { usePathname } from "next/navigation";
 
 const SocketContext = createContext(null);
 
 export default function SocketProvider({ children }) {
+    const pathname = usePathname();
     const dispatch = useAppDispatch();
     const user = useAppSelector((state) => state.auth.user);
     const userId = user?.id || user?._id;
@@ -39,24 +41,35 @@ export default function SocketProvider({ children }) {
     const { socket, isConnected } = useSocket(userId);
 
     useEffect(() => {
-        if (!socket) return;
+    if (!socket) return;
 
-        const handleNotification = (data) => {
-            console.log("🔔 New notification:", data);
-            playMessageSound  ()
-            showToast({ message: `New Message from ${data.message.sender.fullName}`, type: "info" });
-            setNotifications((prev) => [
-                ...prev,
-                data,
-            ]);
-        };
+    const handleNotification = (data) => {
+        // لو المستخدم داخل صفحة الرسائل، متعملش notification
+        if (pathname.startsWith("/messages")) {
+        return;
+        }
 
-        socket.on("notification:new", handleNotification);
+        console.log("🔔 New notification:", data);
 
-        return () => {
-            socket.off("notification:new", handleNotification);
-        };
-    }, [socket]);
+        playMessageSound();
+
+        showToast({
+        message: `New Message from ${data.message.sender.fullName}`,
+        type: "info",
+        });
+
+        setNotifications((prev) => [
+        ...prev,
+        data,
+        ]);
+    };
+
+    socket.on("notification:new", handleNotification);
+
+    return () => {
+        socket.off("notification:new", handleNotification);
+    };
+    }, [socket, pathname]);
 
     return (
         <SocketContext.Provider

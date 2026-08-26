@@ -231,7 +231,7 @@ export default function ProfilePage() {
               <div className="lg:col-span-2 space-y-6">
                 
                 {/* Skills */}
-                {user?.role==="freelancer"?
+                {user?.skills?.length > 0 && 
                 <motion.div variants={fadeUp} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
 
                   <div className="space-y-6">
@@ -251,7 +251,7 @@ export default function ProfilePage() {
                       </div>
                     ))}
                   </div>
-                </motion.div>:""}
+                </motion.div>}
 
 
                 {/* Portfolio Preview */}
@@ -260,7 +260,15 @@ export default function ProfilePage() {
                     <h3 className="text-xl font-bold text-[#111111]">{user?.role==="freelancer"?"Portfolio Works":"My Projecets"}</h3>
                     <Link href={user?.role==="freelancer"?"/my-works":"/projects"}>
                     <button className="text-sm font-medium text-[#FF7A00] hover:text-orange-600 flex items-center gap-1 transition-colors">
-                      {user?.role==="freelancer"?"View All Works":"View All Projects"}&rarr;
+                      {user?.role === "freelancer" &&
+                        (user?.portfolio.length != 0
+                          ? "View All Works"
+                          : "Add First Work")}
+
+                      {user?.role === "client" &&
+                        (user?.postedProjects.length != 0
+                          ? "View All Projects"
+                          : "Add First Project")}
                     </button>
                     </Link>
                   </div>

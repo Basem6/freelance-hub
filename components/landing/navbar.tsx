@@ -6,6 +6,7 @@ import {  Menu, Sun, X } from 'lucide-react'
 import Image from "next/image";
 import { useRef, useEffect, useState, useCallback  } from 'react'
 import Link from "next/link";
+import { useSocketContext } from '../../app/providers/SocketProvider';
 import { useAppDispatch, useAppSelector } from '@/app/lib/hooks'
 import { logout, setUser } from '@/app/lib/Features/authSlice'
 import { useRouter } from "next/navigation";
@@ -22,11 +23,13 @@ const NAV_LINKS = [
   { label: 'Messages', href: '/messages' },
 ]
 
-export function Navbar() {  
-
+export function Navbar() { 
+const { notifications } = useSocketContext(); 
+console.log(notifications)
 const [activeMenu, setActiveMenu] = useState(null);
 const nav1Ref = useRef(null);
 const nav2Ref = useRef(null);
+const nav3Ref = useRef(null);
 const router = useRouter();
 const [open1, setOpen1] = useState(false);
 const {user}= useAppSelector((state) => {
@@ -224,7 +227,7 @@ return (
 
       {!user?
       <div className="flex items-center gap-1.5">
-        <ThemeToggle />
+        {/* <ThemeToggle /> */}
         <Link
           href="/choose-role"
           className={cn(
@@ -255,10 +258,10 @@ return (
         </Button>
       </div>:
       <div className='flex gap-5 items-center'>
-        <div className="relative">
-            <BadgeQuestionMark strokeWidth={1.2} className='cursor-pointer' onClick={() => openNav(nav2Ref, "help")}/>
+        <div className="relative cursor-pointer" onClick={() => openNav(nav2Ref, "help")}>
+            <BadgeQuestionMark strokeWidth={1.2} />
           {activeMenu === "help"  &&
-          <div className='absolute top-12 right-0 w-60 bg-white rounded-lg shadow-lg group-hover:block' ref={nav2Ref}>
+          <div className='absolute top-12 right-0 w-60 select-none bg-white rounded-lg shadow-lg group-hover:block' ref={nav2Ref}>
             <ul className='flex flex-col'>
               <li className='px-4 py-2 hover:bg-gray-100 cursor-pointer rounded-t-md flex gap-3 items-center '>
                   
@@ -276,9 +279,74 @@ return (
           </div>
           }
         </div>
-        <div className="relative  xs:rounded-full rounded-lg p-2 cursor-pointer w-8 h-10 flex items-center justify-center">
-          <Bell strokeWidth={1.2} className='cursor-pointer absolute bottom-2 right-0' />
-          <div className='absolute top-2 -right-0 size-2 rounded-full bg-red-500'></div>
+        <div className="relative xs:rounded-full select-none rounded-lg p-2 cursor-pointer w-8 h-10 flex items-center justify-center" onClick={() => openNav(nav3Ref, "notfication")}>
+          <Bell
+            strokeWidth={1.2}
+            className="absolute bottom-2 right-0 select-none"
+            
+          />
+
+          {activeMenu === "notfication" && (
+            <div
+              className="absolute select-none top-12 right-0 w-56 bg-white rounded-lg min-h-56 h-auto   shadow-lg z-50"
+              ref={nav3Ref}
+            >
+              <ul
+                className={`flex flex-col select-none  items-center min-h-56 ${
+                  notifications.length === 0 ? "justify-center" : "justify-start"
+                }`}
+              >
+                  {notifications.length > 0 ? (
+                  <>
+                    {notifications.slice(0, 4).map((element, index) => (
+                      <li
+                        key={element._id || index}
+                        className={`py-2 hover:bg-gray-100 select-none min-w-full ${index===0 ?"rounded-t-lg":""} justify-center  flex gap-4 items-center`}
+                      >
+                        <span className="size-8 rounded-full overflow-hidden shrink-0">
+                          <Image
+                            src={element.message?.sender?.image || "/avatars/avatar-1.png"}
+                            alt={element.message?.sender?.fullName || "User"}
+                            width={32}
+                            height={32}
+                            className="w-full h-full object-cover"
+                          />
+                        </span>
+
+                        <p className="text-sm text-gray-700">
+                          {element.message?.sender?.fullName
+                            ? `${element.message.sender.fullName} sent a message`
+                            : "You have a new notification"}
+                        </p>
+                      </li>
+                    ))}
+
+                    {/* يظهر فقط لو فيه أكتر من 4 */}
+                    {notifications.length > 4 && (
+                      <li
+                        className="text-center py-2 text-sm text-orange-400 cursor-pointer hover:underline"
+                        onClick={() => {
+                          router.push("/messages")
+                        }}
+                      >
+                        Load More
+                      </li>
+                    )}
+                  </>
+                ) : (
+                  <li className="px-4 py-3 text-sm text-gray-500">
+                    No notifications
+                  </li>
+                )}
+              </ul>
+            </div>
+          )}
+
+    <div
+      className={`absolute top-2 -right-0 size-2 rounded-full bg-red-500 transition-all origin-center ${
+        notifications.length === 0 ? "scale-0" : "scale-100"
+      } duration-300`}
+    />
         </div>
         <div className="relative">
           <div className='size-10 rounded-full overflow-hidden cursor-pointer' onClick={() => openNav(nav1Ref, "profile")}>
@@ -291,7 +359,7 @@ return (
           />
           </div>
           {activeMenu ==="profile" &&
-          <div className='absolute top-12 right-0 w-60 bg-white rounded-lg shadow-lg group-hover:block' ref={nav1Ref}>
+          <div className='absolute top-12 select-none right-0 w-60 bg-white rounded-lg shadow-lg group-hover:block' ref={nav1Ref}>
             <ul className='flex flex-col'>
               <li className='px-4 py-2 hover:bg-gray-100 cursor-pointer rounded-t-md flex gap-3 items-center'>
                 <div className='size-8 rounded-full overflow-hidden'>

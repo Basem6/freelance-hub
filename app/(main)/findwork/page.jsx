@@ -112,7 +112,7 @@ function ProjectCard({ project: p }) {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.97 }}
       transition={{ duration: 0.25 }}
-      className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 group overflow-hidden"
+      className=" rounded-2xl border  shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 group overflow-hidden"
     >
       {/* Orange top accent bar */}
       <div className="h-1 w-full bg-gradient-to-r from-[#FF7A00] to-orange-400 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
@@ -357,7 +357,7 @@ export default function FindWorkPage() {
   const visible = filtered.slice(0, visibleCount);
   const hasMore = visibleCount < filtered.length;
   return (
-    <div className="min-h-screen bg-[#F8F8F8]">
+    <div className="min-h-screen ">
 
       {/* ── Body ── */}
       <div className="px-4 sm:px-6 py-8">
@@ -365,7 +365,7 @@ export default function FindWorkPage() {
 
           {/* Desktop Sidebar */}
           <aside className="hidden lg:block mt-15 ">
-            <div className=" bg-white sticky top-1 rounded-2xl border border-gray-100 shadow-sm p-5">
+            <div className="  sticky top-1 rounded-2xl border  shadow-sm p-5">
               <div className="flex items-center justify-between mb-5">
                 <h3 className="text-sm font-bold text-[#111111] flex items-center gap-2">
                   <SlidersHorizontal className="w-4 h-4 text-[#FF7A00]" /> Filters
