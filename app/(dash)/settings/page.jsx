@@ -11,6 +11,7 @@ import {
 import Loader from "../../../components/ui/Loader"
 import  {compressImage} from "../../utils/compressImage"
 import { hideShow, setShow } from '../../lib/Features/showSlice';
+import axios from 'axios';
 
 export default function SettingsPage() {
   const LoadingUser = useAppSelector(state => state.auth.loading);
@@ -99,6 +100,8 @@ export default function SettingsPage() {
 // --- TAB COMPONENTS ---
 
 function ProfileTab({ user, onSave, saveFlash , loading }) {
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const dispatch = useAppDispatch();
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(user.image ||"/avatars/avatar-1.png");
@@ -111,80 +114,96 @@ function ProfileTab({ user, onSave, saveFlash , loading }) {
     country: user?.country||'USA',
     phone: user?.phone||'',
   });
+  useEffect(() => {
+    if (isUploading) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
 
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isUploading]);
   const [isCountryOpen, setIsCountryOpen] = useState(false);
   const countryOptions = ['USA', 'UK', 'Canada', 'UAE', 'Saudi Arabia', 'Egypt'];
 
   const handleChange = (e) => setFormData({...formData, [e.target.name]: e.target.value});
+  const handleUpload = async () => {
+  if (!image) return;
 
-  const uploadImage = async () => {
   try {
-    // 1. Check image
-    if (!image) {
-      throw new Error("اختر صورة أولاً");
-    }
+    // =========================
+    // 1. Start blocking UI
+    // =========================
+    setIsUploading(true);
+    setUploadProgress(0);
 
-    const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
-    const uploadPreset =
-      process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
-
-    if (!cloudName || !uploadPreset) {
-      throw new Error("إعدادات Cloudinary غير موجودة");
-    }
-
+    // =========================
     // 2. Compress image
+    // =========================
     const compressedImage = await compressImage(image);
 
-    // 3. Upload to Cloudinary
+    console.log("Original size:", image.size);
+    console.log("Compressed size:", compressedImage.size);
+
+    // =========================
+    // 3. Prepare Cloudinary FormData
+    // =========================
     const cloudinaryFormData = new FormData();
 
     cloudinaryFormData.append("file", compressedImage);
-    cloudinaryFormData.append("upload_preset", uploadPreset);
 
-    const cloudinaryRes = await fetch(
+    cloudinaryFormData.append(
+      "upload_preset",
+      process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET
+    );
+
+    const cloudName =
+      process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+
+    // =========================
+    // 4. Upload to Cloudinary
+    // =========================
+    const response = await axios.post(
       `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+      cloudinaryFormData,
       {
-        method: "POST",
-        body: cloudinaryFormData,
+        onUploadProgress: (progressEvent) => {
+          if (!progressEvent.total) return;
+
+          const percent = Math.round(
+            (progressEvent.loaded * 100) /
+              progressEvent.total
+          );
+
+          setUploadProgress(percent);
+        },
       }
     );
 
-    const cloudinaryText = await cloudinaryRes.text();
-
-    let cloudinaryData;
-
-    try {
-      cloudinaryData = JSON.parse(cloudinaryText);
-    } catch {
-      throw new Error("استجابة Cloudinary غير صحيحة");
+    const imageUrl = response.data.secure_url;
+    if(user?.image ===imageUrl ){
+      return;
     }
+    console.log("Cloudinary uploaded:", imageUrl);
 
-    if (!cloudinaryRes.ok) {
-      throw new Error(
-        cloudinaryData?.error?.message ||
-          `Cloudinary error: ${cloudinaryRes.status}`
-      );
-    }
-
-    if (!cloudinaryData.secure_url) {
-      throw new Error("لم نحصل على رابط الصورة من Cloudinary");
-    }
-
-    const imageUrl = cloudinaryData.secure_url;
-
-    console.log("Cloudinary image:", imageUrl);
-
-    // 4. Update image through Next.js API
-    const apiRes = await fetch("api/backend/api/auth/profile/image", {
-      method: "PATCH",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        image: imageUrl,
-      }),
-    });
+    // =========================
+    // 5. Update backend
+    // =========================
+    const apiRes = await fetch(
+      "/api/backend/api/auth/profile/image",
+      {
+        method: "PATCH",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          image: imageUrl,
+        }),
+      }
+    );
 
     const apiText = await apiRes.text();
 
@@ -207,43 +226,63 @@ function ProfileTab({ user, onSave, saveFlash , loading }) {
 
     if (!result.success) {
       throw new Error(
-        result.message || "فشل تحديث الصورة"
+        result.message ||
+          "فشل تحديث الصورة"
       );
     }
 
-    // 5. Update Redux
+    // =========================
+    // 6. Update Redux
+    // =========================
     dispatch(
       updateUser({
         image: imageUrl,
       })
     );
 
-    // 6. Reset image preview/input state
+    // =========================
+    // 7. Reset states
+    // =========================
     setImage(null);
     setPreview(null);
 
-    // 7. Success message
+    // =========================
+    // 8. Complete progress
+    // =========================
+    setUploadProgress(100);
+
+    // =========================
+    // 9. Success message
+    // =========================
     setshow("تم تحديث الصورة بنجاح ✅");
 
     setTimeout(() => {
       setshow(null);
     }, 2000);
 
-    return imageUrl;
+    console.log("Upload completed:", imageUrl);
 
   } catch (error) {
-    console.error("Upload image error:", error);
+    console.error("Upload failed:", error);
 
-    setshow("خطأ: " + error.message);
+    setUploadProgress(0);
+
+    setshow(
+      error?.message ||
+        "حدث خطأ أثناء رفع الصورة ❌"
+    );
 
     setTimeout(() => {
       setshow(null);
     }, 3000);
 
-    throw error;
+  } finally {
+    // =========================
+    // Unlock UI
+    // =========================
+    setIsUploading(false);
   }
 };
-
   const updateUserProfile = async (updatedData) => {
   console.log("FORM DATA:", updatedData);
 
@@ -330,7 +369,7 @@ function ProfileTab({ user, onSave, saveFlash , loading }) {
 
   try {
     if (image) {
-      await uploadImage();
+      await handleUpload();
     }
 
     await updateUserProfile(formData);
@@ -348,7 +387,49 @@ function ProfileTab({ user, onSave, saveFlash , loading }) {
   };
   console.log(loading)
   return (
-    <div className="bg-white rounded-2xl shadow-sm p-6 lg:p-8 overflow-hidden max-w-full">
+    <div className="bg-white rounded-2xl shadow-sm p-6 lg:p-8  max-w-full">
+       {isUploading && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="w-[90%] max-w-md rounded-2xl bg-white p-7 shadow-2xl">
+
+            <div className="mb-5 text-center">
+              <p className="text-lg font-semibold text-gray-900">
+                Uploading image
+              </p>
+
+              <p className="mt-1 text-sm text-gray-500">
+                Please wait while your image is being uploaded...
+              </p>
+            </div>
+
+            {/* Percentage */}
+            <div className="mb-3 flex items-center justify-between">
+              <span className="text-sm font-medium text-gray-600">
+                Upload progress
+              </span>
+
+              <span className="text-sm font-bold text-orange-500">
+                {uploadProgress}%
+              </span>
+            </div>
+
+            {/* Progress bar */}
+            <div className="h-3 w-full overflow-hidden rounded-full bg-gray-100">
+              <div
+                className="h-full rounded-full bg-orange-500 transition-all duration-200"
+                style={{
+                  width: `${uploadProgress}%`,
+                }}
+              />
+            </div>
+
+            {/* Status */}
+            <p className="mt-4 text-center text-xs text-gray-400">
+              Do not close this page.
+            </p>
+          </div>
+        </div>
+      )}
       <h2 className="text-xl font-bold text-[#111111] mb-6">Profile Information</h2>
       
       <form onSubmit={onSave} className="space-y-6">
@@ -381,23 +462,20 @@ function ProfileTab({ user, onSave, saveFlash , loading }) {
           <InputGroup label="Full Name" name="fullName" value={formData.fullName} onChange={handleChange} />
           <InputGroup label="Email Address" type="email" name="email" value={formData.email} onChange={handleChange} />
           <InputGroup label="Age" type="number" name="age" value={formData.age} onChange={handleChange} />
-          <InputGroup label="Password" type="password" name="password" value={formData.password} onChange={handleChange} />
-        
-          
           <div className="space-y-1.5">
             <label className="block text-sm font-semibold text-gray-700">Country</label>
             <div className="relative">
               <button
                 type="button"
                 onClick={() => setIsCountryOpen((prev) => !prev)}
-                className="flex w-full items-center justify-between rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-left text-sm font-medium text-gray-700 transition-all hover:border-[#FF7A00] hover:bg-white"
+                className="flex w-full items-center justify-between rounded-xl border  border-gray-200  bg-gray-50 px-4 py-2.5 text-left text-sm font-medium text-gray-700 transition-all hover:border-[#FF7A00] hover:bg-white"
               >
                 <span>{formData.country || 'Select a country'}</span>
                 <span className="text-gray-400">▾</span>
               </button>
 
               {isCountryOpen && (
-                <div className="absolute z-10 mt-2 w-full rounded-2xl border border-gray-200 bg-white p-2 shadow-xl shadow-orange-500/10">
+                <div className="absolute z-10 mt-2 w-full rounded-2xl border border-gray-200 bg-white p-2 overflow-y-scroll max-h-44  scrollbar-hide shadow-xl shadow-orange-500/10">
                   {countryOptions.map((country) => (
                     <button
                       key={country}
@@ -417,6 +495,7 @@ function ProfileTab({ user, onSave, saveFlash , loading }) {
               )}
             </div>
           </div>
+        
           <InputGroup label="phone" name="phone" type='number' value={formData.phone} onChange={handleChange} />
         </div>
         <div className="pt-4 flex items-center gap-4">
@@ -452,7 +531,7 @@ function TechnicalSettings() {
   const dispatch = useAppDispatch();
   const router = useRouter()
   const user = useAppSelector(state => state.auth.user);
-  const loading = useAppSelector(state => state.auth.loading)
+  const [loading , setloading] = useState(false)
   const [technicalData, setTechnicalData] = useState({
     major: user?.major ||'',
     specialty: user?.specialty ||'',
@@ -538,7 +617,7 @@ function TechnicalSettings() {
       showToast({ message: "من فضلك أضف مهارة واحدة على الأقل", type: "warning" });
       return;
     }
-    dispatch(setLoading(true));
+    setloading(true)
     try {
       const payload = {
         major: technicalData.major.trim(),
@@ -597,7 +676,7 @@ function TechnicalSettings() {
         type: "error",
       });
     } finally {
-      dispatch(setLoading(false));
+      setloading(false)
     }
   };
   return (

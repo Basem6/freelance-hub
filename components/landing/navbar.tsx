@@ -370,10 +370,15 @@ return (
                   height={200}
                 />
                 </div>
-                <div>
-                  <p className='text-sm '>{user.fullName}</p>
-                  <p className='text-xs text-gray-500'>{user.role}</p>
-                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm">
+                    {user.fullName}
+                  </p>
+
+                  <p className="truncate text-xs text-gray-500">
+                    {user.role}
+                  </p>
+              </div>
               </li>
               <Link href={`/profile`}>
               <li className='px-4 py-2 hover:bg-gray-100 cursor-pointer flex gap-3 items-center '>

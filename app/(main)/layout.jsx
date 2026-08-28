@@ -1,5 +1,3 @@
-import { Geist, Geist_Mono } from 'next/font/google'
-import { GoogleOAuthProvider } from '@react-oauth/google'
 import '.././globals.css'
 import RootLayoutContent from '../../components/RootLayoutContent'
 

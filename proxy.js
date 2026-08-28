@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { jwtDecode } from "jwt-decode";
-export function middleware(request) {
+export function proxy(request) {
     const token = request.cookies.get('authToken')?.value
     const { pathname } = request.nextUrl
     // الصفحات الخاصة بـ freelancer فقط
@@ -10,7 +10,7 @@ export function middleware(request) {
     const clientOnly = ['/projects']
     
     // الصفحات المحمية (محتاج توكن)
-    const protectedRoutes = ['/dashboard', '/profile', '/projects', '/settings', '/my-works', '/messages', '/earnings', "/hire" ]
+    const protectedRoutes = ['/dashboard', '/profile', '/projects', '/settings', '/my-works', '/messages', '/earnings', "/hire","/findworks" ]
     
     const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route))
     const isFreelancerRoute = freelancerOnly.some(route => pathname.startsWith(route))
@@ -73,6 +73,7 @@ export const config = {
         '/my-works',
         '/messages/:path*',
         '/earnings/:path*',
-        '/hire/:path*'
+        '/hire/:path*' ,
+        '/findworks/:path*' ,
     ]
 }

@@ -12,6 +12,7 @@ import { logout } from '../../app/lib/Features/authSlice';
 import api from '../../app/utils/api';
 import {useSocketContext} from "../../app/providers/SocketProvider"
 import { useEffect } from 'react';
+import Image from 'next/image';
 
 export default function DashboardSidebar({ activePage = 'dashboard' }) {
     
@@ -94,19 +95,25 @@ export default function DashboardSidebar({ activePage = 'dashboard' }) {
             isMobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
         }`}>
             {/* Logo */}
-            <div className="py-6 px-3 flex  bg items-center space-x-3 border-b border-gray-50">
-                <div className="flex items-center gap-1.5 space-x-3 mb-3 px-2 py-2 rounded-xl hover:bg-gray-50 transition-colors cursor-pointer group">
-                    <div>
-                        <img 
-                                src={user?.image || "/avatars/avatar-1.png"}   
-                                alt={user?.fullName || 'User'} 
-                                className="w-13 h-13 rounded-full object-cover ring-2 ring-orange-100" 
-                        />  
-                    </div> 
-                    <div>
-                        <p className="font-semibold text-gray-900 truncate">{user?.fullName || 'User Name'}</p>
+            <div className="flex items-center gap-3 border-b border-gray-100 px-4 py-4">
+                <div className="flex min-w-0 flex-1 items-center gap-3 rounded-xl px-2 py-2 transition-colors hover:bg-gray-50 cursor-pointer group">
+                    <Image
+                        src={user?.image || "/avatars/avatar-1.png"}
+                        alt={user?.fullName || "User"}
+                        width={45}
+                        height={45}
+                        className="h-10 w-10 shrink-0 rounded-full object-cover ring-2 ring-orange-100"
+                    />
+
+                    <div className="min-w-0">
+                        <p className="truncate font-semibold text-gray-900">
+                            {user?.fullName || "User Name"}
+                        </p>
+
                         {user?.role && (
-                            <p className="text-xs text-gray-500 uppercase tracking-[0.18em] mt-1">{user.role}</p>
+                            <p className="mt-1 truncate text-xs uppercase tracking-[0.18em] text-gray-500">
+                                {user.role}
+                            </p>
                         )}
                     </div>
                 </div>
@@ -114,7 +121,7 @@ export default function DashboardSidebar({ activePage = 'dashboard' }) {
                     type="button"
                     aria-label="Close dashboard navigation"
                     onClick={() => setIsMobileOpen(false)}
-                    className="ml-auto rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-700 md:hidden"
+                    className="shrink-0 rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 md:hidden"
                 >
                     <X size={20} />
                 </button>

@@ -281,6 +281,14 @@
   -webkit-backdrop-filter: blur(12px);
 }
 
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE و Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;              /* Chrome, Safari */
+}
 @keyframes float {
   0%,
   100% {

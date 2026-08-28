@@ -49,7 +49,7 @@ export default function ProfilePage() {
       .finally(() => setLoading(false));
   }, []);
   
-    useEffect(()=>{
+  useEffect(()=>{
     const ds= async  function (){
     if (user?.role === 'client') {
           setProjectsLoading(true);
@@ -67,14 +67,7 @@ export default function ProfilePage() {
     }
   }
   ds()
-  },[])
-  const handleLogout = async () => {
-    try {
-      await api.post('/api/auth/logout', {});
-      dispatch(logout());
-      router.push('/');
-    } catch (error) { console.error('Logout failed:', error); }
-  };  
+  },[]) 
   console.log(Projects)
   if (loading) {
     return (
@@ -254,121 +247,152 @@ export default function ProfilePage() {
                 </motion.div>}
 
 
-                {/* Portfolio Preview */}
-                <motion.div variants={fadeUp} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                  <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-xl font-bold text-[#111111]">{user?.role==="freelancer"?"Portfolio Works":"My Projecets"}</h3>
-                    <Link href={user?.role==="freelancer"?"/my-works":"/projects"}>
-                    <button className="text-sm font-medium text-[#FF7A00] hover:text-orange-600 flex items-center gap-1 transition-colors">
-                      {user?.role === "freelancer" &&
-                        (user?.portfolio?.length != 0
-                          ? "View All Works"
-                          : "Add First Work")}
+                {/* Portfolio / Projects Preview */}
+                <motion.div
+                  variants={fadeUp}
+                  className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm"
+                >
+                  <div className="mb-6 flex items-center justify-between">
+                    <h3 className="text-xl font-bold text-[#111111]">
+                      {user?.role === "freelancer"
+                        ? "Portfolio Works"
+                        : "My Projects"}
+                    </h3>
 
-                      {user?.role === "client" &&
-                        (user?.postedProjects?.length != 0
+                    <Link
+                      href={
+                        user?.role === "freelancer"
+                          ? "/my-works"
+                          : "/projects"
+                      }
+                      className="text-sm font-medium text-[#FF7A00] transition-colors hover:text-orange-600"
+                    >
+                      {user?.role === "freelancer"
+                        ? user?.portfolio?.length > 0
+                          ? "View All Works"
+                          : "Add First Work"
+                        : Projects.length > 0
                           ? "View All Projects"
-                          : "Add First Project")}
-                    </button>
+                          : "Add First Project"}
                     </Link>
                   </div>
-                  
-                  <div className=" flex gap-4 min-h-36 relative">
-                    {user?.portfolio?.length > 0 ? (
-  user.portfolio.map((item, i) => (
-    <div
-      key={item._id || `portfolio-${i}`}
-      className="group relative h-48 rounded-2xl overflow-hidden cursor-pointer shadow-sm hover:shadow-lg transition-all"
-    >
-      <div className="h-48 relative overflow-hidden">
-        <img
-          src={item.coverImage || DEFAULT_COVER_IMAGE}
-          alt={item.title}
-          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-        />
 
-        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
-          {item.liveUrl && (
-            <Link href={item.liveUrl}>
-              <button className="w-12 h-12 bg-white/30 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-white hover:text-[#FF7A00] transition-colors">
-                <ExternalLink size={20} />
-              </button>
-            </Link>
-          )}
-        </div>
-      </div>
+                  <div className="relative min-h-36">
+                    {/* ========================= */}
+                    {/* Freelancer Portfolio */}
+                    {/* ========================= */}
+                    {user?.role === "freelancer" ? (
+                      user?.portfolio?.length > 0 ? (
+                        <div className="flex flex-wrap gap-4">
+                          {user?.portfolio.slice(0 , 3).map((item, i) => (
+                            <div
+                              key={item._id || `portfolio-${i}`}
+                              className="group  relative h-48 w-[31%] cursor-pointer overflow-hidden rounded-2xl shadow-sm transition-all hover:shadow-lg"
+                            >
+                              <img
+                                src={
+                                  item.coverImage ||
+                                  DEFAULT_COVER_IMAGE
+                                }
+                                alt={item.title || "Portfolio work"}
+                                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                              />
 
-      <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
+                              {/* Overlay */}
+                              <div className="absolute inset-0 bg-black/20 transition-colors group-hover:bg-black/40" />
 
-      <div className="absolute bottom-4 left-4 right-4">
-        <h4 className="text-white font-bold text-lg">
-          {item.title}
-        </h4>
+                              {/* External link */}
+                              {item.liveUrl && (
+                                <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity group-hover:opacity-100">
+                                  <Link
+                                    href={item.liveUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                  >
+                                    <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white/30 text-white backdrop-blur-md transition-colors hover:bg-white hover:text-[#FF7A00]">
+                                      <ExternalLink size={20} />
+                                    </span>
+                                  </Link>
+                                </div>
+                              )}
 
-        <p className="text-white/80 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity translate-y-2 group-hover:translate-y-0 duration-300">
-          View Project
-        </p>
-      </div>
-    </div>
-  ))
-) : user?.postedProjects?.length > 0 ? (
-  <div className=' flex gap-3 flex-wrap min-w-full'>
-  {Projects.map((project) => {
-    const pid = project.id ?? project._id;
-    return (
-      <Link
-        href={`/projects/${pid}`}
-        key={pid}
-        className="rounded-3xl w-50 overflow-hidden grow   border border-gray-200 bg-white px-6 py-3 shadow-sm hover:shadow-md transition"
-      >
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-          <div>
-            <div className="inline-flex items-center gap-2 rounded-full bg-orange-50 px-3 py-1 text-sm font-semibold text-orange-700">
-              <Briefcase size={16} />
-              {project.category}
-            </div>
+                              {/* Content */}
+                              <div className="absolute bottom-4 left-4 right-4">
+                                <h4 className="text-lg font-bold text-white">
+                                  {item.title}
+                                </h4>
 
-            <h3 className="mt-4 text-xl font-semibold text-[#111111]">
-              {project.title}
-            </h3>
+                                <p className="translate-y-2 text-sm font-medium text-white/80 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+                                  View Project
+                                </p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                          <div className="flex min-h-36 items-center justify-center">
+                              <p className="text-lg font-medium text-gray-400">
+                                No portfolio work yet
+                              </p>
+                          </div>
+                      )
+                    ) : (
+                      /* ========================= */
+                      /* Client Projects */
+                      /* ========================= */
+                      user?.role ==="client"? (
+                        <div className="flex min-w-full flex-wrap gap-3">
+                          {Projects?.slice(0, 3).map((project) => {
+                            const pid = project.id ?? project._id;
 
-            
+                            return (
+                              <Link
+                                href={`/projects/${pid}`}
+                                key={pid}
+                                className="w-50 grow overflow-hidden rounded-3xl border border-gray-200 bg-white px-6 py-3 shadow-sm transition hover:shadow-md"
+                              >
+                                <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                                  <div>
+                                    <div className="inline-flex items-center gap-2 rounded-full bg-orange-50 px-3 py-1 text-sm font-semibold text-orange-700">
+                                      <Briefcase size={16} />
 
-            
-          </div>
+                                      {project.category}
+                                    </div>
 
-          <div className="flex flex-col items-start gap-2 text-sm text-gray-500 sm:items-end">
-            <span>
-              Budget:{" "}
-              <span className="font-semibold text-gray-900">
-                {project.budget}
-              </span>
-            </span>
-          </div>
-        </div>
+                                    <h3 className="mt-4 text-xl font-semibold text-[#111111]">
+                                      {project.title}
+                                    </h3>
+                                  </div>
 
-        <div className="mt-6 flex flex-wrap gap-2">
-          {(project.skills || []).map((skill, index) => (
-            <span
-              key={`${skill}-${index}`}
-              className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700"
-            >
-              {skill}
-            </span>
-          ))}
-        </div>
-      </Link>
-      );
-    })}
-  </div>
-  ) : (
-    <p className="text-gray-500 absolute left-1/2 top-1/3 -translate-x-1/2 text-2xl">
-      No {user?.role === "freelancer" ? "portfolio work" : "projects"} yet
-    </p>
-  )}
+                              
+                                </div>
+
+                                <div className="mt-6 flex flex-wrap gap-2">
+                                  {(project.skills || []).map(
+                                    (skill, index) => (
+                                      <span
+                                        key={`${skill}-${index}`}
+                                        className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700"
+                                      >
+                                        {skill}
+                                      </span>
+                                    )
+                                  )}
+                                </div>
+                              </Link>
+                            );
+                          })}
+                        </div>
+                      ) : (
+                        <div className="flex min-h-36 items-center justify-center">
+                              <p className="text-lg font-medium text-gray-400">
+                                No Projects yet
+                              </p>
+                          </div>
+                      )
+                    )}
                   </div>
                 </motion.div>
-
               </div>
             </div>
           </motion.div>

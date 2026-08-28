@@ -119,6 +119,7 @@ export default function ProjectsPage() {
     const payload = {
       ...projectData,
       skills,
+      budget:Number(budget)
     };
 
     try {
@@ -210,7 +211,7 @@ export default function ProjectsPage() {
                 <div className="relative">
                   <DollarSign className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
                   <input
-                    type="text"
+                    type="number"
                     name="budget"
                     value={projectData.budget}
                     onChange={handleChange}
