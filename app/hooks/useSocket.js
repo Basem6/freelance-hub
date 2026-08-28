@@ -26,8 +26,8 @@ export const useSocket = (userId) => {
                 if (!token || disposed) return;
 
                 client = io(
-                        process.env.NEXT_PUBLIC_API_UR||
-                        "http://localhost:8080",
+                        process.env.NEXT_PUBLIC_API_URL
+                    ,
                     {
                         auth: { token },
                         withCredentials: true,
