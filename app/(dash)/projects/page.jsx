@@ -119,7 +119,6 @@ export default function ProjectsPage() {
     const payload = {
       ...projectData,
       skills,
-      budget:Number(budget)
     };
 
     try {
