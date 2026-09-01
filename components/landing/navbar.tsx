@@ -67,10 +67,10 @@ useEffect(() => {
             router.push('/choose-role');
             return;
         }
-        if (data.success && !data.isNewUser ) {
-        dispatch(setUser(data.user));
-        window.history.replaceState({}, '', '/');
-        }
+        if (data.success && !data.isNewUser) {
+    dispatch(setUser(data.user));
+    router.replace("/");
+  }
     }).catch((error)=>{
       console.log(error)
     })

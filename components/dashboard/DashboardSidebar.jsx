@@ -167,14 +167,13 @@ export default function DashboardSidebar({ activePage = 'dashboard' }) {
             {/* User footer */}
             {user && (
                 <div className="p-4 border-t border-gray-100">
-                    <Link href="/" onClick={() => setIsMobileOpen(false)}>
-                        <button 
+                    <button 
+                        onClick={() => router.push('/')}
                         className="w-full flex items-center justify-center space-x-2 px-4 py-2.5 text-sm text-gray-500 hover:text-green-400 hover:bg-green-50 rounded-xl transition-all duration-200 border border-transparent hover:border-red-100"
                     >
                         <Home size={15} />
                         <span className="font-medium ">Home</span>
                     </button>
-                    </Link>
                     <button 
                         onClick={handlelogout}
                         className="w-full flex items-center justify-center space-x-2 px-4 py-2.5 text-sm text-gray-500 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all duration-200 border border-transparent hover:border-red-100"

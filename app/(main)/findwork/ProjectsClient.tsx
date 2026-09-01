@@ -237,15 +237,6 @@
                 {timeAgo(p.createdAt)}
                 </span>
 
-                {p.experience && (
-                <span className="flex items-center gap-1">
-                    <TrendingUp className="h-3.5 w-3.5" />
-
-                    {EXPERIENCE_LABELS[
-                    p.experience as keyof typeof EXPERIENCE_LABELS
-                    ] || p.experience}
-                </span>
-                )}
             </div>
 
             <Link
