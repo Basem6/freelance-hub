@@ -19,6 +19,7 @@ import {
 import { hideShow, setShow } from "../../../lib/Features/showSlice";
 import { useAppDispatch } from "../../../lib/hooks";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 // ======================================================
 // Animations
@@ -113,10 +114,12 @@ const slideInRight = {
 
 export default function ProjectDetailsClient({ project  , proposals: initialProposals }) {
   const dispatch = useAppDispatch()
+  const router = useRouter();
   const [proposals, setProposals] = useState(initialProposals || []);
   const user = useAppSelector((state) => state.auth.user);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [showProposal, setShowProposal] = useState(false);
+  console.log(project, "project details");
   // Get client info - handle both data structures
   const clientInfo = project?.clientId || project?.client || {};
   const clientName = clientInfo?.fullName || clientInfo?.name || "Client";
@@ -548,6 +551,7 @@ export default function ProjectDetailsClient({ project  , proposals: initialProp
                   <motion.button
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
+                    onClick={() => router.push(`/messages?userId=${project?.clientId._id|| project?.client?._id}`)}
                     className="w-full py-3.5 px-4 bg-gradient-to-r from-[#FF7A00] to-orange-500 hover:from-orange-600 hover:to-orange-500 text-white rounded-xl font-bold text-base shadow-lg shadow-orange-500/30 transition-all"
                   >
                     Send a Message

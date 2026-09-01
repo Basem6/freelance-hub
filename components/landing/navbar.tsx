@@ -24,19 +24,19 @@ const NAV_LINKS = [
 ]
 
 export function Navbar() { 
-const { notifications } = useSocketContext(); 
+const { notifications }:any = useSocketContext(); 
 console.log(notifications)
 const [activeMenu, setActiveMenu] = useState(null);
 const nav1Ref = useRef(null);
 const nav2Ref = useRef(null);
 const nav3Ref = useRef(null);
 const router = useRouter();
-const [open1, setOpen1] = useState(false);
-const {user}= useAppSelector((state) => {
+
+const {user}= useAppSelector((state:{auth: any}) => {
   return state.auth;
 });
 const dispatch = useAppDispatch();
-const openNav = (ref, id) => {
+const openNav = (ref:any, id:any) => {
   
   if (activeMenu === id) return;
 
@@ -52,7 +52,7 @@ const openNav = (ref, id) => {
   registerOutsideClick(ref, () => closeNav(ref, id));
 };
 
-const closeNav = (ref, id) => {
+const closeNav = (ref:any, id:any) => {
   gsap.to(ref.current, {
     opacity: 0,
     y: 10,
@@ -64,8 +64,6 @@ const closeNav = (ref, id) => {
   });
 };
 
-// scrolled state to add shadow to navbar on scroll
-console.log(user)
 const [scrolled, setScrolled] = useState(false)
 const [open, setOpen] = useState(false)
 useEffect(() => {
@@ -257,7 +255,7 @@ return (
               >
                   {notifications.length > 0 ? (
                   <>
-                    {notifications.slice(0, 4).map((element, index) => (
+                    {notifications.slice(0, 4).map((element:any, index:number) => (
                       <li
                         key={element._id || index}
                         className={`py-2 hover:bg-gray-100 select-none min-w-full ${index===0 ?"rounded-t-lg":""} justify-center  flex gap-4 items-center`}
@@ -302,7 +300,7 @@ return (
           )}
 
     <div
-      className={`absolute top-2 -right-0 size-2 rounded-full bg-red-500 transition-all origin-center ${
+      className={`absolute top-2 right-0 size-2 rounded-full bg-red-500 transition-all origin-center ${
         notifications.length === 0 ? "scale-0" : "scale-100"
       } duration-300`}
     />
