@@ -46,8 +46,8 @@ useEffect(() => {
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-        code,
-        redirectUri: window.location.origin
+          code,
+          redirectUri: window.location.origin
         })
     })
     .then(res => res.json())
