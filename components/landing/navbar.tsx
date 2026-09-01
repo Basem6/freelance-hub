@@ -67,10 +67,11 @@ useEffect(() => {
             router.push('/choose-role');
             return;
         }
-        if (data.success && !data.isNewUser) {
-    dispatch(setUser(data.user));
-    router.replace("/");
-  }
+        if (data.success && !data.isNewUser ) {
+        dispatch(setUser(data.user));
+        window.history.replaceState({}, '', '/');
+        router.push("/");
+        }
     }).catch((error)=>{
       console.log(error)
     })
@@ -227,6 +228,7 @@ return (
 
       {!user?
       <div className="flex items-center gap-1.5">
+        {/* <ThemeToggle /> */}
         <Link
           href="/choose-role"
           className={cn(
