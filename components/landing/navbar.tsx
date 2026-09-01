@@ -227,7 +227,6 @@ return (
 
       {!user?
       <div className="flex items-center gap-1.5">
-        {/* <ThemeToggle /> */}
         <Link
           href="/choose-role"
           className={cn(
