@@ -36,48 +36,6 @@ const {user}= useAppSelector((state) => {
   return state.auth;
 });
 const dispatch = useAppDispatch();
-useEffect(() => {
-  
-    const params = new URLSearchParams(window.location.search);
-    const code = params.get('code');
-    if (code) {
-    fetch('/api/auth/google', {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          code,
-          redirectUri: window.location.origin
-        })
-    })
-    .then(res => res.json())
-    .then(data => {
-        console.log("##########")
-        console.log(data)
-        if (data.isNewUser) {
-            console.log('📝 New user detected, redirecting to choose role...');
-            
-            // Store Google data temporarily for the choose-role page
-            sessionStorage.setItem(
-                'googleData',
-                JSON.stringify(data.googleData)
-            );
-            //f
-
-            router.push('/choose-role');
-            return;
-        }
-        if (data.success && !data.isNewUser ) {
-        dispatch(setUser(data.user));
-        window.history.replaceState({}, '', '/');
-        router.push("/");
-        }
-    }).catch((error)=>{
-      console.log(error)
-    })
-    }
-}, []);
-//gsap
 const openNav = (ref, id) => {
   
   if (activeMenu === id) return;
