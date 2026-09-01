@@ -11,9 +11,7 @@ async function getProject(id) {
       headers: {
         Cookie: `authToken=${authToken || ''}`,
       },
-      next: {
-        revalidate: 300,
-      },
+      
     }
   )
 
@@ -25,11 +23,32 @@ async function getProject(id) {
 
   return data.project
 }
+async function getproposal(projectId) {
+  const cookieStore = await cookies()
+  const authToken = cookieStore.get('authToken')?.value
 
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_APP_URL}/api/backend/projects/${projectId}/allproposal`,
+    {
+      headers: {
+        Cookie: `authToken=${authToken || ''}`,
+      },
+      cache: "no-store",
+    }
+  )
+
+  if (!res.ok) {
+    return null
+  }
+
+  const data = await res.json()
+
+  return data.proposals
+}
 export default async function Page({ params }) {
   const { id } = await params
 
   const project = await getProject(id)
-
-  return <ProjectDetailsClient project={project} />
+  const proposals = await getproposal(id)
+  return <ProjectDetailsClient project={project} proposals={proposals} />
 }

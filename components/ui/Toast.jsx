@@ -5,7 +5,7 @@ import {  useAppSelector } from "../../app/lib/hooks";
 const Toast = () => {
     const {isShow , message , type} = useAppSelector((state) => state.show);
     return (
-      <div className={`${isShow? "opacity-100": "opacity-0"} pointer-events-none  transition-all duration-300 absolute left-0 top-19 z-50`}>
+      <div className={`${isShow? "opacity-100": "opacity-0"} pointer-events-none  transition-all duration-300 fixed left-0 top-19 z-50`}>
         <StyledWrapper>
         <div className="card">
             <svg className="wave" fill={`${type=="sucess"?'#04e4003a':type=="warning"?"#ffa30d3a":type=="info"?"#1a21f43f":"#1b21c5"}`} viewBox="0 0 1440 320" xmlns="http://www.w3.org/2000/svg">

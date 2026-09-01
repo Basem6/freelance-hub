@@ -91,7 +91,6 @@
 
     function ProjectCard({ project: p }: { project: any }) {
     const [bookmarked, setBookmarked] = useState(false)
-
     const skills = p.skills || []
     const shown = skills.slice(0, 5)
 
@@ -209,18 +208,6 @@
                     {p.clientId?.fullName || 'Unknown Client'}
                 </span>
                 </div>
-
-                <div className="flex items-center gap-1 text-xs text-gray-500">
-                <Star className="h-3 w-3 fill-[#FF7A00] text-[#FF7A00]" />
-
-                <span className="font-medium">
-                    {p.clientId?.rating || 0}
-                </span>
-
-                <span>
-                    ({p.clientId?.reviews || 0} reviews)
-                </span>
-                </div>
             </div>
             </div>
 
@@ -239,7 +226,10 @@
 
                 <span className="flex items-center gap-1">
                 <Users className="h-3.5 w-3.5" />
-                {p.proposals || 0} proposals
+                {p?.proposals?.filter(
+                    (proposal: any) => proposal.status !== "withdrawn"
+                ).length || 0}{" "}
+                proposals
                 </span>
 
                 <span className="flex items-center gap-1">
@@ -348,45 +338,6 @@
 
         {/* Project Type */}
 
-        <div>
-            <p className="mb-3 text-xs font-bold uppercase tracking-widest text-gray-400">
-            Project Type
-            </p>
-
-            <div className="space-y-1">
-            {(['fixed', 'hourly'] as const).map((type) => (
-                <CheckRow
-                key={type}
-                id={`type-${type}`}
-                label={BUDGET_LABELS[type]}
-                checked={(filters.budgetTypes || []).includes(type)}
-                onChange={() => toggle('budgetTypes', type)}
-                />
-            ))}
-            </div>
-        </div>
-
-        {/* Experience */}
-
-        <div>
-            <p className="mb-3 text-xs font-bold uppercase tracking-widest text-gray-400">
-            Experience
-            </p>
-
-            <div className="space-y-1">
-            {(Object.keys(EXPERIENCE_LABELS) as Array<
-                keyof typeof EXPERIENCE_LABELS
-            >).map((experience) => (
-                <CheckRow
-                key={experience}
-                id={`experience-${experience}`}
-                label={EXPERIENCE_LABELS[experience]}
-                checked={(filters.experience || []).includes(experience)}
-                onChange={() => toggle('experience', experience)}
-                />
-            ))}
-            </div>
-        </div>
 
         {/* Status */}
 

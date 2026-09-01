@@ -355,7 +355,7 @@ return (
             alt="User photo"
             width={200}
             height={200}
-            className="object-cover object-center"
+            className="object-cover h-full h-full object-center"
           />
           </div>
           {activeMenu ==="profile" &&
@@ -368,6 +368,7 @@ return (
                   alt="userphoto"
                   width={200}
                   height={200}
+                  className="object-cover h-full h-full object-center"
                 />
                 </div>
                 <div className="min-w-0 flex-1">

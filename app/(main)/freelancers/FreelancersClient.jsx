@@ -59,7 +59,7 @@ const skills = Array.isArray(f?.skills) ? f.skills : [];
 const shown = skills.slice(0, 4);
 const extra = Math.max(0, skills.length - 4);
 
-const isAvailable = f?.availability === "available";
+const isAvailable = f?.online === true;
 
 return (
     <motion.article
@@ -303,28 +303,6 @@ return (
         </div>
     </div>
 
-    {/* Experience */}
-    <div>
-        <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">
-        Experience Level
-        </p>
-
-        <div className="space-y-1">
-        {Object.keys(EXPERIENCE_LABELS).map((experience) => (
-            <CheckRow
-            key={experience}
-            id={`fe-${experience}`}
-            label={EXPERIENCE_LABELS[experience]}
-            checked={(filters.experience || []).includes(
-                experience
-            )}
-            onChange={() =>
-                toggle("experience", experience)
-            }
-            />
-        ))}
-        </div>
-    </div>
 
     {/* Availability */}
     <div>
@@ -346,75 +324,6 @@ return (
             }
             />
         ))}
-        </div>
-    </div>
-
-    {/* Languages */}
-    {allLanguages.length > 0 && (
-        <div>
-        <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">
-            Languages
-        </p>
-
-        <div className="space-y-1 max-h-40 overflow-y-auto">
-            {allLanguages.map((language) => (
-            <CheckRow
-                key={language}
-                id={`fl-${language}`}
-                label={language}
-                checked={(filters.languages || []).includes(
-                language
-                )}
-                onChange={() =>
-                toggle("languages", language)
-                }
-            />
-            ))}
-        </div>
-        </div>
-    )}
-
-    {/* Rate */}
-    <div>
-        <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">
-        Hourly Rate
-        </p>
-
-        <div className="grid grid-cols-2 gap-2">
-
-        <input
-            type="number"
-            min="0"
-            placeholder="Min"
-            value={filters.rateMin ?? ""}
-            onChange={(e) =>
-            setFilters((prev) => ({
-                ...prev,
-                rateMin:
-                e.target.value === ""
-                    ? undefined
-                    : Number(e.target.value),
-            }))
-            }
-            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#FF7A00]"
-        />
-
-        <input
-            type="number"
-            min="0"
-            placeholder="Max"
-            value={filters.rateMax ?? ""}
-            onChange={(e) =>
-            setFilters((prev) => ({
-                ...prev,
-                rateMax:
-                e.target.value === ""
-                    ? undefined
-                    : Number(e.target.value),
-            }))
-            }
-            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#FF7A00]"
-        />
         </div>
     </div>
 

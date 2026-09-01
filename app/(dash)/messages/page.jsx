@@ -46,7 +46,7 @@ const normalizeConversation = (conversation, currentUserId) => {
   lastMessage: conversation.lastMessage?.text || conversation.lastMessage?.body || conversation.lastMessage || '',
   time: conversation.time || (conversation.updatedAt ? new Date(conversation.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''),
   unread: conversation.unread || conversation.unreadCount || 0,
-  online: Boolean(conversation.online || conversation.otherUser?.online),
+  online: Boolean(otherParticipant?.online),
   messages: (conversation.messages || []).map((message) => normalizeMessage(message, currentUserId)),
   };
 };
@@ -131,10 +131,11 @@ export default function MessagesPage() {
   const messagesEndRef = useRef(null);
   const typingTimeoutRef = useRef(null);
   const [isOtherUserTyping, setIsOtherUserTyping] = useState(false);
-  const { notifications, setNotifications , socket ,isConnected } = useSocketContext();
+  const { socket ,isConnected } = useSocketContext();
   const currentUserId = user?.id || user?._id;
   const requestedUserId = searchParams.get('userId');
   const activeConv = conversations.find((c) => String(c.id) === String(activeConvId));
+  console.log(activeConv)
   const filteredConvs = conversations.filter((c) =>
     c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     c.lastMessage.toLowerCase().includes(searchQuery.toLowerCase())
@@ -537,9 +538,7 @@ export default function MessagesPage() {
                       alt={activeConv.name}
                       className="w-10 h-10 rounded-full object-cover ring-2 ring-orange-100"
                     />
-                    {activeConv.online && (
-                      <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-400 border-2 border-white rounded-full" />
-                    )}
+                    
                   </div>
                   <div>
                     <p className="font-semibold text-gray-900 text-sm">{activeConv.name}</p>
