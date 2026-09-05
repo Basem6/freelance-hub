@@ -218,7 +218,7 @@ return (
         <div className="relative cursor-pointer" onClick={() => openNav(nav2Ref, "help")}>
             <BadgeQuestionMark strokeWidth={1.2} />
           {activeMenu === "help"  &&
-          <div className='absolute top-12 right-0 w-60 select-none bg-white rounded-lg shadow-lg group-hover:block' ref={nav2Ref}>
+          <div className='absolute top-12 -right-6 w-60 select-none bg-white rounded-lg shadow-lg group-hover:block' ref={nav2Ref}>
             <ul className='flex flex-col'>
               <li className='px-4 py-2 hover:bg-gray-100 cursor-pointer rounded-t-md flex gap-3 items-center '>
                   

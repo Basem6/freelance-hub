@@ -12,10 +12,10 @@
     ArrowRight,
     Bookmark,
     AlertCircle,
-    TrendingUp,
     } from 'lucide-react'
     import Link from 'next/link'
     import Image from 'next/image'
+    import OptionSelect from '@/components/ui/OptionSelect'
 
     // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -31,11 +31,6 @@
     'Graphic Design',
     ]
 
-    const EXPERIENCE_LABELS = {
-    entry: 'Entry Level',
-    intermediate: 'Intermediate',
-    expert: 'Expert',
-    }
 
     const STATUS_LABELS = {
     open: 'Open',
@@ -43,10 +38,6 @@
     closed: 'Closed',
     }
 
-    const BUDGET_LABELS = {
-    fixed: 'Fixed Price',
-    hourly: 'Hourly Rate',
-    }
 
     // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -595,7 +586,7 @@
 
                 <div className="mb-6 flex flex-col gap-3 sm:flex-row">
 
-                <div className="relative flex-1">
+                <div className="relative md:w-1/2 grow">
                     <input
                     type="text"
                     value={search}
@@ -621,25 +612,13 @@
                     />
                     </svg>
                 </div>
-
-                <select
-                    value={sort}
-                    onChange={(e) => setSort(e.target.value)}
-                    className="rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-[#FF7A00]"
-                >
-                    <option value="newest">Newest First</option>
-                    <option value="oldest">Oldest First</option>
-                    <option value="budget_high">Highest Budget</option>
-                    <option value="budget_low">Lowest Budget</option>
-                    <option value="proposals_low">
-                    Fewest Proposals
-                    </option>
-                </select>
-
+                <div className='grow'>
+                <OptionSelect value={sort} options={[{ value: 'newest', label: 'Newest First' }, { value: 'oldest', label: 'Oldest First' }, { value: 'budget_high', label: 'Highest Budget' }, { value: 'budget_low', label: 'Lowest Budget' }, { value: 'proposals_low', label: 'Fewest Proposals' }]} onChange={setSort} buttonClassName="bg-white w-full  px-4 py-3" />
+                </div>
                 <button
                     type="button"
                     onClick={() => setDrawerOpen(true)}
-                    className="rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm lg:hidden"
+                    className="rounded-xl grow border border-gray-200 bg-white px-4 py-3 text-sm lg:hidden"
                 >
                     <SlidersHorizontal className="inline-block h-4 w-4" />
                     <span className="ml-2">Filters</span>

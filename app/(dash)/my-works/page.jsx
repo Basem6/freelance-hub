@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { compressImage } from '@/app/utils/compressImage';
 import Link from 'next/link';
+import OptionSelect from '@/components/ui/OptionSelect';
 
 const CATEGORY_OPTIONS = [
   'Web Development',
@@ -579,13 +580,7 @@ export default function MyWorksPage() {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
-                      <select 
-                        value={newWork.category}
-                        onChange={(e) => setNewWork({...newWork, category: e.target.value})}
-                        className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#FF7A00]/50 bg-white"
-                      >
-                        {categories.filter(c => c !== 'All').map(c => <option key={c} value={c}>{c}</option>)}
-                      </select>
+                      <OptionSelect value={newWork.category} options={categories.filter(c => c !== 'All')} onChange={(category) => setNewWork({...newWork, category})} buttonClassName="bg-white" />
                     </div>
                   </div>
 

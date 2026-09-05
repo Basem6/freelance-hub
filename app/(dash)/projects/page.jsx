@@ -7,6 +7,7 @@ import { useAppDispatch, useAppSelector } from '@/app/lib/hooks';
 import { logout } from '@/app/lib/Features/authSlice';
 import api from '@/app/utils/api';
 import { Briefcase, CalendarDays, DollarSign, Sparkles, Tag, PlusCircle, CheckCircle2 } from 'lucide-react';
+import OptionSelect from '@/components/ui/OptionSelect';
 
 const CATEGORY_OPTIONS = [
   'Web Development',
@@ -207,16 +208,7 @@ export default function ProjectsPage() {
               </label>
               <label className="space-y-2 text-sm font-medium text-gray-700">
                 Category
-                <select
-                  name="category"
-                  value={projectData.category}
-                  onChange={handleChange}
-                  className="w-full rounded-3xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-[#FF7A00] focus:ring-2 focus:ring-[#FF7A00]/20"
-                >
-                  {CATEGORY_OPTIONS.map((category) => (
-                    <option key={category} value={category}>{category}</option>
-                  ))}
-                </select>
+                <OptionSelect value={projectData.category} options={CATEGORY_OPTIONS} onChange={(category) => setProjectData((current) => ({ ...current, category }))} buttonClassName="rounded-3xl bg-white px-4 py-3 text-gray-900" />
               </label>
               <label className="space-y-2 text-sm font-medium text-gray-700">
                 Deadline

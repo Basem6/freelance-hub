@@ -11,7 +11,6 @@ async function getProject(id) {
       headers: {
         Cookie: `authToken=${authToken || ''}`,
       },
-      
     }
   )
 

@@ -9,7 +9,6 @@ SlidersHorizontal,
 X,
 Star,
 DollarSign,
-ChevronDown,
 CheckCircle,
 AlertCircle,
 ArrowRight,
@@ -18,6 +17,7 @@ Globe,
 Filter,
 } from "lucide-react";
 import Link from "next/link";
+import OptionSelect from "@/components/ui/OptionSelect";
 
 // ─── Categories ──────────────────────────────────────────────────────────────
 
@@ -693,7 +693,7 @@ return (
             <div className="flex flex-col md:flex-row gap-3">
 
                 {/* Search */}
-                <div className="relative flex-1">
+                <div className="relative md:w-1/2 grow">
 
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
 
@@ -704,7 +704,7 @@ return (
                     setSearch(e.target.value)
                     }
                     placeholder="Search freelancers, skills..."
-                    className="w-full h-11 pl-11 pr-10 bg-white border border-gray-200 rounded-xl text-sm outline-none focus:border-[#FF7A00] focus:ring-2 focus:ring-orange-100 transition-all"
+                    className="w-full h-11 pl-11 pr-10 bg-white border border-gray-200  rounded-xl text-sm outline-none focus:border-[#FF7A00] focus:ring-2 focus:ring-orange-100 transition-all"
                 />
 
                 {search && (
@@ -720,26 +720,9 @@ return (
                 </div>
 
                 {/* Sort */}
-                <div className="relative">
+                <div className="relative grow">
 
-                <select
-                    value={sort}
-                    onChange={(e) =>
-                    setSort(e.target.value)
-                    }
-                    className="appearance-none w-full md:w-48 h-11 pl-4 pr-10 bg-white border border-gray-200 rounded-xl text-sm font-medium text-gray-700 outline-none focus:border-[#FF7A00] cursor-pointer"
-                >
-                    {SORT_OPTIONS.map((option) => (
-                    <option
-                        key={option.value}
-                        value={option.value}
-                    >
-                        {option.label}
-                    </option>
-                    ))}
-                </select>
-
-                <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <OptionSelect value={sort} options={SORT_OPTIONS} onChange={setSort} buttonClassName="h-11 rounded-xl w-full bg-white px-4" />
                 </div>
 
                 {/* Mobile Filters */}
@@ -747,7 +730,7 @@ return (
                 onClick={() =>
                     setDrawerOpen(true)
                 }
-                className="lg:hidden h-11 px-4 bg-white border border-gray-200 rounded-xl text-sm font-semibold text-gray-700 flex items-center justify-center gap-2"
+                className="lg:hidden grow h-11 px-4 bg-white border border-gray-200 rounded-xl text-sm font-semibold text-gray-700 flex items-center justify-center gap-2"
                 >
                 <Filter className="w-4 h-4 text-[#FF7A00]" />
 

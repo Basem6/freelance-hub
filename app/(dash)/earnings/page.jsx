@@ -12,6 +12,7 @@ import {
   Wallet, BarChart2, Filter, Download, X, ArrowUpRight
 } from 'lucide-react';
 import EarningsChart from '@/components/dashboard/EarningsChart';
+import OptionSelect from '@/components/ui/OptionSelect';
 
 /* ─────────── Mock Data ─────────── */
 const MOCK_TRANSACTIONS = [
@@ -84,6 +85,7 @@ const STAT_CARDS = [
 
 /* ─────────── Withdraw Modal ─────────── */
 function WithdrawModal({ onClose, available }) {
+  const [withdrawMethod, setWithdrawMethod] = useState('Bank Account (****4242)');
   const [amount, setAmount] = useState('');
   const [step, setStep] = useState('form'); // 'form' | 'success'
 
@@ -147,10 +149,7 @@ function WithdrawModal({ onClose, available }) {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">Withdraw To</label>
-                <select className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF7A00]/30 bg-white text-sm">
-                  <option>Bank Account (****4242)</option>
-                  <option>PayPal (user@example.com)</option>
-                </select>
+                <OptionSelect value={withdrawMethod} options={['Bank Account (****4242)', 'PayPal (user@example.com)']} onChange={setWithdrawMethod} buttonClassName="bg-white px-4 py-3" />
               </div>
 
               <p className="text-xs text-gray-400">Withdrawals typically process in 1–3 business days.</p>

@@ -12,6 +12,7 @@ import Loader from "../../../components/ui/Loader"
 import  {compressImage} from "../../utils/compressImage"
 import { hideShow, setShow } from '../../lib/Features/showSlice';
 import axios from 'axios';
+import OptionSelect from '@/components/ui/OptionSelect';
 
 export default function SettingsPage() {
   const LoadingUser = useAppSelector(state => state.auth.loading);
@@ -125,7 +126,6 @@ function ProfileTab({ user, onSave, saveFlash , loading }) {
       document.body.style.overflow = "";
     };
   }, [isUploading]);
-  const [isCountryOpen, setIsCountryOpen] = useState(false);
   const countryOptions = ['USA', 'UK', 'Canada', 'UAE', 'Saudi Arabia', 'Egypt'];
 
   const handleChange = (e) => setFormData({...formData, [e.target.name]: e.target.value});
@@ -464,36 +464,12 @@ function ProfileTab({ user, onSave, saveFlash , loading }) {
           <InputGroup label="Age" type="number" name="age" value={formData.age} onChange={handleChange} />
           <div className="space-y-1.5">
             <label className="block text-sm font-semibold text-gray-700">Country</label>
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => setIsCountryOpen((prev) => !prev)}
-                className="flex w-full items-center justify-between rounded-xl border  border-gray-200  bg-gray-50 px-4 py-2.5 text-left text-sm font-medium text-gray-700 transition-all hover:border-[#FF7A00] hover:bg-white"
-              >
-                <span>{formData.country || 'Select a country'}</span>
-                <span className="text-gray-400">▾</span>
-              </button>
-
-              {isCountryOpen && (
-                <div className="absolute z-10 mt-2 w-full rounded-2xl border border-gray-200 bg-white p-2 overflow-y-scroll max-h-44  scrollbar-hide shadow-xl shadow-orange-500/10">
-                  {countryOptions.map((country) => (
-                    <button
-                      key={country}
-                      type="button"
-                      onClick={() => {
-                        setFormData((prev) => ({ ...prev, country }));
-                        setIsCountryOpen(false);
-                      }}
-                      className={`flex w-full items-center rounded-xl px-3 py-2.5 text-left text-sm transition-all ${formData.country === country
-                        ? 'bg-[#FFF4E8] text-[#FF7A00]'
-                        : 'text-gray-700 hover:bg-[#FFF4E8] hover:text-[#FF7A00]'}`}
-                    >
-                      {country}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+            <OptionSelect
+              value={formData.country}
+              options={countryOptions}
+              placeholder="Select a country"
+              onChange={(country) => setFormData((prev) => ({ ...prev, country }))}
+            />
           </div>
         
           <InputGroup label="phone" name="phone" type='number' value={formData.phone} onChange={handleChange} />
