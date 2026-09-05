@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAppSelector } from "@/app/lib/hooks";
 import Image from "next/image";
@@ -15,6 +15,14 @@ import {
   Shield,
   ArrowRight,
   X,
+  MoreHorizontal,
+  Eye,
+  UserCheck,
+  Flag,
+  Loader2,
+  AlertTriangle,
+  Pencil,
+  MessageCircle,
 } from "lucide-react";
 import { hideShow, setShow } from "../../../lib/Features/showSlice";
 import { useAppDispatch } from "../../../lib/hooks";
@@ -112,14 +120,17 @@ const slideInRight = {
 // Main Component
 // ======================================================
 
-export default function ProjectDetailsClient({ project  , proposals: initialProposals }) {
+export default function ProjectDetailsClient({ project, proposals: initialProposals }) {
   const dispatch = useAppDispatch()
+  console.log(project, "project details");
   const router = useRouter();
   const [proposals, setProposals] = useState(initialProposals || []);
   const user = useAppSelector((state) => state.auth.user);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [showProposal, setShowProposal] = useState(false);
-  console.log(project, "project details");
+  const [openProposalMenu, setOpenProposalMenu] = useState(null);
+  const [proposalDialog, setProposalDialog] = useState(null);
+  const [selectedProposal, setSelectedProposal] = useState(null);
   // Get client info - handle both data structures
   const clientInfo = project?.clientId || project?.client || {};
   const clientName = clientInfo?.fullName || clientInfo?.name || "Client";
@@ -130,6 +141,60 @@ export default function ProjectDetailsClient({ project  , proposals: initialProp
       dispatch(hideShow())
   }, 3000);
   } 
+  useEffect(() => {
+    const closeMenu = (event) => {
+      if (!event.target.closest('[data-proposal-menu]')) setOpenProposalMenu(null);
+    };
+    const closeOnEscape = (event) => {
+      if (event.key === "Escape") setOpenProposalMenu(null);
+    };
+    document.addEventListener("mousedown", closeMenu);
+    document.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.removeEventListener("mousedown", closeMenu);
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, []);
+
+  const handleSelectFreelancer = async (proposal) => {
+    try {
+      setSelectedProposal(proposal._id);
+      const response = await fetch(`/api/backend/projects/${proposal._id}/choosefreelancer`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.message || "Unable to select this freelancer.");
+      setProposals((current) => current.map((item) => item._id === proposal._id ? { ...item, status: "accepted" } : item));
+      setProposalDialog(null);
+      showToast({ message: data.message || "Freelancer selected successfully.", type: "sucess" });
+    } catch (error) {
+      showToast({ message: error.message || "Unable to select this freelancer.", type: "error" });
+    } finally {
+      setSelectedProposal(null);
+    }
+  };
+
+  const handleReportProposal = async (proposal, reason, details) => {
+    try {
+      setSelectedProposal(proposal._id);
+      const response = await fetch(`/api/backend/projects/${proposal._id}/report`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reason, details }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.message || "Unable to report this proposal.");
+      setProposalDialog(null);
+      showToast({ message: data.message || "Proposal reported. Thank you for helping keep FreelanceHub safe.", type: "sucess" });
+    } catch (error) {
+      showToast({ message: error.message || "Unable to report this proposal.", type: "error" });
+    } finally {
+      setSelectedProposal(null);
+    }
+  };
   return (
     <div className="min-h-screen bg-[#F8F8F8] font-sans text-[#111111] pb-24">
 
@@ -144,6 +209,37 @@ export default function ProjectDetailsClient({ project  , proposals: initialProp
             onClose={() => setShowProposal(false)}
             showToast={showToast}
             setProposals={setProposals}
+          />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {proposalDialog?.type === "edit" && <ProposalModal project={project} proposal={proposalDialog.proposal} isEditing onClose={() => setProposalDialog(null)} showToast={showToast} setProposals={setProposals} />}
+        {proposalDialog?.type === "details" && (
+          <ProposalDetailsModal
+            proposal={proposalDialog.proposal}
+            user={user}
+            onClose={() => setProposalDialog(null)}
+            onMessage={() => {
+              setProposalDialog(null);
+              router.push(`/messages?userId=${proposalDialog.proposal?.freelancer?._id}`);
+            }}
+          />
+        )}
+        {proposalDialog?.type === "select" && (
+          <ConfirmationModal
+            proposal={proposalDialog.proposal}
+            isLoading={selectedProposal === proposalDialog.proposal._id}
+            onClose={() => setProposalDialog(null)}
+            onConfirm={() => handleSelectFreelancer(proposalDialog.proposal)}
+          />
+        )}
+        {proposalDialog?.type === "report" && (
+          <ReportModal
+            proposal={proposalDialog.proposal}
+            isLoading={selectedProposal === proposalDialog.proposal._id}
+            onClose={() => setProposalDialog(null)}
+            onSubmit={handleReportProposal}
           />
         )}
       </AnimatePresence>
@@ -175,16 +271,8 @@ export default function ProjectDetailsClient({ project  , proposals: initialProp
                 variants={fadeInUp}
                 className="flex flex-wrap gap-2 mb-4"
               >
-                <span className="px-3 py-1 bg-green-50 text-green-700 text-xs font-semibold rounded-full border border-green-200">
-                  Open
-                </span>
-
-                <span className="px-3 py-1 bg-red-50 text-red-700 text-xs font-semibold rounded-full border border-red-200">
-                  Urgent
-                </span>
-
-                <span className="px-3 py-1 bg-orange-50 text-[#FF7A00] text-xs font-semibold rounded-full border border-orange-200">
-                  Featured
+                <span className={`px-3 py-1 ${project.status === 'open' ? 'bg-green-50' : project.status === 'in_progress' ? 'bg-blue-50' : 'bg-gray-50'} text-${project.status === 'open' ? 'green-700' : project.status === 'in_progress' ? 'blue-700' : 'gray-700'} text-xs font-semibold rounded-full border border-${project.status === 'open' ? 'green-200' : project.status === 'in_progress' ? 'blue-200' : 'gray-200'}`}>
+                  {project.status}
                 </span>
               </motion.div>
 
@@ -219,12 +307,6 @@ export default function ProjectDetailsClient({ project  , proposals: initialProp
 
                 {/* Actions */}
                 <div className="flex items-center gap-3">
-
-                  <button
-                    className="p-2.5 rounded-full hover:bg-gray-50 border border-gray-200 text-gray-600 transition-all hover:border-gray-300"
-                  >
-                    <Share2 className="w-5 h-5" />
-                  </button>
 
                   <button
                     onClick={() => setIsBookmarked(!isBookmarked)}
@@ -274,10 +356,10 @@ export default function ProjectDetailsClient({ project  , proposals: initialProp
 
                     <div className="flex items-center text-sm text-gray-600 gap-3 mt-1">
 
-                      {clientInfo?.location && (
+                      {clientInfo?.country && (
                         <span className="flex items-center gap-1">
                           <MapPin className="w-3.5 h-3.5" />
-                          {clientInfo.location}
+                          {clientInfo.country}
                         </span>
                       )}
 
@@ -442,12 +524,12 @@ export default function ProjectDetailsClient({ project  , proposals: initialProp
               whileInView="visible"
               viewport={{ once: true }}
               variants={fadeInUp}
-              className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm"
+              className="bg-white rounded-2xl md:p-8 p-2 py-5 border border-gray-100 shadow-sm"
             >
 
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
 
-                <h2 className="text-xl font-bold">
+                <h2 className="text-xl font-bold px-2">
                   Top Proposals ({proposals.length ?? 0})
                 </h2>
 
@@ -468,6 +550,14 @@ export default function ProjectDetailsClient({ project  , proposals: initialProp
                     <ProposalCard
                       key={proposal._id}
                       proposal={proposal}
+                      user={user}
+                      project={project}
+                      isMenuOpen={openProposalMenu === proposal._id}
+                      onToggleMenu={() => setOpenProposalMenu((current) => current === proposal._id ? null : proposal._id)}
+                      onAction={(type) => {
+                        setOpenProposalMenu(null);
+                        setProposalDialog({ type, proposal });
+                      }}
                     />
 
                   ))
@@ -535,7 +625,8 @@ export default function ProjectDetailsClient({ project  , proposals: initialProp
 
 
                 {/* Main Button */}
-                {user?.role === "freelancer" ? (
+                
+                {user?.role === "freelancer"  ? (
 
                   <motion.button
                     whileHover={{ scale: 1.02 }}
@@ -546,7 +637,7 @@ export default function ProjectDetailsClient({ project  , proposals: initialProp
                     Submit a Proposal
                   </motion.button>
 
-                ) : (
+                ) : user?.role === "client" && user._id != project?.clientId._id ? (
 
                   <motion.button
                     whileHover={{ scale: 1.02 }}
@@ -557,7 +648,7 @@ export default function ProjectDetailsClient({ project  , proposals: initialProp
                     Send a Message
                   </motion.button>
 
-                )}
+                ):""}
 
               </motion.div>
 
@@ -600,8 +691,47 @@ export default function ProjectDetailsClient({ project  , proposals: initialProp
                     <span className="font-semibold">
                       {project?.lastViewed ?? "Recently"}
                     </span>
+                  </div>
+                  {project?.freelancerId &&
+                  <div className="flex justify-between items-center text-sm">
+
+                    <span className="text-gray-500">
+                      freelancer assigned
+                    </span>
+
+                  <div className="flex items-center gap-3 ">
+                     {/* Avatar */}
+                    <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-full overflow-hidden shrink-0">
+
+                      <Image
+                        src={
+                          project?.freelancerId?.image ||
+                          "/avatars/avatar-1.png"
+                        }
+                        alt={
+                          project?.freelancerId?.fullName ||
+                          "Freelancer"
+                        }
+                        width={48}
+                        height={48}
+                        className="w-full h-full object-cover"
+                      />
+
+                    </div>
+                    <div className="flex flex-col items-center justify-center   overflow-hidden ">
+                      <div className="text-sm  text-center text-gray-900">
+                        {project.freelancerId?.fullName || "Freelancer"}
+                      </div>
+                      <div className="text-xs  text-center text-gray-900/70">
+                        {project.freelancerId?.major || "Backend developer"}
+                      </div>
+                    </div>
+                        
+                    
+                  </div>
 
                   </div>
+                  }
 
                 </div>
 
@@ -675,25 +805,38 @@ export default function ProjectDetailsClient({ project  , proposals: initialProp
   );
 }
 
-function ProposalCard({ proposal }) {
+function ProposalCard({ proposal, project, user, isMenuOpen, onToggleMenu, onAction }) {
   const freelancer = proposal?.freelancer;
+  const isOwnProposal = user?.role === "freelancer" && String(user?._id) === String(freelancer?._id);
+  const canReport =
+  user && !isOwnProposal;
 
   return (
     <motion.div
       variants={fadeInUp}
-      className="group p-5 border border-gray-100 hover:border-orange-200 rounded-xl hover:shadow-md transition-all bg-white relative overflow-hidden"
+      className="group md:p-5 p-2 border border-gray-100 hover:border-orange-200 rounded-xl hover:shadow-md  transition-all bg-white relative"
     >
 
       {/* Match */}
-      <div className="absolute top-0 right-0 p-4">
+      <div className="absolute top-0 right-0 flex items-center gap-2 p-4" data-proposal-menu>
 
         <span className=" text-gray-500 text-xs  px-2.5 py-1 rounded-full flex items-center gap-1">
-
-
-          {timeAgo(proposal?.createdAt) || "Recently"} ago
-
+          {timeAgo(proposal?.createdAt) || "Recently"} 
         </span>
-
+        
+        <div className="relative">
+          <button type="button" aria-label={`Actions for ${freelancer?.fullName || "freelancer"}`} aria-expanded={isMenuOpen} aria-haspopup="menu" onClick={onToggleMenu} className="inline-flex h-8 w-8 items-center justify-center rounded-full text-gray-500 transition hover:bg-orange-50 hover:text-[#FF7A00] focus:outline-none focus:ring-2 focus:ring-[#FF7A00]/30">
+            <MoreHorizontal className="h-5 w-5" />
+          </button>
+          <AnimatePresence>
+            {isMenuOpen && <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} role="menu" className="absolute right-0 z-30 mt-2 w-52 rounded-xl border border-gray-100 bg-white p-1.5 shadow-lg shadow-gray-200/60">
+              {user?.role === "client"&& user?._id === project.clientId._id && <ProposalMenuItem icon={Eye} label="View Full Proposal" onClick={() => onAction("details")} />}
+              {user?.role === "client" && user?._id === project.clientId._id && <ProposalMenuItem icon={UserCheck} label="Select Freelancer" onClick={() => onAction("select")} disabled={proposal?.status === "accepted"} />}
+              {isOwnProposal && <ProposalMenuItem icon={Pencil} label="Edit Proposal" onClick={() => onAction("edit")} />}
+              {canReport && <ProposalMenuItem icon={Flag} label="Report Proposal" onClick={() => onAction("report")} destructive />}
+            </motion.div>}
+          </AnimatePresence>
+        </div>
       </div>
 
       <div className="flex items-start gap-4 sm:gap-5">
@@ -718,13 +861,14 @@ function ProposalCard({ proposal }) {
         </div>
 
         <div className="flex-1 min-w-0 pr-16 sm:pr-24">
-
-          <h4 className="font-bold text-gray-900 text-lg truncate">
+          <a href={`/hire/${freelancer._id}`}>
+          <h4 className="font-bold hover:text-gray-900/60 transtion-all duration-300 w-fit   text-gray-900 text-lg truncate">
 
             {freelancer?.fullName ||
               "Freelancer"}
 
           </h4>
+          </a>
 
           <p className="text-xs  text-gray-600 truncate">
 
@@ -761,29 +905,13 @@ function ProposalCard({ proposal }) {
 
             </span>
 
-            <span>
-
-              {proposal?.deliveryTime ?? 0} days
-
-            </span>
-
+         
           </div>
 
           {/* Cover Letter */}
-          <p className="mt-3 text-sm text-gray-600 line-clamp-3 leading-relaxed">
-
-            "{proposal?.coverLetter || "No cover letter"}"
-
-          </p>
-          <Link href={`/hire/${freelancer?._id}`} className="absolute bottom-4 right-4 sm:bottom-5 sm:right-6">
-          <button className="mt-4 text-[#FF7A00] text-sm font-semibold flex items-center gap-1 hover:gap-2 transition-all">
-
-            View Profile
-
-            <ArrowRight className="w-4 h-4" />
-
-          </button>
-          </Link>
+          <p className="mt-3 text-sm text-gray-600 line-clamp-3 leading-relaxed whitespace-pre-line">
+          "{proposal?.coverLetter || "No cover letter"}"
+        </p>
 
         </div>
 
@@ -793,10 +921,51 @@ function ProposalCard({ proposal }) {
   );
 }
 
-function ProposalModal({ project, onClose  , showToast , setProposals}) {
-  const [coverLetter, setCoverLetter] = useState("");
-  const [bidAmount, setBidAmount] = useState("");
-  const [deliveryTime, setDeliveryTime] = useState("");
+function ProposalMenuItem({ icon: Icon, label, onClick, disabled, destructive }) {
+  return <button type="button" role="menuitem" onClick={onClick} disabled={disabled} className={`flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-left text-sm transition ${destructive ? "text-red-600 hover:bg-red-50" : "text-gray-700 hover:bg-orange-50 hover:text-[#FF7A00]"} disabled:cursor-not-allowed disabled:opacity-40`}><Icon className="h-4 w-4" />{label}</button>;
+}
+
+function ProposalDetailsModal({ proposal, user, onClose, onMessage }) {
+  const freelancer = proposal?.freelancer || {};
+  return <ProposalDialog title="Full Proposal" onClose={onClose}>
+    <div className="flex items-center gap-3 border-b border-gray-100 pb-5"><Image src={freelancer.image || "/avatars/avatar-1.png"} alt={freelancer.fullName || "Freelancer"} width={48} height={48} className="h-12 w-12 rounded-full object-cover" /><div><a href={`/hire/${freelancer._id}`}>
+          <h3 className="font-bold hover:text-gray-900/60 transtion-all duration-300 w-fit   text-gray-900 text-lg truncate">
+
+            {freelancer?.fullName ||
+              "Freelancer"}
+
+          </h3>
+          </a><p className="text-sm text-gray-500">{freelancer.major || "Independent freelancer"}</p></div></div>
+    <div className="grid grid-cols-2 gap-3 py-5 text-sm"><ProposalStat label="Proposed price" value={`$${proposal?.bidAmount ?? 0}`} /><ProposalStat label="Delivery time" value={`${proposal?.deliveryTime ?? 0} days`} /><ProposalStat label="Rating" value={freelancer.rating ? `${freelancer.rating} / 5` : "Not rated"} /><ProposalStat label="Location" value={freelancer.country || freelancer.location || "Not provided"} /></div>
+    <div className="space-y-2"><h3 className="text-sm font-semibold text-gray-900">Proposal message</h3><p className="whitespace-pre-wrap rounded-xl bg-gray-50 p-4 text-sm leading-relaxed text-gray-600">{proposal?.coverLetter || "No proposal message provided."}</p></div>
+    {(proposal?.additionalDetails || freelancer.bio || freelancer.skills?.length) && <div className="mt-5 space-y-2"><h3 className="text-sm font-semibold text-gray-900">Additional details</h3><p className="whitespace-pre-wrap text-sm leading-relaxed text-gray-600">{proposal?.additionalDetails || freelancer.bio || freelancer.skills?.join(", ")}</p></div>}
+    {user?.role === "client" && freelancer?._id && <button type="button" onClick={onMessage} className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#FF7A00] px-4 py-3 text-sm font-semibold text-white transition hover:bg-orange-500 focus:outline-none focus:ring-2 focus:ring-[#FF7A00]/30"><MessageCircle className="h-4 w-4" />Message Freelancer</button>}
+  </ProposalDialog>;
+}
+
+function ProposalStat({ label, value }) {
+  return <div className="rounded-xl border border-gray-100 bg-white p-3"><p className="text-xs text-gray-500">{label}</p><p className="mt-1 font-semibold text-gray-900">{value}</p></div>;
+}
+
+function ConfirmationModal({ proposal, isLoading, onClose, onConfirm }) {
+  return <ProposalDialog title="Select freelancer" onClose={onClose}><div className="flex gap-3 rounded-xl bg-orange-50 p-4 text-sm text-orange-900"><AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-[#FF7A00]" /><p>Select <strong>{proposal?.freelancer?.fullName || "this freelancer"}</strong> for this project? This will update the proposal status.</p></div><div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end"><button type="button" onClick={onClose} disabled={isLoading} className="rounded-xl border border-gray-200 px-4 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-50 disabled:opacity-50">Cancel</button><button type="button" onClick={onConfirm} disabled={isLoading} className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#FF7A00] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-orange-500 disabled:cursor-not-allowed disabled:opacity-60">{isLoading && <Loader2 className="h-4 w-4 animate-spin" />}{isLoading ? "Selecting..." : "Select freelancer"}</button></div></ProposalDialog>;
+}
+
+function ReportModal({ proposal, isLoading, onClose, onSubmit }) {
+  const [reason, setReason] = useState("Misleading or inaccurate information");
+  const [details, setDetails] = useState("");
+  return <ProposalDialog title="Report proposal" onClose={onClose}><p className="text-sm text-gray-600">Help us understand what is wrong with this proposal.</p><label className="mt-5 block text-sm font-semibold text-gray-700">Reason<select value={reason} onChange={(event) => setReason(event.target.value)} className="mt-2 w-full rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm font-normal text-gray-900 outline-none transition focus:border-[#FF7A00] focus:ring-2 focus:ring-[#FF7A00]/20"><option>Misleading or inaccurate information</option><option>Spam or solicitation</option><option>Inappropriate content</option><option>Other</option></select></label><label className="mt-4 block text-sm font-semibold text-gray-700">Additional details <span className="font-normal text-gray-400">(optional)</span><textarea value={details} onChange={(event) => setDetails(event.target.value)} rows={4} placeholder="Tell us a little more" className="mt-2 w-full resize-none rounded-xl border border-gray-200 px-3 py-2.5 text-sm font-normal text-gray-900 outline-none transition focus:border-[#FF7A00] focus:ring-2 focus:ring-[#FF7A00]/20" /></label><div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end"><button type="button" onClick={onClose} disabled={isLoading} className="rounded-xl border border-gray-200 px-4 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-50 disabled:opacity-50">Cancel</button><button type="button" onClick={() => onSubmit(proposal, reason, details)} disabled={isLoading} className="inline-flex items-center justify-center gap-2 rounded-xl bg-red-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60">{isLoading && <Loader2 className="h-4 w-4 animate-spin" />}{isLoading ? "Reporting..." : "Submit report"}</button></div></ProposalDialog>;
+}
+
+function ProposalDialog({ title, onClose, children }) {
+  useEffect(() => { const closeOnEscape = (event) => event.key === "Escape" && onClose(); document.addEventListener("keydown", closeOnEscape); return () => document.removeEventListener("keydown", closeOnEscape); }, [onClose]);
+  return <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50  flex items-end justify-center bg-gray-900/40 p-0 sm:items-center sm:p-4" onMouseDown={(event) => event.target === event.currentTarget && onClose()}><motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 18 }} className="max-h-[90vh] w-full max-w-lg overflow-auto hide-scrollbar bg-white rounded-t-2xl  p-6 shadow-2xl sm:rounded-2xl" role="dialog" aria-modal="true" aria-labelledby="proposal-dialog-title"><div className="flex items-center justify-between gap-4"><h2 id="proposal-dialog-title" className="text-xl font-bold text-gray-900">{title}</h2><button type="button" aria-label="Close dialog" onClick={onClose} className="rounded-full p-2 text-gray-500 transition hover:bg-gray-100 hover:text-gray-900"><X className="h-5 w-5" /></button></div><div className="mt-5">{children}</div></motion.div></motion.div>;
+}
+
+function ProposalModal({ project, proposal, isEditing = false, onClose  , showToast , setProposals}) {
+  const [coverLetter, setCoverLetter] = useState(proposal?.coverLetter || "");
+  const [bidAmount, setBidAmount] = useState(proposal?.bidAmount?.toString() || "");
+  const [deliveryTime, setDeliveryTime] = useState(proposal?.deliveryTime?.toString() || "");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
 
@@ -824,9 +993,9 @@ function ProposalModal({ project, onClose  , showToast , setProposals}) {
       setIsSubmitting(true);
 
       const response = await fetch(
-        `/api/backend/projects/${project._id}/addproposal`,
+        isEditing ? `/api/backend/freelancer/updateProposal/${proposal._id}` : `/api/backend/projects/${project._id}/addproposal`,
         {
-          method: "POST",
+          method: isEditing ? "PATCH" : "POST",
           headers: {
             "Content-Type": "application/json",
           },
@@ -845,7 +1014,9 @@ function ProposalModal({ project, onClose  , showToast , setProposals}) {
           data.message || "Failed to submit proposal"
         );
       }
-      setProposals((prev) => [data.proposal, ...prev]);
+      setProposals((prev) => isEditing
+        ? prev.map((item) => item._id === proposal._id ? { ...item, ...data.proposal } : item)
+        : [data.proposal, ...prev]);
       console.log("Proposal submitted:", data);
       showToast({ message: data.message, type: "sucess" });
       onClose();
@@ -901,7 +1072,7 @@ function ProposalModal({ project, onClose  , showToast , setProposals}) {
           <div>
 
             <h2 className="text-xl font-bold text-gray-900">
-              Submit a Proposal
+              {isEditing ? "Edit Proposal" : "Submit a Proposal"}
             </h2>
 
             <p className="text-sm text-gray-500 mt-1 line-clamp-1">
@@ -1048,8 +1219,8 @@ function ProposalModal({ project, onClose  , showToast , setProposals}) {
               className="flex-1 px-4 py-3 bg-gradient-to-r from-[#FF7A00] to-orange-500 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-orange-200 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {isSubmitting
-                ? "Submitting..."
-                : "Submit Proposal"}
+                ? (isEditing ? "Saving..." : "Submitting...")
+                : (isEditing ? "Save Changes" : "Submit Proposal")}
             </button>
 
           </div>

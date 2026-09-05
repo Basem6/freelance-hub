@@ -80,7 +80,7 @@ const cfg = STATUS_CONFIG[offer?.status];
 const Icon = cfg.icon;
 
 return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 hide-scrollbar flex items-center justify-center p-4">
     <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -115,7 +115,7 @@ return (
         </div>
 
         {/* Modal Body */}
-        <div className="p-6 overflow-y-auto space-y-5">
+        <div className="p-6 overflow-y-auto hide-scrollbar space-y-5">
         <div className="grid grid-cols-2 gap-4">
             <div className="p-4 bg-gray-50 rounded-xl">
             <p className="text-xs text-gray-400 mb-1">Client Budget</p>
@@ -143,7 +143,7 @@ return (
         <div>
             <h3 className="text-sm font-semibold text-gray-700 mb-2">Your Cover Letter</h3>
             <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
-            <p className="text-sm text-gray-600 leading-relaxed italic">"{offer?.coverLetter}"</p>
+            <p className="text-sm text-gray-600 leading-relaxed italic   overflow-hidden">{offer?.coverLetter}</p>
             </div>
         </div>
         </div>

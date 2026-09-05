@@ -83,8 +83,10 @@ export default function MyWorksPage() {
           return;
         }
         else{
-        const worksRes = await api.get('/api/freelancer/allworks');
-        const allWorks = normalizeWorks(worksRes?.data || []);
+        const worksRes = await api.get('freelancer/myworks');
+        console.log(worksRes )
+        console.log("###")
+        const allWorks = normalizeWorks(worksRes?.data.works || []);
         setWorks(allWorks);
         syncPortfolioToUser(allWorks);
         }
@@ -97,13 +99,6 @@ export default function MyWorksPage() {
     initialize();
   }, []);
   
-  const handleLogout = async () => {
-    try {
-      await api.post('/api/auth/logout', {});
-      dispatch(logout());
-      router.push('/login');
-    } catch (error) { console.error('Logout failed:', error); }
-  };
   const [works, setWorks] = useState(() => normalizeWorks(user?.portfolio || []));
   const [viewMode, setViewMode] = useState('grid');
   const [searchQuery, setSearchQuery] = useState('');

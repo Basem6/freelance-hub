@@ -39,6 +39,7 @@
 
     const STATUS_LABELS = {
     open: 'Open',
+    in_progress: 'In Progress',
     closed: 'Closed',
     }
 
@@ -116,6 +117,8 @@
                 className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-semibold ${
                     p.status === 'open'
                     ? 'border-green-200 bg-green-50 text-green-700'
+                    : p.status === 'in_progress' 
+                    ? 'border-blue-200 bg-blue-50 text-blue-700'
                     : 'border-gray-200 bg-gray-100 text-gray-500'
                 }`}
                 >
@@ -123,6 +126,8 @@
                     className={`h-1.5 w-1.5 rounded-full ${
                     p.status === 'open'
                         ? 'bg-green-500'
+                        : p.status === 'in_progress'? 
+                        'bg-blue-500'
                         : 'bg-gray-400'
                     }`}
                 />
@@ -133,11 +138,6 @@
 
                 <span className="inline-flex items-center rounded-full border border-orange-200 bg-orange-50 px-2.5 py-0.5 text-xs font-semibold text-[#FF7A00]">
                 {p.category}
-                </span>
-
-                <span className="inline-flex items-center rounded-full border border-blue-100 bg-blue-50 px-2.5 py-0.5 text-xs font-semibold text-blue-600">
-                {BUDGET_LABELS[p.budgetType as keyof typeof BUDGET_LABELS] ||
-                    'Fixed Price'}
                 </span>
             </div>
 

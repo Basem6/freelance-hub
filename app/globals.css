@@ -5,7 +5,15 @@
   user-select: none;
 }
 @custom-variant dark (&:is(.dark *));
+/* globals.css */
+.hide-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
 
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
 @theme inline {
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);

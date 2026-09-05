@@ -31,7 +31,6 @@ export default function ProjectsPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.auth.user);
-  const [loading, setLoading] = useState(true);
   const [projectData, setProjectData] = useState(initialProject);
   const [skills, setSkills] = useState([]);
   const [skillInput, setSkillInput] = useState('');
@@ -55,9 +54,7 @@ export default function ProjectsPage() {
       } catch (error) {
         dispatch(logout());
         router.push('/login');
-      } finally {
-        setLoading(false);
-      }
+      } 
     };
     initialize();
   }, []);
@@ -147,17 +144,6 @@ export default function ProjectsPage() {
       setTimeout(() => setMessage(''), 5000);
     }
   };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-[#F8F8F8] flex items-center justify-center md:ml-64 px-6">
-        <div className="rounded-3xl bg-white p-8 shadow-lg border border-gray-200">
-          <p className="text-gray-700">Loading your dashboard...</p>
-        </div>
-      </div>
-    );
-  }
-
   const pageTitle = user?.role === 'client' ? 'Client Projects' : 'Freelancer Projects';
   const pageSubtitle = user?.role === 'client'
     ? 'Manage the jobs you posted and share them with freelancers.'
@@ -179,7 +165,7 @@ export default function ProjectsPage() {
             <button
               type="button"
               onClick={() => setShowCreateForm((prev) => !prev)}
-              className="inline-flex items-center gap-2 rounded-full bg-[#FF7A00] px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 transition"
+              className="inline-flex items-center whitespace-nowrap gap-2 rounded-full bg-[#FF7A00] px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 transition"
             >
               <PlusCircle size={18} />
               {showCreateForm ? 'Hide form' : 'Add New Project'}
@@ -357,7 +343,7 @@ export default function ProjectsPage() {
                 const pid = project.id ?? project._id;
                 return (
                   <Link
-                    href={`/projects/${pid}`}
+                    href={`/findworks/${pid}`}
                     key={pid}
                     className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm hover:shadow-md transition"
                   >
@@ -374,9 +360,7 @@ export default function ProjectsPage() {
                         </p>
                       </div>
                       <div className="flex flex-col items-start gap-2 text-sm text-gray-500 sm:items-end">
-                        <span>Budget: <span className="font-semibold text-gray-900">{project.budget}</span></span>
-                        <span>Deadline: <span className="font-semibold text-gray-900">{project.deadline || 'Flexible'}</span></span>
-                        <span>Remote: <span className="font-semibold text-gray-900">{project.remote ? 'Yes' : 'No'}</span></span>
+                        <span>Budget: <span className=" text-green-400">{project.budget} $</span></span>
                       </div>
                     </div>
                     <div className="mt-6 flex flex-wrap gap-2">

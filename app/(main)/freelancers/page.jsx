@@ -3,9 +3,7 @@ async function getFreelancers() {
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/freelancers`,
     {
-      next: {
-        revalidate: 300,
-      },
+      
     }
   );
 

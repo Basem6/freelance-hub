@@ -21,23 +21,7 @@ import Link from "next/link";
 
 // ─── Categories ──────────────────────────────────────────────────────────────
 
-const CATEGORIES = [
-"All",
-"Web Development",
-"UI/UX Design",
-"Mobile Apps",
-"AI & Machine Learning",
-"Digital Marketing",
-"Content Writing",
-"Data Analysis",
-"Graphic Design",
-];
-
-const EXPERIENCE_LABELS = {
-entry: "Entry Level",
-intermediate: "Intermediate",
-expert: "Expert",
-};
+const CATEGORIES = ['All','Development', 'Design', 'Translation', 'Marketing', 'Writing', 'Data', 'Video Editing', 'Consulting']
 
 const AVAILABILITY_LABELS = {
 available: "Available Now",
@@ -228,19 +212,6 @@ filters,
 setFilters,
 freelancers,
 }) {
-const allLanguages = useMemo(() => {
-    const languages = new Set();
-
-    (freelancers || []).forEach((f) => {
-    if (Array.isArray(f?.languages)) {
-        f.languages.forEach((language) => {
-        languages.add(language);
-        });
-    }
-    });
-
-    return [...languages].sort();
-}, [freelancers]);
 
 const toggle = (key, value) => {
     setFilters((prev) => {
@@ -399,16 +370,6 @@ const chips = [
         })),
     })),
 
-    ...(filters.experience || []).map((experience) => ({
-    label: EXPERIENCE_LABELS[experience],
-    remove: () =>
-        setFilters((prev) => ({
-        ...prev,
-        experience: prev.experience.filter(
-            (value) => value !== experience
-        ),
-        })),
-    })),
 
     ...(filters.availability || []).map((availability) => ({
     label: AVAILABILITY_LABELS[availability],
@@ -421,16 +382,6 @@ const chips = [
         })),
     })),
 
-    ...(filters.languages || []).map((language) => ({
-    label: language,
-    remove: () =>
-        setFilters((prev) => ({
-        ...prev,
-        languages: prev.languages.filter(
-            (value) => value !== language
-        ),
-        })),
-    })),
 
     ...(filters.rateMin !== undefined
     ? [
@@ -555,46 +506,28 @@ const filtered = useMemo(() => {
     // Active category
     if (activeCategory !== "All") {
     result = result.filter(
-        (f) => f?.category === activeCategory
+        (f) => f?.specialty === activeCategory
     );
     }
 
     // Categories
     if (filters.categories?.length) {
     result = result.filter((f) =>
-        filters.categories.includes(f?.category)
+        filters.categories.includes(f?.specialty)
     );
     }
 
-    // Experience
-    if (filters.experience?.length) {
-    result = result.filter((f) =>
-        filters.experience.includes(f?.experience)
-    );
-    }
 
     // Availability
     if (filters.availability?.length) {
-    result = result.filter((f) =>
-        filters.availability.includes(
-        f?.availability
-        )
-    );
-    }
-
-    // Languages
-    if (filters.languages?.length) {
     result = result.filter((f) => {
-        const languages = Array.isArray(f?.languages)
-        ? f.languages
-        : [];
+        const isOnline = f?.online === true || f?.online === "true";
 
-        return languages.some((language) =>
-        filters.languages.includes(language)
+        return filters.availability.some((availability) =>
+        availability === "available" ? isOnline : !isOnline
         );
     });
     }
-
     // Min rate
     if (filters.rateMin !== undefined) {
     result = result.filter(
