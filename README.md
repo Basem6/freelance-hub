@@ -163,25 +163,8 @@ Clients can:
 * [ ] Reviews & ratings
 * [ ] Advanced notifications
 
-## 🚀 Getting Started
 
-### 1. Clone the repository
-
-```bash
-git clone YOUR_REPOSITORY_URL
-cd Freelance-Hub
-```
-
-### 2. Install dependencies
-
-Frontend:
-
-```bash
-cd frontend
-npm install
-```
-
-### 3. Environment Variables
+### Environment Variables
 
 Create `.env` files for both frontend and backend and add the required environment variables.
 
@@ -197,13 +180,7 @@ CLOUDINARY_API_KEY=
 CLOUDINARY_API_SECRET=
 ```
 
-### 4. Run the project
 
-Frontend:
-
-```bash
-npm run dev
-```
 
 ## 📌 Project Status
 
