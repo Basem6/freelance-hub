@@ -274,7 +274,7 @@ export default function MyWorksPage() {
         </div>
 
         {/* Stats Row */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="md:grid grid-cols-1 md:grid-cols-3 gap-6 hidden mb-8">
           <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex items-center space-x-4">
             <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center text-[#FF7A00]">
               <Briefcase size={24} />
@@ -305,8 +305,8 @@ export default function MyWorksPage() {
         </div>
 
         {/* Filters and Search */}
-        <div className="bg-white hide-scrollbar  rounded-2xl p-4 shadow-sm border border-gray-100 flex flex-col lg:flex-row justify-between items-center mb-8 gap-4 lg:gap-0">
-          <div className="flex items-center hide-scrollbar  space-x-2  w-full lg:w-auto pb-2 lg:pb-0">
+        <div className="bg-white   rounded-2xl p-4 shadow-sm border border-gray-100 flex flex-col lg:flex-row justify-between items-center mb-8 gap-4 lg:gap-0">
+          <div className="flex items-center overflow-auto hide-scrollbar  space-x-2  w-full lg:w-auto pb-2 lg:pb-0">
             {categories.map(cat => (
               <button
                 key={cat}
@@ -320,22 +320,22 @@ export default function MyWorksPage() {
             ))}
           </div>
 
-          <div className="flex items-center space-x-4 w-full lg:w-auto justify-between lg:justify-end">
-            <div className="relative">
+          <div className="flex flex-wrap gap-3 items-center space-x-4 w-full lg:w-auto justify-between lg:justify-end">
+            <div className="relative grow">
               <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
               <input
                 type="text"
                 placeholder="Search works..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 pr-4 py-2 rounded-full border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#FF7A00]/50 text-sm w-48 md:w-64"
+                className="pl-10 w-full pr-4 py-2 rounded-full border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#FF7A00]/50 text-sm "
               />
             </div>
-          
-            <div className="relative">
+            
+            <div className="relative grow">
               <button 
                 onClick={() => setIsSortDropdownOpen(!isSortDropdownOpen)}
-                className="flex items-center justify-between min-w-29 whitespace-nowrap  px-3 py-2 rounded-full border border-gray-200 text-xs hover:bg-gray-50"
+                className="flex items-center w-full justify-between  whitespace-nowrap  px-3 py-2 rounded-full border border-gray-200 text-xs hover:bg-gray-50"
               >
                 <span>{sortBy}</span>
                 <ChevronDown size={16} />

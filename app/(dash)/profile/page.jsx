@@ -120,14 +120,10 @@ export default function ProfilePage() {
           >
             {/* Section 1: Hero Card */}
             <motion.div variants={fadeUp} className="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100">
-              {/* Banner */}
-              <div className="h-28 relative group">
-                <div className="" />
-              </div>
               
               {/* Profile Info */}
-              <div className="px-6 pb-8 relative">
-                <div className="flex flex-col md:flex-row gap-6 items-start md:items-end -mt-16 mb-4">
+              <div className="px-6 py-8 relative">
+                <div className="flex flex-col md:flex-row gap-6 items-start md:items-center  mb-2">
                   <div className="relative z-10">
                       <img 
                         src={user?.image || "/avatars/avatar-1.png"}  

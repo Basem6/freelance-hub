@@ -99,7 +99,7 @@ return (
         <div className="flex-1 pr-4">
             <h2 className="text-lg font-bold text-gray-900 leading-tight mb-1">{offer?.project?.title}</h2>
             <div className="flex items-center space-x-2">
-            <img src={offer?.client?.image} alt={offer?.client?.fullName} className="w-5 h-5 rounded-full" />
+            <img src={offer?.client?.image||"/avatars/avatar-1.png"} alt={offer?.client?.fullName} className="w-5 h-5 rounded-full" />
             <span className="text-sm text-gray-500">{offer?.client?.fullName}</span>
             </div>
         </div>
@@ -196,43 +196,23 @@ const handleWithdrawOffer = async (offerId) => {
     }
 };
 
-useEffect(() => {
-    const init = async () => {
-    try {
-        const res = await api.get('/api/auth/me');
-        if (!res.data.success) {
-        dispatch(logout());
-        router.push('/login');
-        return;
-        }
-        if (res.data.user?.role === 'client') {
-        router.push('/projects');
-        return;
-        }
-        
-    } catch {
-        dispatch(logout());
-        router.push('/login');
-    } finally {
+
+const stats = offers?.length
+  ? {
+      total: offers.length,
+      pending: offers?.filter((o) => o?.status === "pending").length,
+      accepted: offers?.filter((o) => o?.status === "accepted").length,
+      rejected: offers?.filter((o) => o?.status === "rejected").length,
     }
-    };
-    init();
-}, []);
+  : {};;
 
-const stats = {
-    total: offers.length,
-    pending: offers.filter((o) => o?.status === 'pending').length,
-    accepted: offers.filter((o) => o?.status === 'accepted').length,
-    rejected: offers.filter((o) => o?.status === 'rejected').length,
-};
-
-const filtered = offers.filter((o) => {
+const filtered = offers.length?offers.filter((o) => {
     const matchesFilter = filter === 'all' || o?.status === filter;
     const matchesSearch =
     o?.project?.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    o?.client?.fullName?.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesFilter && matchesSearch;
-});
+    o?.client?.fullName?.toLowerCase().includes(searchQuery.toLowerCase())
+    return matchesFilter && matchesSearch ;
+}):"";
 return (
     <div className='w-full'>
     <main className="flex-1 p-6 lg:p-8 overflow-y-auto">
@@ -246,7 +226,7 @@ return (
         </div>
 
         {/* Stat Cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div className="md:grid hidden grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {[
             { label: 'Total Offers', value: stats.total, icon: Briefcase, bg: 'bg-gray-100', text: 'text-gray-600' },
             { label: 'Pending Review', value: stats.pending, icon: Clock, bg: 'bg-yellow-100', text: 'text-yellow-600' },
@@ -301,20 +281,20 @@ return (
         )}
 
         {/* Filters & Search */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-6">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 gap-3 border-b border-gray-100">
-            <div className="flex space-x-1 bg-gray-100 rounded-xl p-1">
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-auto no-scrollbar mb-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-2 md:p-4 gap-3 border-b border-gray-100">
+            <div className="flex space-x-1 fl bg-gray-100 rounded-xl">
             {['all', 'pending', 'accepted', 'rejected'].map((f) => (
                 <button
                 key={f}
                 onClick={() => setFilter(f)}
-                className={`px-4 py-2 text-xs font-semibold rounded-lg capitalize transition-all ${
+                className={`px-3 md:px-4 py-2 text-xs font-semibold rounded-lg capitalize transition-all ${
                     filter === f ? 'bg-white shadow text-gray-900' : 'text-gray-500 hover:text-gray-800'
                 }`}
                 >
                 {f}
                 {f !== 'all' && (
-                    <span className={`ml-1.5 px-1.5 py-0.5 rounded-full text-[10px] font-bold ${
+                    <span className={`ml-1.5 ${stats.length? "px-1.5 py-0.5":""} rounded-full text-[10px] font-bold ${
                     f === 'pending' ? 'bg-yellow-100 text-yellow-700' :
                     f === 'accepted' ? 'bg-green-100 text-green-700' :
                     'bg-red-100 text-red-600'
@@ -374,7 +354,7 @@ return (
                     <div className="flex items-start space-x-4 flex-1 min-w-0">
                         <div className="relative flex-shrink-0">
                         <img
-                            src={offer?.client?.image}
+                            src={offer?.client?.image||"/avatars/avatar-1.png"}
                             alt={offer?.client?.fullName}
                             className="w-12 h-12 rounded-full object-cover ring-2 ring-gray-100 group-hover:ring-orange-100 transition-all"
                         />

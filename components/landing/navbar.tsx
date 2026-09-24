@@ -13,7 +13,7 @@ import { useRouter } from "next/navigation";
 import api from '../../app/utils/api'
 import gsap from "gsap";
 import  { registerOutsideClick, unregisterOutsideClick } from '@/app/hooks/ClickOutside'
-import { Search, Bell,  TrendingUp , Settings , BadgeQuestionMark, CircleUserRound , LogOut } from "lucide-react";
+import { Search, Bell,  TrendingUp , Settings , BadgeQuestionMark, CircleUserRound , LogOut , ChevronDown} from "lucide-react";
 
 const NAV_LINKS = [
   { label: 'Home', href: '/' },
@@ -116,8 +116,14 @@ return (
               <a
                 href={link.href}
                 className="flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-medium   duration-300"
-              >
-                <span className="mr-1">{link.label}</span>
+              > 
+                <div className="flex items-center gap-1.5">
+                  <span className="mr-1">{link.label}</span>
+                  {hasDropdown &&
+                  <span className="group-hover:rotate-180 transition-transform duration-300"><ChevronDown className={"text-black/40 group-hover:text-black transition-colors duration-300"}  strokeWidth={1.3} size={17}/></span>
+                  }
+                </div>
+                
 
                 {hasDropdown && (
                   <i className="fa-solid fa-angle-down text-xs text-gray-500 dark:text-gray-500 duration-300 group-hover:-rotate-180 group-hover:text-black dark:group-hover:text-white" />
@@ -184,7 +190,6 @@ return (
 
       {!user?
       <div className="flex items-center gap-1.5">
-        {/* <ThemeToggle /> */}
         <Link
           href="/choose-role"
           className={cn(

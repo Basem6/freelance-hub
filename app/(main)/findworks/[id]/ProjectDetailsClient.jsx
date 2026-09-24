@@ -272,8 +272,8 @@ export default function ProjectDetailsClient({ project, proposals: initialPropos
                 variants={fadeInUp}
                 className="flex flex-wrap gap-2 mb-4"
               >
-                <span className={`px-3 py-1 ${project.status === 'open' ? 'bg-green-50' : project.status === 'in_progress' ? 'bg-blue-50' : 'bg-gray-50'} text-${project.status === 'open' ? 'green-700' : project.status === 'in_progress' ? 'blue-700' : 'gray-700'} text-xs font-semibold rounded-full border border-${project.status === 'open' ? 'green-200' : project.status === 'in_progress' ? 'blue-200' : 'gray-200'}`}>
-                  {project.status}
+                <span className={`px-3 py-1 ${project?.status === 'open' ? 'bg-green-50' : project?.status === 'in_progress' ? 'bg-blue-50' : 'bg-gray-50'} text-${project?.status === 'open' ? 'green-700' : project?.status === 'in_progress' ? 'blue-700' : 'gray-700'} text-xs font-semibold rounded-full border border-${project?.status === 'open' ? 'green-200' : project?.status === 'in_progress' ? 'blue-200' : 'gray-200'}`}>
+                  {project?.status}
                 </span>
               </motion.div>
 
