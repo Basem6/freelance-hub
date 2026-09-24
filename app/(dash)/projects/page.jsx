@@ -312,7 +312,7 @@ export default function ProjectsPage() {
         </div>
 
         <section className="space-y-6">
-         
+          
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-sm uppercase tracking-[0.2em] text-gray-400">Your projects</p>

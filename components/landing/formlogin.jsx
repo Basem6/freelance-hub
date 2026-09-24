@@ -1,15 +1,12 @@
 "use client";
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useAppDispatch , useAppSelector } from "../../app/lib/hooks";
 import  {setShow , hideShow} from "../../app/lib/Features/showSlice.js";
 import { useRouter } from "next/navigation";
-import { type } from 'os';
-import GoogleLoginComponent from '../ui/GoogleLogin.jsx';
 import { setUser } from '../../app/lib/Features/authSlice.js';
 const Formlogin = () => {
 const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
-const error = useAppSelector(state => state.auth.error);
 const router = useRouter();
 
 useEffect(() => {

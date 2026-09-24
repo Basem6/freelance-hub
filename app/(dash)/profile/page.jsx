@@ -330,10 +330,13 @@ export default function ProfilePage() {
                           ))}
                         </div>
                       ) : (
-                          <div className="flex min-h-36 items-center justify-center">
-                              <p className="text-lg font-medium text-gray-400">
-                                No portfolio work yet
-                              </p>
+                          <div className="flex flex-col items-center justify-center min-h-58 ">
+                                      <div className="w-24 h-24 bg-orange-100 rounded-full flex items-center justify-center text-[#FF7A00] mb-4">
+                                        <Briefcase size={40} />
+                                      </div>
+                                      <h3 className="text-xl font-bold mb-2">No works found</h3>
+                                      <p className="text-gray-500 mb-6">There are no works matching your criteria.</p>
+
                           </div>
                       )
                     ) : (

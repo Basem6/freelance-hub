@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { useAppSelector, useAppDispatch } from '@/app/lib/hooks';
 import { logout, updateUser } from '@/app/lib/Features/authSlice';
 import api from '@/app/utils/api';
-import DashboardSidebar from '@/components/dashboard/DashboardSidebar';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Briefcase, Eye, Star, Search, Grid, List, Plus, 
@@ -85,8 +84,6 @@ export default function MyWorksPage() {
         }
         else{
         const worksRes = await api.get('freelancer/myworks');
-        console.log(worksRes )
-        console.log("###")
         const allWorks = normalizeWorks(worksRes?.data.works || []);
         setWorks(allWorks);
         syncPortfolioToUser(allWorks);
@@ -256,8 +253,6 @@ export default function MyWorksPage() {
     show: { opacity: 1, y: 0 }
   };
 
-  if (loading) return <div className="min-h-screen bg-[#F8F8F8] flex items-center justify-center">Loading...</div>;
-
   return (
     <div className="flex min-h-screen bg-[#F8F8F8] text-[#111111] font-sans md:ml-64">
       <main className="flex-1 p-8 overflow-y-auto">
@@ -310,8 +305,8 @@ export default function MyWorksPage() {
         </div>
 
         {/* Filters and Search */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex flex-col lg:flex-row justify-between items-center mb-8 gap-4 lg:gap-0">
-          <div className="flex items-center space-x-2 overflow-x-auto w-full lg:w-auto pb-2 lg:pb-0">
+        <div className="bg-white hide-scrollbar  rounded-2xl p-4 shadow-sm border border-gray-100 flex flex-col lg:flex-row justify-between items-center mb-8 gap-4 lg:gap-0">
+          <div className="flex items-center hide-scrollbar  space-x-2  w-full lg:w-auto pb-2 lg:pb-0">
             {categories.map(cat => (
               <button
                 key={cat}
@@ -336,18 +331,11 @@ export default function MyWorksPage() {
                 className="pl-10 pr-4 py-2 rounded-full border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#FF7A00]/50 text-sm w-48 md:w-64"
               />
             </div>
-            <div className="flex items-center space-x-2 bg-gray-100 rounded-full p-1">
-              <button onClick={() => setViewMode('grid')} className={`p-1.5 rounded-full ${viewMode === 'grid' ? 'bg-white shadow text-[#FF7A00]' : 'text-gray-500'}`}>
-                <Grid size={18} />
-              </button>
-              <button onClick={() => setViewMode('list')} className={`p-1.5 rounded-full ${viewMode === 'list' ? 'bg-white shadow text-[#FF7A00]' : 'text-gray-500'}`}>
-                <List size={18} />
-              </button>
-            </div>
+          
             <div className="relative">
               <button 
                 onClick={() => setIsSortDropdownOpen(!isSortDropdownOpen)}
-                className="flex items-center space-x-2 px-4 py-2 rounded-full border border-gray-200 text-sm font-medium hover:bg-gray-50"
+                className="flex items-center justify-between min-w-29 whitespace-nowrap  px-3 py-2 rounded-full border border-gray-200 text-xs hover:bg-gray-50"
               >
                 <span>{sortBy}</span>
                 <ChevronDown size={16} />
@@ -358,13 +346,13 @@ export default function MyWorksPage() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 10 }}
-                    className="absolute right-0 mt-2 w-40 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-10"
+                    className="absolute  right-0 mt-2 w-40 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-10"
                   >
                     {['Newest', 'Most Viewed', 'Featured'].map(option => (
                       <button
                         key={option}
                         onClick={() => { setSortBy(option); setIsSortDropdownOpen(false); }}
-                        className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50"
+                        className="w-full  text-left px-4 py-2 text-sm hover:bg-gray-50"
                       >
                         {option}
                       </button>
@@ -424,12 +412,6 @@ export default function MyWorksPage() {
                     <div className="flex justify-between items-start mb-2">
                       <span className="px-3 py-1 bg-gray-100 text-xs font-semibold rounded-full text-gray-700">{work.category}</span>
                       <div className="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button onClick={() => toggleFeature(work.id)} className={`p-1.5 rounded-md hover:bg-gray-100 ${work.featured ? 'text-yellow-500' : 'text-gray-400'}`}>
-                          <Star size={16} fill={work.featured ? "currentColor" : "none"} />
-                        </button>
-                        <button className="p-1.5 rounded-md hover:bg-gray-100 text-blue-500">
-                          <Edit2 size={16} />
-                        </button>
                         <button onClick={() => setDeleteConfirmId(work.id)} className="p-1.5 rounded-md hover:bg-red-50 text-red-500">
                           <Trash2 size={16} />
                         </button>

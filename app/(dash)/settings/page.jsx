@@ -39,15 +39,6 @@ export default function SettingsPage() {
     setSaveFlash(true);
     setTimeout(() => setSaveFlash(false), 2000);
   };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-[#F8F9FA] flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-[#FF7A00] border-t-transparent rounded-full animate-spin"></div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-[#F8F9FA] flex md:ml-64">
       <main className="flex-1 p-4 sm:p-6 lg:p-8">

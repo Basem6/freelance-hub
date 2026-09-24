@@ -1,9 +1,8 @@
 import Loader from "../../../components/ui/Loader"
 export default function Loading() {
     return (
-        <div className="min-h-screen min-w-full flex items-center justify-center bg-gray-50">
+        <div className="min-w-full min-h-screen bg-gray-50 flex justify-center items-center">
             <Loader></Loader>
         </div>
-        
     )
 }

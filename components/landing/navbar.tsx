@@ -344,11 +344,13 @@ return (
                   <p className='text-sm '>Your Profile</p>
               </li>
               </Link>
+              <Link href={"/earnings"}>
               <li className='px-4 py-2 hover:bg-gray-100 cursor-pointer flex gap-3 items-center  border-b border-gray-200'>
                   <TrendingUp strokeWidth={1.2} />
                   <p className='text-sm '>Stats and Trend</p>
               </li>
-              <li className='px-4 py-2 hover:bg-gray-100 cursor-pointer flex gap-3 items-center  '>
+              </Link>
+              <li className='px-4 cursor-no-drop py-2 hover:bg-gray-100  flex gap-3 items-center  '>
                   <Sun strokeWidth={1.2} />
                   <p className='text-sm '>Themes</p>
               </li>

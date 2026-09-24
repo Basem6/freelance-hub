@@ -1,8 +1,5 @@
 import { Reveal } from '@/components/landing/reveal'
-import { buttonVariants } from '@/components/ui/button'
-import { cn } from '../../app/lib/utils'
 import {
-  ArrowRight,
   BadgeCheck,
   Briefcase,
   MessageSquare,

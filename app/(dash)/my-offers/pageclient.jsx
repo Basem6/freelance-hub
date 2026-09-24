@@ -175,7 +175,6 @@ return (
 
 /* ─────────── Main Page ─────────── */
 export default function PageClient({offers: offerss }) {
-console.log("offerss", offerss)
 const router = useRouter();
 const dispatch = useAppDispatch();
 const [offers, setOffers] = useState(offerss || []);
@@ -235,7 +234,7 @@ const filtered = offers.filter((o) => {
     return matchesFilter && matchesSearch;
 });
 return (
-    <div className="flex min-h-screen bg-[#F8F8F8] text-gray-900 md:ml-64">
+    <div className='w-full'>
     <main className="flex-1 p-6 lg:p-8 overflow-y-auto">
 
         {/* Header */}

@@ -1,11 +1,10 @@
 "use client";
 import Link from "next/link";
-import React, { useState } from 'react';
+import { useState } from 'react';
 import styled from 'styled-components';
 import { useRouter } from "next/navigation";
-import { useAppDispatch , useAppSelector } from "../../app/lib/hooks";
+import { useAppDispatch } from "../../app/lib/hooks";
 import  {setShow , hideShow} from "../../app/lib/Features/showSlice.js";
-import { type } from "os";
 import { setUser } from "../../app/lib/Features/authSlice.js";
 import { useSearchParams } from "next/navigation";
 const Formsign = () => {
@@ -19,7 +18,7 @@ const Formsign = () => {
   }, 3000);
   } 
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
+  const [ loading,setLoading] = useState(false);
   const [data, setData] = useState({
       userName: "",
       email: "",
@@ -102,14 +101,6 @@ const Formsign = () => {
       setLoading(false);
       }
   };
-  const handleGoogleLogin = () => {
-    window.location.href = 
-    `https://accounts.google.com/o/oauth2/v2/auth?` +
-    `client_id=206275470398-ks60mr8ume6jqmeckebfl7q36elrq9g2.apps.googleusercontent.com&` +
-    `redirect_uri=${encodeURIComponent(window.location.origin)}&` +
-    `response_type=code&` +
-    `scope=openid email profile`;
-};
   return (
     <StyledWrapper>
       <form className="form md:w-[600px] w-full flex flex-col gap-2 bg-[#ffffff] mt-7.5 md:shadow-xl rounded-3xl py-5 px-13" onSubmit={handleSubmit} >

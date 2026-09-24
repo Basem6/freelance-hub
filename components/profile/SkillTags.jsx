@@ -24,7 +24,7 @@ export default function SkillTags({skillsData}) {
 
   }
   return (
-    <div className="bg-white rounded-2xl relative shadow-sm p-8 py-8 mb-6 min-h-66 max-h-66 overflow-hidden ">
+    <div className="bg-white rounded-2xl relative shadow-sm p-8  mb-6 max-h-66 overflow-hidden ">
       {skillsData.length<=0?
       <div className="flex justify-center absolute top-0 left-0  min-w-full    items-center text-4xl text-gray-700 min-h-full"> No skills yet</div>:
       ""

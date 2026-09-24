@@ -1,7 +1,7 @@
 'use client';
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ExternalLink } from 'lucide-react';
+import { Briefcase, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 
 const gradients = [
@@ -17,8 +17,6 @@ const gradients = [
 
 export default function PortfolioGrid({ user }) {
   const [activeFilter, setActiveFilter] = useState('All');
-  console.log(user)
-  // Get unique categories from portfolio
   const filters = useMemo(() => {
     if (!user?.portfolio?.length) return ['All'];
     const categories = ['All', ...new Set(user.portfolio.map(item => item.category))];
@@ -42,9 +40,14 @@ export default function PortfolioGrid({ user }) {
     return (
       <div className="bg-white rounded-2xl shadow-sm p-6 mb-6 min-w-full">
         <h2 className="text-xl font-bold text-gray-900 mb-4">Portfolio</h2>
-        <div className="text-center py-12">
-          <p className="text-gray-700 text-4xl">No portfolio work yet</p>
-        </div>
+        <div className="flex flex-col items-center bg-white rounded-2xl py-5  justify-center min-h-58 ">
+                          <div className="w-24 h-24 bg-orange-100 rounded-full flex items-center justify-center text-[#FF7A00] mb-4">
+                            <Briefcase size={40} />
+                          </div>
+                          <h3 className="text-xl font-bold mb-2">No works found</h3>
+                          <p className="text-gray-500 mb-6">There are no works matching your criteria.</p>
+
+              </div>
       </div>
     );
   }
