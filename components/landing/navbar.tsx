@@ -13,7 +13,7 @@ import { useRouter } from "next/navigation";
 import api from '../../app/utils/api'
 import gsap from "gsap";
 import  { registerOutsideClick, unregisterOutsideClick } from '@/app/hooks/ClickOutside'
-import { Search, Bell,  TrendingUp , Settings , BadgeQuestionMark, CircleUserRound , LogOut , ChevronDown} from "lucide-react";
+import { Search, Bell,  TrendingUp , Settings , BadgeQuestionMark, CircleUserRound , LogOut  , ChevronDown} from "lucide-react";
 
 const NAV_LINKS = [
   { label: 'Home', href: '/' },
@@ -25,7 +25,6 @@ const NAV_LINKS = [
 
 export function Navbar() { 
 const { notifications }:any = useSocketContext(); 
-console.log(notifications)
 const [activeMenu, setActiveMenu] = useState(null);
 const nav1Ref = useRef(null);
 const nav2Ref = useRef(null);
@@ -315,22 +314,24 @@ return (
             <Image
             src={user?.image || "/avatars/avatar-1.png"}
             alt="User photo"
-            width={200}
-            height={200}
-            className="object-cover h-full h-full object-center"
+            width={100}
+            height={100}
+            quality={10}
+            className="object-cover"
           />
+          
           </div>
           {activeMenu ==="profile" &&
           <div className='absolute top-12 select-none right-0 w-60 bg-white rounded-lg shadow-lg group-hover:block' ref={nav1Ref}>
             <ul className='flex flex-col'>
-              <li className='px-4 py-2 hover:bg-gray-100 cursor-pointer rounded-t-md flex gap-3 items-center'>
+              <li className='px-3 py-2 hover:bg-gray-100 cursor-pointer rounded-t-md flex gap-3 items-center'>
                 <div className='size-8 rounded-full overflow-hidden'>
                   <Image
                   src={user.image?user.image:"/avatars/avatar-1.png"}
                   alt="userphoto"
-                  width={200}
-                  height={200}
-                  className="object-cover h-full h-full object-center"
+                  width={100}
+                  height={100}
+                  className="object-cover  object-center"
                 />
                 </div>
                 <div className="min-w-0 flex-1">

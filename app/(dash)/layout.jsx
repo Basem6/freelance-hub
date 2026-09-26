@@ -2,9 +2,9 @@ import DashboardSidebar from "../../components/dashboard/DashboardSidebar";
 
 export default function RootLayout({ children }) {
 return (
-        <div className="font-sans antialiased relative min-h-screen">
-                <DashboardSidebar />
-                <div className="pt-20 md:pt-0">
+        <div className="font-sans gap-5 antialiased relative min-h-screen flex">
+                <div className=""><DashboardSidebar /></div>
+                <div className="flex justify-center w-full">
                         {children}
                 </div>
         </div>

@@ -26,6 +26,9 @@ import {
   ExternalLink
 } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
+import Avatar from '../../../components/ui/Avatar';
+import { Plus } from 'lucide-react';
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -68,12 +71,11 @@ export default function ProfilePage() {
   }
   ds()
   },[]) 
-  console.log(Projects)
   if (loading) {
     return (
-      <div className="flex h-screen bg-[#F8F8F8]">
-        <div className="w-64 bg-white border-r border-gray-200 hidden md:block flex-shrink-0 animate-pulse" />
-        <div className="flex-1 p-8 overflow-y-auto">
+      <div className="flex min-h-screen min-w-full bg-white">
+        <div className="min-w-full  border-gray-200 hidden md:block animate-pulse" />
+        <div className="flex-1  overflow-y-auto">
           <div className="max-w-6xl mx-auto space-y-6">
             <div className="h-64 bg-gray-200 rounded-2xl animate-pulse" />
             <div className="grid grid-cols-4 gap-4">
@@ -107,7 +109,7 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="flex h-screen bg-[#F8F8F8] overflow-hidden md:ml-64">
+    <div className="flex min-h-screen min-w-full bg-white overflow-hidden">
       {/* Main Content */}
       <div className="flex-1 overflow-y-auto">
         <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-6">
@@ -119,41 +121,16 @@ export default function ProfilePage() {
             className="space-y-6"
           >
             {/* Section 1: Hero Card */}
-            <motion.div variants={fadeUp} className="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100">
+            <motion.div variants={fadeUp} className="bg-white rounded-2xl  overflow-hidden border border-gray-300/60">
               
               {/* Profile Info */}
-              <div className="px-6 py-8 relative">
-                <div className="flex flex-col md:flex-row gap-6 items-start md:items-center  mb-2">
-                  <div className="relative z-10">
-                      <img 
-                        src={user?.image || "/avatars/avatar-1.png"}  
-                        alt={user?.fullName || 'User'} 
-                        className="w-32 h-32 rounded-full border-4 border-white object-cover shadow-lg bg-white"
-                      />
-                    <div className="absolute bottom-1 right-1 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md">
-                      <CheckCircle className="text-blue-500 w-6 h-6" />
-                    </div>
-                  </div>
-                  
+              <div className="px-4 py-8 relative">
+                <div className="flex flex-col md:flex-row gap-5 items-start md:items-center  mb-2">
+                  <Avatar user={user}></Avatar>
                   <div className="flex-1 pb-2">
                     <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4 mb-2">
-                      <h2 className="text-3xl font-bold text-[#111111]">{user?.fullName || 'User Name'}</h2>
-                      {user?.role==="freelancer"?
-                      <div className="flex items-center gap-2 px-3 py-1 bg-green-50 text-green-700 rounded-full text-sm font-medium border border-green-100 w-fit">
-                        <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                        Available for work
-                      </div>:""}
+                      <h2 className="text-3xl font-semibold text-[#111111]">{user?.fullName || 'User Name'}</h2>
                     </div>
-                    {isEditing ? (
-                      <input 
-                        type="text" 
-                        defaultValue="UI/UX Designer & Frontend Developer" 
-                        className="w-full md:max-w-md px-3 py-2 border-2 border-orange-200 focus:border-[#FF7A00] rounded-xl outline-none text-gray-700 mb-2 transition-colors"
-                      />
-                    ) : (
-                      <p className="text-lg text-gray-600 font-medium mb-2">{user?.major ||""}</p>
-                    )}
-                    
                     <div className="flex items-center gap-4 text-gray-500 text-sm">
                       <div className="flex items-center gap-1">
                         <MapPin size={16} />
@@ -176,8 +153,8 @@ export default function ProfilePage() {
                 
                 {/* About */}
                 {user?.role==="freelancer"?
-                <motion.div variants={fadeUp} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                  <h3 className="text-lg font-bold text-[#111111] mb-4">About</h3>
+                <motion.div variants={fadeUp} className="bg-white p-6 rounded-2xl border-gray-300/60 border ">
+                  <h3 className="text-2xl text-[#111111] mb-4">About</h3>
                     <p className="text-gray-600 leading-relaxed">
                       {user?.bio||
                       "Passionate UI/UX Designer with 5+ years creating scalable web applications and beautiful user interfaces."}
@@ -185,8 +162,8 @@ export default function ProfilePage() {
                 </motion.div>:""}
 
                 {/* Contact Info */}
-                <motion.div variants={fadeUp} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                  <h3 className="text-lg font-bold text-[#111111] mb-4">Contact Info</h3>
+                <motion.div variants={fadeUp} className="bg-white p-6 rounded-2xl border-gray-300/60 border">
+                  <h3 className="text-2xl text-[#111111] mb-4">Contact</h3>
                   <div className="space-y-4">
                     <div className="flex items-center gap-3 text-gray-600">
                       <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center flex-shrink-0">
@@ -194,21 +171,29 @@ export default function ProfilePage() {
                       </div>
                         <span className="font-medium truncate">{user?.email || 'email@example.com'}</span>
                     </div>
-                    {user?.country&&
+                    
                     <div className="flex items-center gap-3 text-gray-600">
                       <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center flex-shrink-0">
                         <MapPin size={18} className="text-gray-400" />
                       </div>
-                        <span className="font-medium">{user?.country}</span>
-                    </div>}
-                    {user?.phone &&
-                    <div className="flex items-center gap-3 text-gray-600">
-                      <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center flex-shrink-0">
-                        <Phone size={18} className="text-gray-400" />
-                      </div>
-                        <span className="font-medium">{user?.phone}</span>
+                        <span className="font-medium">{user?.country||"Not Selected"}</span>
                     </div>
-                    }
+                  </div>
+                </motion.div>
+                <motion.div variants={fadeUp} className="bg-white p-6 rounded-2xl border-gray-300/60 border">
+                  <div className='flex justify-between min-w-full items-center'> 
+                    <h3 className="text-2xl text-[#111111]">Education</h3>
+                    <div className='size-7 rounded-full border border-orange-400 flex justify-center items-center'> <Plus className='text-orange-400 hover:text-orange-600 hover:rotate-180 duration-200 transition-colors transition-transform' size={15}></Plus></div>
+                  </div>
+                  <div className="space-y-4">
+                  </div>
+                </motion.div>
+                <motion.div variants={fadeUp} className="bg-white p-6 rounded-2xl border-gray-300/60 border">
+                  <div className='flex justify-between min-w-full items-center'> 
+                    <h3 className="text-2xl text-[#111111]">Languages</h3>
+                    <div className='size-7 rounded-full border border-orange-400 flex justify-center items-center'> <Plus className='text-orange-400 hover:text-orange-600 hover:rotate-180 duration-200 transition-colors transition-transform' size={15}></Plus></div>
+                  </div>
+                  <div className="space-y-4">
                   </div>
                 </motion.div>
 
@@ -220,38 +205,54 @@ export default function ProfilePage() {
               <div className="lg:col-span-2 space-y-6">
                 
                 {/* Skills */}
-                {user?.skills?.length > 0 && 
-                <motion.div variants={fadeUp} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-
+                
+                <motion.div variants={fadeUp} className="bg-white p-6 rounded-2xl border border-gray-300/60">
+                        <h3 className="text-2xl text-[#111111] mb-4">Skills</h3>
                   <div className="space-y-6">
-                    {[
-                      { category: 'Skills', skills:user?.skills || ['React', 'Next.js', 'Tailwind CSS', 'TypeScript', 'Redux'] },
-                    ].map((group, i) => (
+                    
+                    {user.skills.length>0?user.skills.map((group, i) => (
+                      <>
+                      <h3 className="text-2xl text-[#111111] mb-4">Skills</h3>
                       <div key={i}>
-                        <h4 className="text-black  font-bold tracking-wider mb-3">{group.category}</h4>
                         <div className="flex flex-wrap gap-2">
                           {group.skills.map((skill, j) => (
                             <span key={j} className="px-3 py-1.5 bg-gray-50 border border-gray-200 text-gray-700 rounded-lg text-sm font-medium hover:border-[#FF7A00] hover:text-[#FF7A00] transition-colors cursor-pointer flex items-center gap-1">
                               {skill}
-                              {isEditing && <X size={14} className="text-gray-400 hover:text-red-500" />}
                             </span>
                           ))}
                         </div>
                       </div>
-                    ))}
+                      </>
+                    )):
+                    <div className='flex justify-center flex-col gap-3 items-center'>
+                      <div className='overflow-hidden'>
+                        <Image 
+                        src={"/photoMeaning/Shape.svg"}
+                        alt='user'
+                        width={40}
+                        height={40}
+                        loading='lazy'
+                        quality={10}
+                        className='object-contain h-full w-fit'
+                        >
+                        </Image>
+                      </div>
+                      <div className='text-sm text-gray-800/60'>You have no skills , <a className='hover:border-b border-orange-400 text-orange-500'>Add skills</a></div>
+                    </div>
+                    }
                   </div>
-                </motion.div>}
+                </motion.div>
 
 
                 {/* Portfolio / Projects Preview */}
                 <motion.div
                   variants={fadeUp}
-                  className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm"
+                  className="rounded-2xl border border-gray-300/60 bg-white p-6 "
                 >
                   <div className="mb-6 flex items-center justify-between">
-                    <h3 className="text-xl font-bold text-[#111111]">
+                    <h3 className="text-2xl text-[#111111]">
                       {user?.role === "freelancer"
-                        ? "Portfolio Works"
+                        ? "Portfolio"
                         : "My Projects"}
                     </h3>
 
@@ -263,13 +264,7 @@ export default function ProfilePage() {
                       }
                       className="text-sm font-medium text-[#FF7A00] transition-colors hover:text-orange-600"
                     >
-                      {user?.role === "freelancer"
-                        ? user?.portfolio?.length > 0
-                          ? "View All Works"
-                          : "Add First Work"
-                        : Projects.length > 0
-                          ? "View All Projects"
-                          : "Add First Project"}
+                      <div className='size-7 rounded-full border border-orange-400 flex justify-center items-center'> <Plus className='text-orange-400 hover:text-orange-600 hover:rotate-180 duration-200 transition-colors transition-transform' size={15}></Plus></div>
                     </Link>
                   </div>
 
@@ -391,6 +386,31 @@ export default function ProfilePage() {
                       )
                     )}
                   </div>
+                </motion.div>
+                <motion.div
+                variants={fadeUp}
+                className='rounded-2xl border border-gray-300/60 bg-white p-6'>
+                  <div className='flex justify-between min-w-full items-center'> 
+                    <h3 className="text-2xl text-[#111111]">Experience</h3>
+                    <div className='size-7 rounded-full border border-orange-400 flex justify-center items-center'> <Plus className='text-orange-400 hover:text-orange-600 hover:rotate-180 duration-200 transition-colors transition-transform' size={15}></Plus></div>
+                  </div>
+                
+                <div className='flex min-h-65 justify-center items-center flex-col'>
+                    <div>
+                      <Image
+                      src={"photoMeaning/icons8-file-192.svg"}
+                      width={100}
+                      height={100}
+                      quality={10}
+                      className='object-contain w-full h-full'
+                      >
+
+                      </Image>
+                    </div>
+                    <div className=' text-gray-800/60'>Add Any Experience to help you grow</div>
+                    <button className='text-orange-500/90 my-2 hover:text-orange-500  border-b border-white   hover:border-orange-400'>Add Experience</button>
+                </div>
+
                 </motion.div>
               </div>
             </div>

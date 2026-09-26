@@ -18,10 +18,10 @@ const geistMono = Geist_Mono({
 
 // ✅ metadata في Server Component
 export const metadata = {
-    title: 'FreelanceHub',
+    title: 'Hemma',
     description: 'Find Top Freelancers. Build Amazing Projects.',
     openGraph: {
-        title: 'FreelanceHub',
+        title: 'Hemma',
         description: 'Hire vetted freelancers and manage projects end to end',
         type: 'website',
     },

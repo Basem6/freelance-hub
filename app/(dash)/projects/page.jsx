@@ -152,7 +152,7 @@ export default function ProjectsPage() {
   const listTitle = user?.role === 'client' ? 'Your posted projects' : 'Your project listings';
 
   return (
-    <div className="min-h-screen bg-[#F8F8F8] text-[#111111] md:ml-64">
+    <div className="min-h-screen bg-white text-[#111111]">
       <main className="max-w-6xl mx-auto px-6 py-10">
         <div className="mb-10 rounded-3xl border border-gray-200 bg-white p-8 shadow-sm">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">

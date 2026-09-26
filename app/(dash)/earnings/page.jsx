@@ -80,7 +80,7 @@ export default function EarningsPage() {
   const filtered = [];
 
   return (
-    <div className="flex min-h-screen bg-[#F8F8F8] text-gray-900 md:ml-64">
+    <div className="flex min-h-screen bg-[#F8F8F8] text-gray-900 w-full">
       <main className="flex-1 p-6 lg:p-8 overflow-y-auto">
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">

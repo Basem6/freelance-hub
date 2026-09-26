@@ -93,11 +93,10 @@
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.97 }}
         transition={{ duration: 0.25 }}
-        className="group overflow-hidden rounded-2xl border bg-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
+        className="overflow-hidden hover:bg-gray-200/60 duration-200 transition-colors  border-b bg-white border-gray-400/60 "
         >
-        <div className="h-1 w-full bg-gradient-to-r from-[#FF7A00] to-orange-400 opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
 
-        <div className="space-y-4 p-6">
+        <div className="space-y-2 p-3">
 
             {/* Badges + Bookmark */}
 
@@ -105,31 +104,19 @@
             <div className="flex flex-wrap gap-2">
 
                 <span
-                className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-semibold ${
+                className={`inline-flex items-center gap-1  rounded-sm  border px-2.5 py-0.5 text-xs  ${
                     p.status === 'open'
-                    ? 'border-green-200 bg-green-50 text-green-700'
+                    ? 'border-green-200 bg-green-300/40 text-green-900'
                     : p.status === 'in_progress' 
-                    ? 'border-blue-200 bg-blue-50 text-blue-700'
-                    : 'border-gray-200 bg-gray-100 text-gray-500'
+                    ? 'border-blue-200 bg-blue-300/40 text-blue-900'
+                    : 'border-gray-200 bg-gray-300/40 text-gray-800'
                 }`}
                 >
-                <span
-                    className={`h-1.5 w-1.5 rounded-full ${
-                    p.status === 'open'
-                        ? 'bg-green-500'
-                        : p.status === 'in_progress'? 
-                        'bg-blue-500'
-                        : 'bg-gray-400'
-                    }`}
-                />
-
+            
                 {STATUS_LABELS[p.status as keyof typeof STATUS_LABELS] ||
                     p.status}
                 </span>
 
-                <span className="inline-flex items-center rounded-full border border-orange-200 bg-orange-50 px-2.5 py-0.5 text-xs font-semibold text-[#FF7A00]">
-                {p.category}
-                </span>
             </div>
 
             <button
@@ -167,7 +154,7 @@
             {shown.map((skill: string, index: number) => (
                 <span
                 key={`${skill}-${index}`}
-                className="rounded-full border border-gray-200 bg-gray-50 px-2.5 py-1 text-xs font-medium text-gray-600 transition-colors hover:border-[#FF7A00] hover:text-[#FF7A00]"
+                className="border rounded-sm border-gray-400/20 bg-gray-50 px-2.5 py-1 text-xs font-medium text-gray-600 transition-colors hover:border-[#FF7A00] hover:text-[#FF7A00]"
                 >
                 {skill}
                 </span>
@@ -182,7 +169,7 @@
 
             {/* Client */}
 
-            <div className="flex items-center gap-2.5 rounded-xl border border-gray-100 bg-gray-50 px-3 py-3">
+            <div className="flex items-center gap-2.5 rounded-xl  py-3">
             <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full">
                 <Image
                 src={p.clientId?.image || '/avatars/avatar-1.png'}
@@ -232,9 +219,8 @@
 
             <Link
                 href={`/findworks/${p._id}`}
-                className="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-gradient-to-r from-[#FF7A00] to-orange-400 px-4 py-2 text-xs font-bold text-white shadow shadow-orange-400/30 transition-all hover:shadow-md hover:shadow-orange-400/40"
+                className="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-orange-400/80 px-4 py-2 text-xs font-bold text-white shadow shadow-orange-400/30 transition-all hover:shadow-md hover:shadow-orange-400/40"
             >
-                View Project
 
                 <ArrowRight className="h-3.5 w-3.5" />
             </Link>
@@ -552,7 +538,7 @@
             {/* Sidebar */}
 
             <aside className="mt-15 hidden lg:block">
-                <div className="sticky top-1 rounded-2xl border bg-white p-5 shadow-sm">
+                <div className="sticky top-1 rounded-2xl border bg-white p-5 ">
 
                 <div className="mb-5 flex items-center justify-between">
                     <h3 className="flex items-center gap-2 text-sm font-bold text-[#111111]">
@@ -580,7 +566,7 @@
 
             {/* Content */}
 
-            <div className="mt-15 min-w-0 flex-1">
+            <div className="mt-15 w-full">
 
                 {/* Search */}
 
@@ -653,27 +639,6 @@
                 ))}
                 </div>
 
-                {/* Result count */}
-
-                <div className="mb-5 flex items-center justify-between">
-                <p className="text-sm text-gray-500">
-                    <span className="font-semibold text-gray-800">
-                    {filtered.length}
-                    </span>{' '}
-                    projects found
-                </p>
-
-                {hasFilters && (
-                    <button
-                    type="button"
-                    onClick={resetFilters}
-                    className="text-xs font-medium text-gray-400 underline hover:text-red-500"
-                    >
-                    Clear all
-                    </button>
-                )}
-                </div>
-
                 {/* Cards */}
 
                 {filtered.length === 0 ? (
@@ -705,7 +670,7 @@
                 </motion.div>
                 ) : (
                 <>
-                    <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
+                    <div className="w-full flex flex-col gap-2 ">
                     <AnimatePresence mode="popLayout">
                         {visible.map((project) => (
                         <ProjectCard

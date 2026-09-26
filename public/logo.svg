@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none">
+  <defs>
+    <linearGradient id="h" x1="20" y1="20" x2="108" y2="108" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ff9823"/>
+      <stop offset="1" stop-color="rgb(254, 139, 44)"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Abstract H mark for Hemma -->
+  <path
+    d="M31 20C21.059 20 13 28.059 13 38v52c0 9.941 8.059 18 18 18h8V72.5c0-4.694 3.806-8.5 8.5-8.5H57V38c0-9.941-8.059-18-18-18h-8Z"
+    fill="#ff911b"/>
+
+  <path
+    d="M97 20c9.941 0 18 8.059 18 18v52c0 9.941-8.059 18-18 18h-8V72.5c0-4.694-3.806-8.5-8.5-8.5H71V38c0-9.941 8.059-18 18-18h8Z"
+    fill="#fa961c"/>
+
+  <path
+    d="M27 76.5c0-10.493 8.507-19 19-19h27c10.493 0 19-8.507 19-19V27.5c0-4.142 3.358-7.5 7.5-7.5S107 23.358 107 27.5V43c0 19.33-15.67 35-35 35H46c-2.485 0-4.5 2.015-4.5 4.5V100c0 4.142-3.358 7.5-7.5 7.5S27 104.142 27 100V76.5Z"
+    fill="url(#h)"
+  />
+</svg>

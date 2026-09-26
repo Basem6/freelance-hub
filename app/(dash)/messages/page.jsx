@@ -460,7 +460,7 @@ export default function MessagesPage() {
 };
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F8F8F8] flex items-center justify-center md:ml-64">
+      <div className="min-h-screen bg-[#F8F8F8] flex items-center justify-center w-full">
         <div className="flex flex-col items-center space-y-3">
           <div className="w-10 h-10 rounded-full border-4 border-orange-200 border-t-[#FF7A00] animate-spin" />
           <p className="text-gray-400 text-sm">Loading messages...</p>
@@ -470,7 +470,7 @@ export default function MessagesPage() {
   }
 
   return (
-    <div className="flex min-h-screen bg-[#F8F8F8] md:ml-64">
+    <div className="flex min-h-screen bg-white w-full">
       <div className="flex-1 flex overflow-hidden" style={{ height: '100vh' }}>
 
         {/* ── Conversation List ── */}

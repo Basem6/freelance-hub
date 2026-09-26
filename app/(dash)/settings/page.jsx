@@ -19,7 +19,7 @@ export default function SettingsPage() {
   const router = useRouter();
   const user = useAppSelector(state => state.auth.user);
   const dispatch = useAppDispatch();
-  const [loading, setLoading] = useState(true);
+  const [ setLoading] = useState(true);
   const [settingsType, setSettingsType] = useState('personal');
 
   // Auth Check Pattern
@@ -40,11 +40,11 @@ export default function SettingsPage() {
     setTimeout(() => setSaveFlash(false), 2000);
   };
   return (
-    <div className="min-h-screen bg-[#F8F9FA] flex md:ml-64">
-      <main className="flex-1 p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen bg-white flex w-full">
+      <main className="flex-1 p-4 sm:p-6 lg:p-3">
         <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col gap-6">
-            <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-gray-100 bg-white/90 p-2 shadow-sm backdrop-blur">
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-gray-300/60 bg-white/90 p-4  backdrop-blur">
               <button
                 type="button"
                 onClick={() => setSettingsType('personal')}
@@ -91,7 +91,7 @@ export default function SettingsPage() {
 
 // --- TAB COMPONENTS ---
 
-function ProfileTab({ user, onSave, saveFlash , loading }) {
+function ProfileTab({ user, onSave, loading }) {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const dispatch = useAppDispatch();
@@ -376,9 +376,8 @@ function ProfileTab({ user, onSave, saveFlash , loading }) {
     const url = URL.createObjectURL(e.target.files[0]);
     setPreview(url);;
   };
-  console.log(loading)
   return (
-    <div className="bg-white rounded-2xl shadow-sm p-6 lg:p-8  max-w-full">
+    <div className="bg-white rounded-2xl border-gray-300/60 border p-6 lg:p-8  max-w-full">
        {isUploading && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm">
           <div className="w-[90%] max-w-md rounded-2xl bg-white p-7 shadow-2xl">
@@ -423,23 +422,18 @@ function ProfileTab({ user, onSave, saveFlash , loading }) {
       )}
       <h2 className="text-xl font-bold text-[#111111] mb-6">Profile Information</h2>
       
-      <form onSubmit={onSave} className="space-y-6">
+      <form onSubmit={onSave} className="space-y-1">
         {/* Photo Upload */}
         <div className="flex items-center gap-6 pb-6 border-b border-gray-100 md:justify-start  justify-center">
-          <div className="relative">
-            <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-[#FF7A00] to-orange-300 flex items-center justify-center text-white text-3xl font-bold shadow-md">
-              {user ? (
+          <div className="relative ">
+            <div className="size-35 rounded-full  ">
                 <img src={preview?preview:user?.image} alt="Profile" className="w-full h-full rounded-full object-cover" />
-              ) : (
-                user?.fullName?.charAt(0) || 'U'
-              )}
             </div>
-            < label htmlFor="profile-photo" className="cursor-pointer absolute bottom-0 right-0 p-2 bg-white rounded-full shadow-md border border-gray-100 text-gray-600 hover:text-[#FF7A00] transition-colors">
+            < label htmlFor="profile-photo" className="cursor-pointer absolute bottom-0 right-0 p-2 bg-white rounded-full border border-gray-100 text-gray-600 hover:text-[#FF7A00] transition-colors">
               
               <Camera size={16} />
               
             </label>
-            
           </div>
           
           <div className='hidden md:block'>
@@ -647,7 +641,7 @@ function TechnicalSettings() {
     }
   };
   return (
-    <div className="bg-white rounded-2xl shadow-sm p-6 lg:p-8">
+    <div className="bg-white rounded-2xl border-gray-300/60 border  p-6 lg:p-8">
       <h2 className="text-xl font-bold text-[#111111] mb-6">Technical Profile</h2>
 
       <form className="space-y-6" onSubmit={handleSubmit}>

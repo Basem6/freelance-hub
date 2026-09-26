@@ -254,7 +254,7 @@ export default function MyWorksPage() {
   };
 
   return (
-    <div className="flex min-h-screen bg-[#F8F8F8] text-[#111111] font-sans md:ml-64">
+    <div className="flex min-h-screen bg-white text-[#111111] font-sans">
       <main className="flex-1 p-8 overflow-y-auto">
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
