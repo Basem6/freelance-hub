@@ -9,8 +9,6 @@ import {
   CheckCircle,
 } from "lucide-react";
 
-import SkillTags from "@/components/profile/SkillTags";
-import PortfolioGrid from "@/components/profile/PortfolioGrid";
 
 import ProfileActions from "@/components/profile/ProfileActions";
 import { cookies } from "next/headers";
@@ -324,16 +322,16 @@ export default async function Page({ params }) {
           </div>
 
           {/* Skills */}
-          {person?.skills && (
+          {/* {person?.skills && (
             <div className="lg:col-span-2 space-y-6">
               <SkillTags skillsData={person.skills} />
             </div>
-          )}
+          )} */}
 
           {/* Portfolio */}
-          <div className="lg:col-span-3">
+          {/* <div className="lg:col-span-3">
             <PortfolioGrid user={person} />
-          </div>
+          </div> */}
 
         </div>
 
