@@ -23,7 +23,7 @@ const authSlice = createSlice({
         
         state.user = {
         ...state.user,
-        ...action.payload, // ✅ دمج البيانات
+        ...action.payload, 
         };
         if (typeof window !== 'undefined') {
         localStorage.setItem('user', JSON.stringify(state.user));
@@ -34,7 +34,7 @@ const authSlice = createSlice({
         logout: (state) => {
             state.user = null
             state.isAuthenticated = false
-            state.error = null
+            state.error= null
             
             if (typeof window !== 'undefined') {
                 localStorage.removeItem('user')

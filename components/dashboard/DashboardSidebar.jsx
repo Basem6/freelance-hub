@@ -2,8 +2,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { Briefcase, MessageSquare, DollarSign, Settings,House,LogOut, CircleUserRound, FolderOpen, Users, Menu, X, PanelLeftClose } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Briefcase, MessageSquare, TextAlignEnd,DollarSign, Settings,House,LogOut, CircleUserRound, FolderOpen, Users, Menu, X, PanelLeftClose } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '../../app/lib/hooks';
 import { logout } from '../../app/lib/Features/authSlice';
 import api from '../../app/utils/api';
@@ -89,34 +88,61 @@ export default function DashboardSidebar({ activePage = 'dashboard' }) {
             console.error('Logout error:', error);
         }
     };
+    const activeIconRef = useRef(null);
 
+    function handleanimation(e) {
+        if (activeIconRef.current) {
+            activeIconRef.current.classList.remove("nav-link");
+        }
+
+        const icon = e.currentTarget.children[0];
+        console.log(icon)
+        icon.classList.add("nav-link");
+
+        activeIconRef.current = icon;
+    }
     return (
         <>
-            {/* Mobile Menu Button */}
-            <button
+        <div>
+            <div className="navMob md:hidden   fixed justify-between min-w-full h-14 bg-white items-center px-4 border-b border-gray-400/60 pb-2  flex z-50 ">
+                <div className="logo relative">
+                    <Image
+                            src="/logo.svg"
+                            alt="logo"
+                            width={30}
+                            height={30}
+                            className={`
+                            `}
+                    />
+                </div>
+                <button
                 type="button"
                 aria-label="Open dashboard navigation"
                 aria-expanded={isMobileOpen}
                 onClick={() => setIsMobileOpen(true)}
-                className="fixed left-4 top-4 z-40 flex h-11 w-11 items-center justify-center rounded-xl bg-white text-gray-700 shadow-md ring-1 ring-gray-200 md:hidden"
+                className="  flex h-11 w-11 items-center justify-center   text-gray-700  md:hidden"
             >
-                <Menu size={21} />
+            
+                <TextAlignEnd  size={21} />
             </button>
+            </div>
 
+        </div>
+        <div className={`md:sticky top-0 left-0`}>
             {/* Mobile Overlay */}
             {isMobileOpen && (
                 <button
                     type="button"
                     aria-label="Close dashboard navigation"
                     onClick={() => setIsMobileOpen(false)}
-                    className="fixed inset-0 z-40 bg-gray-900/30 md:hidden"
+                    className="fixed inset-0 z-50 bg-gray-900/30 md:hidden"
                 />
             )}
 
             {/* Sidebar */}
             <aside
                 ref={sidebarRef}
-                className={`z-50 flex sticky left-0 top-0 min-h-screen w-64 flex-col gap-2 overflow-y-auto overflow-x-hidden bg-gray-100 transition-transform duration-300 ${
+                className={`z-9999 flex fixed md:sticky left-0 top-0 min-h-screen w-64 flex-col gap-2 overflow-y-auto overflow-x-hidden bg-gray-100 transition-transform duration-300 ${
                     isMobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
                 }`}
             >
@@ -142,7 +168,7 @@ export default function DashboardSidebar({ activePage = 'dashboard' }) {
                         <button
                             onClick={handleToggleSidebar}
                             aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-                            className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${
+                            className={`absolute md:flex hidden inset-0  items-center justify-center transition-all duration-300 ${
                                 isLogoHovered ? 'opacity-100' : 'opacity-0'
                             }`}
                         >
@@ -153,11 +179,6 @@ export default function DashboardSidebar({ activePage = 'dashboard' }) {
                             />
                         </button>
 
-                        {/* Tooltip */}
-                        {/* <div className="absolute left-12 top-1/2 -translate-y-1/2 bg-gray-800 text-white text-xs font-medium px-2 py-1 rounded whitespace-nowrap pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                            {isCollapsed ? 'Expand' : 'Collapse'}
-                            <div className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-gray-800"></div>
-                        </div> */}
                     </div>
 
                     {/* Mobile Close Button */}
@@ -185,7 +206,7 @@ export default function DashboardSidebar({ activePage = 'dashboard' }) {
                 {/* Panel Icon */}
                 <button
                     onClick={handleToggleSidebar}
-                    className={` flex items-center justify-center transition-opacity duration-200`}
+                    className={`md:flex hidden items-center justify-center transition-opacity duration-200`}
                 >
                     <PanelLeftClose
                         className="cursor-pointer text-gray-500 hover:text-orange-400"
@@ -198,27 +219,31 @@ export default function DashboardSidebar({ activePage = 'dashboard' }) {
 
                 {/* Navigation Items */}
                 <nav ref={linksContainerRef} className="flex-1 flex flex-col gap-1 px-3 py-4 ">
-                    {navItems.map((item) => {
+                    {navItems.map((item , ind) => {
                         const Icon = item.icon;
                         const active = isActive(item);
                         return (
                             <Link key={item.id} href={item.href} onClick={() => setIsMobileOpen(false)}>
-                                <motion.div
-                                    whileHover={{ x: 2 }}
-                                    transition={{ duration: 0.15 }}
+                                <div
+                                    
+                                    onMouseMove={(e)=>handleanimation(e)}
+                                    
                                     className={`w-full flex items-center relative space-x-3  py-2.5 rounded-xl transition-all duration-200 cursor-pointer group ${
                                         active
                                             ? 'bg-orange-50 text-[#FF7A00]'
                                             : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
                                     }`}
                                 >
+                                    <div className=''>
                                     <Icon
                                         size={22}
                                         strokeWidth={1.2}
-                                        className={`shrink-0 mx-2 group-hover:-rotate-12 duration-300 transition-transform ${
+
+                                        className={`shrink-0 mx-2  duration-300 transition-transform ${
                                             active ? 'text-[#FF7A00]' : 'text-gray-400 group-hover:text-gray-600'
                                         }`}
                                     />
+                                    </div>
                                     <span
                                         className={`link-text whitespace-nowrap font-medium text-sm flex-1 ${
                                             active ? 'text-[#FF7A00]' : ''
@@ -231,7 +256,7 @@ export default function DashboardSidebar({ activePage = 'dashboard' }) {
                                             {item.badge}
                                         </span>
                                     )}
-                                </motion.div>
+                                </div>
                             </Link>
                         );
                     })}
@@ -254,6 +279,7 @@ export default function DashboardSidebar({ activePage = 'dashboard' }) {
                     </button>
                 </div>
             </aside>
+        </div>
         </>
     );
 }

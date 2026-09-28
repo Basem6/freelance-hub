@@ -25,7 +25,7 @@ async function getOffers() {
 export default async function page() {
   let offers = await getOffers();
     return (
-        <div className="flex    min-h-screen bg-[#F8F8F8] text-gray-900 w-full">
+        <div className="flex    min-h-screen bg-white text-gray-900 w-full">
         <PageClient  offers={offers}/>
         </div>
     )

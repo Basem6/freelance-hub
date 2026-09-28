@@ -87,6 +87,9 @@
     const shown = skills.slice(0, 5)
 
     return (
+        <Link
+                href={`/findworks/${p._id}`}
+            >
         <motion.article
         layout
         initial={{ opacity: 0, y: 16 }}
@@ -96,7 +99,7 @@
         className="overflow-hidden hover:bg-gray-200/60 duration-200 transition-colors  border-b bg-white border-gray-400/60 "
         >
 
-        <div className="space-y-2 p-3">
+        <div className="space-y-2 py-2 px-1">
 
             {/* Badges + Bookmark */}
 
@@ -139,9 +142,9 @@
             {/* Title + Description */}
 
             <div>
-            <h3 className="mb-1.5 line-clamp-2 text-base font-bold leading-snug text-[#111111] transition-colors group-hover:text-[#FF7A00]">
+            <a href={`/findworks/${p._id}`} className="mb-1.5 hover:border-gray-800 w-fit border-b border-gray-800/0 -2 text-base font-bold leading-snug text-[#111111] transition-colors group-hover:text-[#FF7A00]">
                 {p.title}
-            </h3>
+            </a>
 
             <p className="line-clamp-2 text-sm leading-relaxed text-gray-500">
                 {p.description}
@@ -217,16 +220,12 @@
 
             </div>
 
-            <Link
-                href={`/findworks/${p._id}`}
-                className="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-orange-400/80 px-4 py-2 text-xs font-bold text-white shadow shadow-orange-400/30 transition-all hover:shadow-md hover:shadow-orange-400/40"
-            >
-
-                <ArrowRight className="h-3.5 w-3.5" />
-            </Link>
+            
             </div>
         </div>
         </motion.article>
+        </Link>
+        
     )
     }
 
@@ -619,7 +618,7 @@
 
                 {/* Active category */}
 
-                <div className="mb-4 flex flex-wrap gap-2">
+                <div className="mb-4 flex  overflow-x-scroll gap-2 no-scrollbar">
                 {CATEGORIES.map((category) => (
                     <button
                     key={category}
@@ -628,7 +627,7 @@
                         setActiveCategory(category)
                         setVisibleCount(6)
                     }}
-                    className={`rounded-full px-4 py-2 text-xs font-semibold transition-all ${
+                    className={`rounded-full whitespace-nowrap px-4 py-2 text-xs font-semibold transition-all ${
                         activeCategory === category
                         ? 'bg-[#FF7A00] text-white'
                         : 'border border-gray-200 bg-white text-gray-600 hover:border-[#FF7A00] hover:text-[#FF7A00]'

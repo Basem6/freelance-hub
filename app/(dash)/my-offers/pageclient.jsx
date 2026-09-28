@@ -1,15 +1,12 @@
 'use client';
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAppSelector, useAppDispatch } from '@/app/lib/hooks';
-import { logout } from '@/app/lib/Features/authSlice';
 import api from '@/app/utils/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
 Briefcase, Clock, CheckCircle, XCircle, ChevronRight,
-Search, Filter, DollarSign, Calendar, Eye, X,
-TrendingUp, AlertCircle, Send, Star
+Search, DollarSign, Calendar, Eye, X,
+TrendingUp, Send, Star
 } from 'lucide-react';
+import { timeAgo } from '../../utils/handletime';
 
 const STATUS_CONFIG = {
 pending: {
@@ -37,43 +34,6 @@ withdrawn: {
     icon: XCircle,
 },
 };
-function timeAgo(date) {
-const seconds = Math.floor(
-    (Date.now() - new Date(date).getTime()) / 1000
-)
-
-if (seconds < 60) {
-    return `${seconds} seconds ago`
-}
-
-const minutes = Math.floor(seconds / 60)
-
-if (minutes < 60) {
-    return `${minutes} minutes ago`
-}
-
-const hours = Math.floor(minutes / 60)
-
-if (hours < 24) {
-    return `${hours} hours ago`
-}
-
-const days = Math.floor(hours / 24)
-
-if (days < 30) {
-    return `${days} days ago`
-}
-
-const months = Math.floor(days / 30)
-
-if (months < 12) {
-    return `${months} months ago`
-}
-
-const years = Math.floor(months / 12)
-
-return `${years} years ago`
-}
 /* ─────────── Detail Modal ─────────── */
 function OfferDetailModal({ offer, onClose, onWithdraw }) {
 const cfg = STATUS_CONFIG[offer?.status];
@@ -92,7 +52,7 @@ return (
         initial={{ opacity: 0, scale: 0.93, y: 24 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.93, y: 24 }}
-        className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden max-h-[88vh] flex flex-col"
+        className="relative bg-white rounded-2xl  w-full max-w-lg overflow-hidden max-h-[88vh] flex flex-col"
     >
         {/* Modal Header */}
         <div className="flex justify-between items-start p-6 border-b border-gray-100">
@@ -151,7 +111,7 @@ return (
         {/* Modal Footer */}
         <div className="p-5 border-t border-gray-100 bg-gray-50">
         {offer?.status === 'accepted' ? (
-            <button className="w-full py-3 bg-gradient-to-r from-[#FF7A00] to-orange-500 text-white rounded-xl font-semibold text-sm hover:shadow-lg hover:shadow-orange-200 transition-all flex items-center justify-center space-x-2">
+            <button className="w-full py-3 bg-gradient-to-r from-[#FF7A00] to-orange-500 text-white rounded-xl font-semibold text-sm   transition-all flex items-center justify-center space-x-2">
             <Send size={16} />
             <span>Go to Project</span>
             </button>
@@ -175,8 +135,6 @@ return (
 
 /* ─────────── Main Page ─────────── */
 export default function PageClient({offers: offerss }) {
-const router = useRouter();
-const dispatch = useAppDispatch();
 const [offers, setOffers] = useState(offerss || []);
 const [filter, setFilter] = useState('all');
 const [searchQuery, setSearchQuery] = useState('');
@@ -215,7 +173,7 @@ const filtered = offers.length?offers.filter((o) => {
 }):"";
 return (
     <div className='w-full'>
-    <main className="flex-1 p-6 lg:p-8 overflow-y-auto">
+    <main className="flex-1 p-6 lg:p-8 overflow-y-auto  ">
 
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
@@ -225,42 +183,13 @@ return (
         </div>
         </div>
 
-        {/* Stat Cards */}
-        <div className="md:grid hidden grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        {[
-            { label: 'Total Offers', value: stats.total, icon: Briefcase, bg: 'bg-gray-100', text: 'text-gray-600' },
-            { label: 'Pending Review', value: stats.pending, icon: Clock, bg: 'bg-yellow-100', text: 'text-yellow-600' },
-            { label: 'Accepted', value: stats.accepted, icon: CheckCircle, bg: 'bg-green-100', text: 'text-green-600' },
-            { label: 'Rejected', value: stats.rejected, icon: XCircle, bg: 'bg-red-100', text: 'text-red-500' },
-        ].map((s, i) => {
-            const Icon = s?.icon;
-            return (
-            <motion.div
-                key={s.label}
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.07 }}
-                className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm flex items-center space-x-4"
-            >
-                <div className={`w-11 h-11 rounded-xl ${s.bg} flex items-center justify-center flex-shrink-0`}>
-                <Icon size={20} className={s.text} />
-                </div>
-                <div>
-                <p className="text-sm text-gray-500">{s.label}</p>
-                <p className="text-2xl font-bold text-gray-900">{s.value}</p>
-                </div>
-            </motion.div>
-            );
-        })}
-        </div>
-
         {/* Acceptance Rate Banner */}
         {stats.total > 0 && (
         <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="bg-gradient-to-r from-[#FF7A00] to-orange-500 rounded-2xl p-5 mb-8 text-white flex items-center justify-between shadow-lg shadow-orange-200"
+            className="bg-gradient-to-r from-[#FF7A00] to-orange-500 rounded-2xl p-5 mb-8 text-white flex items-center justify-between "
         >
             <div className="flex items-center space-x-3">
             <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
@@ -281,7 +210,7 @@ return (
         )}
 
         {/* Filters & Search */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-auto no-scrollbar mb-6">
+        <div className="bg-white rounded-2xl border border-gray-300/70  overflow-auto no-scrollbar mb-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-2 md:p-4 gap-3 border-b border-gray-100">
             <div className="flex space-x-1 fl bg-gray-100 rounded-xl">
             {['all', 'pending', 'accepted', 'rejected'].map((f) => (
@@ -319,7 +248,7 @@ return (
 
         {/* Offers List */}
         {filtered.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20">
+            <div className="flex flex-col md:min-h-120 items-center justify-center py-20">
             <div className="w-20 h-20 bg-orange-50 rounded-full flex items-center justify-center mb-4">
                 <Briefcase size={32} className="text-[#FF7A00]" />
             </div>

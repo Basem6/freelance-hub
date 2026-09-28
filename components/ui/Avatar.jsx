@@ -5,7 +5,7 @@ export default function Avatar({ user, size = 100, className = "" }) {
     const altText = user?.fullName || "User Avatar";
 
     return (
-        <div className={`relative size-30 rounded-full overflow-hidden shrink-0 ${className}`}>
+        <div className={`relative size-26 rounded-full overflow-hidden shrink-0 ${className}`}>
             <Image
                 src={imageUrl}
                 alt={altText}

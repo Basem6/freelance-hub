@@ -1,6 +1,6 @@
 'use client';
 import { motion, AnimatePresence } from 'framer-motion';
-import { DollarSign, Calendar, MapPin, Tag, Briefcase } from 'lucide-react';
+import { DollarSign, Calendar, MapPin} from 'lucide-react';
 
 export default function ClientProjectsCard({ projects }) {
   if (!projects?.length) {

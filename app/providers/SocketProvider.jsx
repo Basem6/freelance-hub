@@ -2,28 +2,18 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 import { useSocket } from "../hooks/useSocket";
-import { useAppDispatch, useAppSelector } from "../lib/hooks";
-import { hideShow, setShow } from "../lib/Features/showSlice";
+import { useAppSelector } from "../lib/hooks";
 import { usePathname } from "next/navigation";
+import {useShowToast} from "../hooks/showToast"
 
 const SocketContext = createContext(null);
 
 export default function SocketProvider({ children }) {
+    const showToast = useShowToast()
     const pathname = usePathname();
-    const dispatch = useAppDispatch();
     const user = useAppSelector((state) => state.auth.user);
     const userId = user?.id || user?._id;
     const [notifications, setNotifications] = useState([]);
-    function showToast(message){
-      dispatch(setShow(message))
-      setTimeout(() => {
-          dispatch(hideShow())
-      }, 3000);
-    } 
-    // هنا هات userId من Redux أو auth state
-    // مثال:
-    // const user = useSelector((state) => state.auth.user);
-    // const userId = user?._id;
     const playMessageSound = () => {
         const audio = new Audio("/sounds/universfield-message-notification-124467.mp3");
     
@@ -44,7 +34,6 @@ export default function SocketProvider({ children }) {
     if (!socket) return;
 
     const handleNotification = (data) => {
-        // لو المستخدم داخل صفحة الرسائل، متعملش notification
         if (pathname.startsWith("/messages")) {
         return;
         }

@@ -80,7 +80,7 @@ export default function EarningsPage() {
   const filtered = [];
 
   return (
-    <div className="flex min-h-screen bg-[#F8F8F8] text-gray-900 w-full">
+    <div className="flex min-h-screen bg-white text-gray-900 w-full">
       <main className="flex-1 p-6 lg:p-8 overflow-y-auto">
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
@@ -98,7 +98,7 @@ export default function EarningsPage() {
             {/* Export */}
             <button
               type="button"
-              className="flex pointer-events-auto cursor-no-drop items-center space-x-2 px-4 py-2.5 border border-gray-200 bg-white rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors shadow-sm"
+              className="flex pointer-events-auto cursor-no-drop items-center space-x-2 px-4 py-2.5 border border-gray-200 bg-white rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
             >
               <Download size={16} />
               <span>Export</span>
@@ -109,7 +109,7 @@ export default function EarningsPage() {
               type="button"
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
-              className="flex items-center pointer-events-auto cursor-no-drop space-x-2 px-5 py-2.5 bg-gradient-to-r from-[#FF7A00] to-orange-500 text-white rounded-xl text-sm font-semibold shadow-lg shadow-orange-200 hover:shadow-xl transition-all"
+              className="flex items-center pointer-events-auto cursor-no-drop space-x-2 px-5 py-2.5 bg-gradient-to-r from-[#FF7A00] to-orange-500 text-white rounded-xl text-sm font-semibold   transition-all"
             >
               <ArrowDownCircle size={17} />
               <span>Withdraw Funds</span>
@@ -117,45 +117,8 @@ export default function EarningsPage() {
           </div>
         </div>
 
-        {/* Stat Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 mb-8">
-          {STAT_CARDS.map((card, i) => {
-            const Icon = card.icon;
-
-            return (
-              <MotionDiv
-                key={card.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.08 }}
-                className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition-shadow"
-              >
-                <div className="flex justify-between items-start mb-4">
-                  <div
-                    className={`w-11 h-11 rounded-xl ${card.bg} flex items-center justify-center`}
-                  >
-                    <Icon size={22} className={card.text} />
-                  </div>
-                </div>
-
-                <p className="text-sm text-gray-500 mb-1">
-                  {card.label}
-                </p>
-
-                <p className="text-2xl font-bold text-gray-900">
-                  {card.value}
-                </p>
-
-                <p className="text-xs text-gray-400 mt-1">
-                  {card.sub}
-                </p>
-              </MotionDiv>
-            );
-          })}
-        </div>
-
         {/* Transactions Table */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-2xl border min-h-130 border-gray-300/70  overflow-hidden">
           {/* Table Header */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-5 border-b border-gray-100 gap-3">
             <div>

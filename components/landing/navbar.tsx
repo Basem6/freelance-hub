@@ -314,8 +314,8 @@ return (
             <Image
             src={user?.image || "/avatars/avatar-1.png"}
             alt="User photo"
-            width={100}
-            height={100}
+            width={90}
+            height={90}
             quality={10}
             className="object-cover"
           />

@@ -316,3 +316,32 @@
 .button-google:hover {
   transform: scale(1.02);
 }
+.nav-link{
+  animation: shake 0.9s ease-in-out  both alternate-reverse ;
+}
+
+@keyframes shake {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  20% {
+    transform: rotate(-25deg);
+  }
+
+  40% {
+    transform: rotate(0deg);
+  }
+
+  60% {
+    transform: rotate(-25deg);
+  }
+
+  80% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(-25deg);
+  }
+}

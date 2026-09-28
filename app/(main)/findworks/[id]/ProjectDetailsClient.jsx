@@ -10,10 +10,8 @@ import {
   CheckCircle,
   Clock,
   Users,
-  Share2,
   Bookmark,
   Shield,
-  ArrowRight,
   X,
   MoreHorizontal,
   Eye,
@@ -24,107 +22,17 @@ import {
   Pencil,
   MessageCircle,
 } from "lucide-react";
-import { hideShow, setShow } from "../../../lib/Features/showSlice";
-import { useAppDispatch } from "../../../lib/hooks";
-import Link from "next/link";
+import { monthNames } from "../../../lib/constants/MonthName";
 import { useRouter } from "next/navigation";
 import OptionSelect from "@/components/ui/OptionSelect";
+import { fadeInUp, slideInRight, staggerContainer } from "../../../lib/constants/animations";
+import { timeAgo } from "../../../utils/handletime";
+import { useShowToast } from "../../../hooks/showToast";
 
-// ======================================================
-// Animations
-// ======================================================
-let monthNames = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "May",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dec"
-];
-const fadeInUp = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.5,
-      ease: "easeOut",
-    },
-  },
-};
-
-const staggerContainer = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-    },
-  },
-};
-function timeAgo(date) {
-    const seconds = Math.floor(
-        (Date.now() - new Date(date).getTime()) / 1000
-    )
-
-    if (seconds < 60) {
-        return `${seconds} seconds ago`
-    }
-
-    const minutes = Math.floor(seconds / 60)
-
-    if (minutes < 60) {
-        return `${minutes} minutes ago`
-    }
-
-    const hours = Math.floor(minutes / 60)
-
-    if (hours < 24) {
-        return `${hours} hours ago`
-    }
-
-    const days = Math.floor(hours / 24)
-
-    if (days < 30) {
-        return `${days} days ago`
-    }
-
-    const months = Math.floor(days / 30)
-
-    if (months < 12) {
-        return `${months} months ago`
-    }
-
-    const years = Math.floor(months / 12)
-
-    return `${years} years ago`
-}
-const slideInRight = {
-  hidden: { opacity: 0, x: 20 },
-  visible: {
-    opacity: 1,
-    x: 0,
-    transition: {
-      duration: 0.5,
-      ease: "easeOut",
-    },
-  },
-};
-
-// ======================================================
-// Main Component
-// ======================================================
 
 export default function ProjectDetailsClient({ project, proposals: initialProposals }) {
-  const dispatch = useAppDispatch()
-  console.log(project, "project details");
   const router = useRouter();
+  const showToast = useShowToast()
   const [proposals, setProposals] = useState(initialProposals || []);
   const user = useAppSelector((state) => state.auth.user);
   const [isBookmarked, setIsBookmarked] = useState(false);
@@ -136,12 +44,6 @@ export default function ProjectDetailsClient({ project, proposals: initialPropos
   const clientInfo = project?.clientId || project?.client || {};
   const clientName = clientInfo?.fullName || clientInfo?.name || "Client";
   const clientImage = clientInfo?.image || "/avatars/avatar-1.png";
-  function showToast(message){
-  dispatch(setShow(message))
-  setTimeout(() => {
-      dispatch(hideShow())
-  }, 3000);
-  } 
   useEffect(() => {
     const closeMenu = (event) => {
       if (!event.target.closest('[data-proposal-menu]')) setOpenProposalMenu(null);
@@ -198,10 +100,6 @@ export default function ProjectDetailsClient({ project, proposals: initialPropos
   };
   return (
     <div className="min-h-screen bg-[#F8F8F8] font-sans text-[#111111] pb-24">
-
-      {/* ==================================================
-          Proposal Modal
-      ================================================== */}
 
       <AnimatePresence>
         {showProposal && (

@@ -1,6 +1,7 @@
 import { configureStore ,  combineReducers } from "@reduxjs/toolkit";
 import authReducer from "./Features/authSlice";
 import showReducer from "./Features/showSlice";
+import technicalDataReducer from "./Features/technicalData";
 
 import {
 persistStore,
@@ -12,12 +13,13 @@ import storage from "redux-persist/lib/storage";
 const rootReducer = combineReducers({
 auth: authReducer,
 show: showReducer,
+technicalData:technicalDataReducer
 });
 
 const persistConfig = {
 key: "root",
 storage,
-whitelist: ["auth"], // احفظ auth فقط
+whitelist: ["auth", "technicalData"],
 };
 
 const persistedReducer = persistReducer(

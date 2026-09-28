@@ -44,7 +44,7 @@ return (
     </button>
 
     {isOpen && (
-        <div role="listbox" className="absolute z-20 mt-2 max-h-56 w-full overflow-y-auto hide-scrollbar rounded-2xl border border-gray-200 bg-white p-2 shadow-xl shadow-orange-500/10">
+        <div role="listbox" className="absolute z-20 mt-2 max-h-44 w-full overflow-y-auto hide-scrollbar rounded-2xl border border-gray-200 bg-white p-2 shadow-xl shadow-orange-500/10">
         {options.map((option) => {
             const optionValue = typeof option === 'string' ? option : option.value;
             const optionLabel = typeof option === 'string' ? option : option.label;

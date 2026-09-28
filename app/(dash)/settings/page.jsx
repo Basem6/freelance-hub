@@ -1,36 +1,25 @@
 'use client';
-import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import  { useEffect, useState } from 'react';
 import { useAppSelector, useAppDispatch } from '@/app/lib/hooks';
-import { logout , setLoading , updateUser } from '@/app/lib/Features/authSlice';
+import { updateUser } from '@/app/lib/Features/authSlice';
 import api from '@/app/utils/api';
+import {skillSuggestions} from '@/app/utils/skillSuggestions'
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  Camera, CheckCircle2,
-} from 'lucide-react';
+import {Camera} from 'lucide-react';
 import Loader from "../../../components/ui/Loader"
 import  {compressImage} from "../../utils/compressImage"
-import { hideShow, setShow } from '../../lib/Features/showSlice';
+import { useShowToast } from '../../hooks/showToast';
 import axios from 'axios';
 import OptionSelect from '@/components/ui/OptionSelect';
+import { handleRemoveSkill } from '../../utils/Skills/removeskill';
+import { handleAddSkill } from '../../utils/Skills/addskill';
+import { updateTechnicalData } from '../../lib/Features/technicalData';
 
 export default function SettingsPage() {
   const LoadingUser = useAppSelector(state => state.auth.loading);
-  const router = useRouter();
   const user = useAppSelector(state => state.auth.user);
-  const dispatch = useAppDispatch();
-  const [ setLoading] = useState(true);
   const [settingsType, setSettingsType] = useState('personal');
-
-  // Auth Check Pattern
-  useEffect(() => {
-    api.get('/api/auth/me')
-      .then(res => {
-        if (!res.data.success) { dispatch(logout()); router.push('/login'); }
-      })
-      .catch(() => { dispatch(logout()); router.push('/login'); })
-      .finally(() => setLoading(false));
-  }, [dispatch, router]);
+  
 
   const [saveFlash, setSaveFlash] = useState(false);
 
@@ -97,7 +86,6 @@ function ProfileTab({ user, onSave, loading }) {
   const dispatch = useAppDispatch();
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(user.image ||"/avatars/avatar-1.png");
-  const [show, setshow] = useState(null);
   const [formData, setFormData] = useState({
     fullName: user?.fullName || '',
     email: user?.email || '',
@@ -124,15 +112,8 @@ function ProfileTab({ user, onSave, loading }) {
   if (!image) return;
 
   try {
-    // =========================
-    // 1. Start blocking UI
-    // =========================
     setIsUploading(true);
     setUploadProgress(0);
-
-    // =========================
-    // 2. Compress image
-    // =========================
     const compressedImage = await compressImage(image);
 
     console.log("Original size:", image.size);
@@ -179,9 +160,6 @@ function ProfileTab({ user, onSave, loading }) {
     }
     console.log("Cloudinary uploaded:", imageUrl);
 
-    // =========================
-    // 5. Update backend
-    // =========================
     const apiRes = await fetch(
       "/api/backend/api/auth/profile/image",
       {
@@ -222,35 +200,16 @@ function ProfileTab({ user, onSave, loading }) {
       );
     }
 
-    // =========================
-    // 6. Update Redux
-    // =========================
     dispatch(
       updateUser({
         image: imageUrl,
       })
     );
 
-    // =========================
-    // 7. Reset states
-    // =========================
     setImage(null);
     setPreview(null);
 
-    // =========================
-    // 8. Complete progress
-    // =========================
     setUploadProgress(100);
-
-    // =========================
-    // 9. Success message
-    // =========================
-    setshow("تم تحديث الصورة بنجاح ✅");
-
-    setTimeout(() => {
-      setshow(null);
-    }, 2000);
-
     console.log("Upload completed:", imageUrl);
 
   } catch (error) {
@@ -258,19 +217,7 @@ function ProfileTab({ user, onSave, loading }) {
 
     setUploadProgress(0);
 
-    setshow(
-      error?.message ||
-        "حدث خطأ أثناء رفع الصورة ❌"
-    );
-
-    setTimeout(() => {
-      setshow(null);
-    }, 3000);
-
   } finally {
-    // =========================
-    // Unlock UI
-    // =========================
     setIsUploading(false);
   }
 };
@@ -323,9 +270,6 @@ function ProfileTab({ user, onSave, loading }) {
     });
     const result = await res.json();
 
-    console.log("STATUS:", res.status);
-    console.log("RESULT:", result);
-
     if (!res.ok) {
       throw new Error(
         result.message || `خطأ الخادم: ${res.status}`
@@ -346,17 +290,13 @@ function ProfileTab({ user, onSave, loading }) {
       })
     );
 
-    setshow("تم تحديث البيانات بنجاح ✅");
-
   } catch (error) {
     console.error("Update error:", error);
-    setshow("خطأ: " + error.message);
   }
 };
   const onsubmit = async (event) => {
   event.preventDefault();
 
-  dispatch(setLoading(true));
 
   try {
     if (image) {
@@ -368,7 +308,6 @@ function ProfileTab({ user, onSave, loading }) {
   } catch (error) {
     console.error("Submit error:", error);
   } finally {
-    dispatch(setLoading(false));
   }
 };
   const handleImage = (e) => {  
@@ -378,7 +317,7 @@ function ProfileTab({ user, onSave, loading }) {
   };
   return (
     <div className="bg-white rounded-2xl border-gray-300/60 border p-6 lg:p-8  max-w-full">
-       {isUploading && (
+      {isUploading && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm">
           <div className="w-[90%] max-w-md rounded-2xl bg-white p-7 shadow-2xl">
 
@@ -426,7 +365,7 @@ function ProfileTab({ user, onSave, loading }) {
         {/* Photo Upload */}
         <div className="flex items-center gap-6 pb-6 border-b border-gray-100 md:justify-start  justify-center">
           <div className="relative ">
-            <div className="size-35 rounded-full  ">
+            <div className="size-35 rounded-full  overflow-hi">
                 <img src={preview?preview:user?.image} alt="Profile" className="w-full h-full rounded-full object-cover" />
             </div>
             < label htmlFor="profile-photo" className="cursor-pointer absolute bottom-0 right-0 p-2 bg-white rounded-full border border-gray-100 text-gray-600 hover:text-[#FF7A00] transition-colors">
@@ -466,70 +405,21 @@ function ProfileTab({ user, onSave, loading }) {
           <span><Loader></Loader></span>
           }
           </button>
-          {show&&
-          <AnimatePresence>
-            { (
-              <motion.div
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0 }}
-                className="flex items-center gap-2 text-emerald-600 font-medium"
-              >
-                <CheckCircle2 size={18} />
-                <span>Saved!</span>
-              </motion.div>
-            )}
-          </AnimatePresence>
-          }
+          
         </div>
       </form>
     </div>
   );
 }
 function TechnicalSettings() {
+  const showToast = useShowToast();
   const [isSpecialtyOpen, setIsSpecialtyOpen] = useState(false);
   const [skillInput, setSkillInput] = useState('');
   const dispatch = useAppDispatch();
-  const router = useRouter()
-  const user = useAppSelector(state => state.auth.user);
   const [loading , setloading] = useState(false)
-  const [technicalData, setTechnicalData] = useState({
-    major: user?.major ||'',
-    specialty: user?.specialty ||'',
-    skills:user?.skills || [],
-    summary: user?.bio ||'',
-  });
-   // Auth Check Pattern
-  useEffect(() => {
-    api.get('/api/auth/me')
-      .then(res => {
-        if (!res.data.success) { dispatch(logout()); router.push('/login'); }
-      })
-      .catch(() => { dispatch(logout()); router.push('/login'); })
-      .finally(() => dispatch(setLoading(false)));
-  }, [dispatch, router]);
-
-  function showToast(message){
-  dispatch(setShow(message))
-  setTimeout(() => {
-      dispatch(hideShow())
-  }, 3000);
-  } 
-
+  const technicalData= useAppSelector(state => state.technicalData);
   const specialtyOptions = ['Development', 'Design', 'Translation', 'Marketing', 'Writing', 'Data', 'Video Editing', 'Consulting'];
 
-  const skillSuggestions = [
-    'React',
-    'Next.js',
-    'TypeScript',
-    'Node.js',
-    'MongoDB',
-    'MySQL',
-    'UI/UX',
-    'Tailwind CSS',
-    'Redux',
-    'Figma',
-  ];
 
   const filteredSuggestions = skillInput.trim()
     ? skillSuggestions.filter((skill) => {
@@ -538,72 +428,52 @@ function TechnicalSettings() {
       })
     : [];
 
-  const addSkill = (skill) => {
-    const trimmedSkill = skill.trim();
-    if (!trimmedSkill || technicalData.skills.includes(trimmedSkill)) return;
-
-    setTechnicalData((prev) => ({ ...prev, skills: [...prev.skills, trimmedSkill] }));
-    setSkillInput('');
-  };
-
-  const removeSkill = (skillToRemove) => {
-    setTechnicalData((prev) => ({
-      ...prev,
-      skills: prev.skills.filter((skill) => skill !== skillToRemove),
-    }));
-  };
-
   const handleSkillKeyDown = (event) => {
     if (event.key === 'Enter' && skillInput.trim()) {
       event.preventDefault();
-      addSkill(skillInput);
-    }
+      handleAddSkill(
+        { skill,
+        skills: technicalData.skills,
+        dispatch,
+        setSkillInput,
+        showToast})}
   };
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    setTechnicalData((prev) => ({ ...prev, [name]: value }));
-  };
+
+    dispatch(
+      updateTechnicalData({
+        [name]: value,
+      })
+    );
+};
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
-    // ✅ Validation
     if (!technicalData.major?.trim()) {
-      showToast({ message: "من فضلك أدخل التخصص الرئيسي", type: "warning" });
+      showToast({ message: "select the mahjor", type: "warning" });
       return;
     }
 
     if (!technicalData.skills || technicalData.skills.length === 0) {
-      showToast({ message: "من فضلك أضف مهارة واحدة على الأقل", type: "warning" });
+      showToast({ message: "add one skill at", type: "warning" });
       return;
     }
     setloading(true)
     try {
-      const payload = {
-        major: technicalData.major.trim(),
-        specialty: technicalData.specialty?.trim() || "",
-        skills: technicalData.skills.filter(skill => skill.trim()), // ✅ تنظيف
-        bio: technicalData.summary?.trim() || "",
-      };
-
-      console.log("Sending payload:", payload);
-
       const response = await fetch(
-        `/api/backend/freelance/update/technical`, // ✅ استخدم env
+        `/api/backend/freelance/update/technical`,
         {
           method: "PATCH",
           credentials: "include",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(payload),
+          body: JSON.stringify(technicalData),
         }
       );
-
-      // ✅ معالجة الـ response
       const data = await response.json();
-
       if (!response.ok) {
         throw new Error(data.message || "فشل حفظ البيانات التقنية");
       }
@@ -611,29 +481,18 @@ function TechnicalSettings() {
       if (!data.success) {
         throw new Error(data.message || "فشل التحديث");
       }
-
-      // ✅ Update Redux
-      dispatch(
-        updateUser({
-          major: payload.major,
-          specialty: payload.specialty,
-          skills: payload.skills,
-          bio: payload.bio,
-        })
-      );
-
-      console.log("✅ Technical settings saved:", data.user);
+      dispatch(updateTechnicalData(technicalData))
 
       showToast({
-        message: "✅ تم حفظ البيانات التقنية بنجاح",
+        message: "Technical settings is saved",
         type: "sucess",
       });
 
     } catch (error) {
-      console.error("❌ Technical settings error:", error);
+      console.error(" Technical settings error:", error);
 
       showToast({
-        message: error.message || "حدث خطأ في حفظ البيانات",
+        message: error.message || "error in data",
         type: "error",
       });
     } finally {
@@ -651,7 +510,7 @@ function TechnicalSettings() {
             <input
               type="text"
               name="major"
-              value={technicalData.major}
+              value={technicalData?.major}
               onChange={handleChange}
               placeholder="Computer Science"
               className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#FF7A00]/30 focus:border-[#FF7A00] transition-all bg-gray-50 focus:bg-white"
@@ -666,22 +525,27 @@ function TechnicalSettings() {
                 onClick={() => setIsSpecialtyOpen((prev) => !prev)}
                 className="flex w-full items-center justify-between rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-left text-sm font-medium text-gray-700 transition-all hover:border-[#FF7A00] hover:bg-white"
               >
-                <span>{technicalData.specialty || 'Select a specialty'}</span>
+                <span>{technicalData?.specialty || 'Select a specialty'}</span>
                 <span className="text-gray-400">▾</span>
               </button>
 
               {isSpecialtyOpen && (
                 <div className="absolute z-10 mt-2 w-full rounded-2xl border border-gray-200 bg-white p-2 shadow-xl shadow-orange-500/10">
                   {specialtyOptions.map((option) => {
-                    const isActive = technicalData.specialty === option;
+                    const isActive = technicalData?.specialty === option;
                     return (
                       <button
                         key={option}
                         type="button"
                         onClick={() => {
-                          setTechnicalData((prev) => ({ ...prev, specialty: option }));
-                          setIsSpecialtyOpen(false);
-                        }}
+                        dispatch(
+                          updateTechnicalData({
+                            specialty: option,
+                          })
+                        );
+
+                        setIsSpecialtyOpen(false);
+                      }}
                         className={`flex w-full items-center rounded-xl px-3 py-2.5 text-left text-sm transition-all ${isActive
                           ? 'bg-[#FFF4E8] text-[#FF7A00]'
                           : 'text-gray-700 hover:bg-[#FFF4E8] hover:text-[#FF7A00]'}`}
@@ -714,7 +578,15 @@ function TechnicalSettings() {
                   <button
                     key={skill}
                     type="button"
-                    onClick={() => addSkill(skill)}
+                    onClick={() =>
+                    handleAddSkill({
+                      skill,
+                      skills: technicalData?.skills,
+                      dispatch,
+                      setSkillInput,
+                      showToast,
+                    })
+                  }
                     className="flex w-full items-center rounded-lg px-3 py-2 text-left text-sm text-gray-700 transition-colors hover:bg-[#FFF4E8] hover:text-[#FF7A00]"
                   >
                     {skill}
@@ -725,12 +597,18 @@ function TechnicalSettings() {
           </div>
 
           <div className="mt-3 flex flex-wrap gap-2">
-            {technicalData.skills.map((skill) => (
+            {technicalData?.skills.map((skill) => (
               <span key={skill} className="flex items-center gap-2 rounded-full border border-[#FF7A00]/20 bg-[#FFF4E8] px-3 py-1.5 text-sm font-medium text-[#FF7A00]">
                 {skill}
                 <button
                   type="button"
-                  onClick={() => removeSkill(skill)}
+                  onClick={() =>
+                  handleRemoveSkill({
+                    skill,
+                    skills: technicalData?.skills,
+                    dispatch,
+                  })
+                }
                   className="text-[#FF7A00] transition-opacity hover:opacity-70"
                 >
                   ×
@@ -745,7 +623,7 @@ function TechnicalSettings() {
           <textarea
             rows="6"
             name="summary"
-            value={technicalData.summary}
+            value={technicalData?.summary}
             onChange={handleChange}
             placeholder="Write a short professional summary about the user..."
             className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#FF7A00]/30 focus:border-[#FF7A00] transition-all bg-gray-50 focus:bg-white resize-none"
