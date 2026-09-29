@@ -29,7 +29,7 @@ export default function MyWorksPage() {
   const router = useRouter();
   const user = useAppSelector(state => state.auth.user);
   const dispatch = useAppDispatch();
-  const [loading, setLoading] = useState(true);
+  const [setLoading] = useState(true);
 
   const normalizeWorks = (payload) => {
     let entries = [];

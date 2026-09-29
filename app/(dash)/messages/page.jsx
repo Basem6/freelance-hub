@@ -1,16 +1,14 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAppSelector, useAppDispatch } from '@/app/lib/hooks';
-import { logout, setUser } from '@/app/lib/Features/authSlice';
-import { useSocket } from "../../hooks/useSocket";
 import api from '@/app/utils/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Search, Send, Paperclip, MoreVertical, Phone, Video,
-  ChevronLeft, Circle, Check, CheckCheck, MessageSquare,
-  Smile, Image as ImageIcon, X, Star, Archive, Trash2
+  Search, Send, Paperclip, MoreVertical,
+  ChevronLeft, CheckCheck, MessageSquare,
+  Smile,
 } from 'lucide-react';
 import { useSocketContext } from '../../providers/SocketProvider';
 const getEntityId = (entity) => entity?.id || entity?._id || entity?.userId || entity?.user?._id || entity?.user?.id;
@@ -135,25 +133,14 @@ export default function MessagesPage() {
   const currentUserId = user?.id || user?._id;
   const requestedUserId = searchParams.get('userId');
   const activeConv = conversations.find((c) => String(c.id) === String(activeConvId));
-  console.log(activeConv)
   const filteredConvs = conversations.filter((c) =>
     c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     c.lastMessage.toLowerCase().includes(searchQuery.toLowerCase())
   );
-  console.log(conversations)
   
   useEffect(() => {
     const init = async () => {
       try {
-        const res = await api.get('/api/auth/me');
-        if (!res.data.success) {
-          dispatch(logout());
-          router.push('/login');
-          return;
-        }
-        if (res.data.user) {
-          dispatch(setUser(res.data.user));
-        }
         const conversationsResponse = await api.get('/api/chat/conversations');
         const rawConversations = conversationsResponse.data.conversations || conversationsResponse.data.data || conversationsResponse.data || [];
         const nextConversations = (Array.isArray(rawConversations) ? rawConversations : []).map((conversation) => normalizeConversation(conversation, currentUserId));

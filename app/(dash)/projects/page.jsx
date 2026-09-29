@@ -6,18 +6,9 @@ import Link from 'next/link';
 import { useAppDispatch, useAppSelector } from '@/app/lib/hooks';
 import { logout } from '@/app/lib/Features/authSlice';
 import api from '@/app/utils/api';
-import { Briefcase, CalendarDays, DollarSign, Sparkles, Tag, PlusCircle, CheckCircle2 } from 'lucide-react';
+import { Briefcase, CalendarDays, DollarSign, Tag, PlusCircle, CheckCircle2 } from 'lucide-react';
 import OptionSelect from '@/components/ui/OptionSelect';
-
-const CATEGORY_OPTIONS = [
-  'Web Development',
-  'UI/UX Design',
-  'Mobile App',
-  'Branding',
-  'Marketing',
-  'Data Science',
-  'Other',
-];
+import { specialtyOptions } from '../../lib/constants/specialtyOptions';
 
 const initialProject = {
   title: '',
@@ -208,7 +199,7 @@ export default function ProjectsPage() {
               </label>
               <label className="space-y-2 text-sm font-medium text-gray-700">
                 Category
-                <OptionSelect value={projectData.category} options={CATEGORY_OPTIONS} onChange={(category) => setProjectData((current) => ({ ...current, category }))} buttonClassName="rounded-3xl bg-white px-4 py-3 text-gray-900" />
+                <OptionSelect value={projectData.category} options={specialtyOptions} onChange={(category) => setProjectData((current) => ({ ...current, category }))} buttonClassName="rounded-3xl bg-white px-4 py-3 text-gray-900" />
               </label>
               <label className="space-y-2 text-sm font-medium text-gray-700">
                 Deadline

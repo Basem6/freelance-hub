@@ -134,9 +134,6 @@ return (
                 <div className="space-y-4">
                 </div>
                 </motion.div>
-
-            
-
             </div>
 
             {/* Right Column */}

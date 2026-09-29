@@ -1,15 +1,13 @@
 import {
   DollarSign,
-  TrendingUp,
   Clock,
   ArrowDownCircle,
   CheckCircle,
   Loader2,
-  Wallet,
   Download,
 } from "lucide-react";
 
-import { MotionButton, MotionDiv } from "../../../components/ui/Motion";
+import { MotionButton} from "../../../components/ui/Motion";
 
 const STATUS_CONFIG = {
   paid: {
@@ -28,53 +26,6 @@ const STATUS_CONFIG = {
     icon: Loader2,
   },
 };
-
-const STAT_CARDS = [
-  {
-    id: "total",
-    label: "Total Earned",
-    value: "$0",
-    sub: "All time",
-    icon: DollarSign,
-    gradient: "from-[#FF7A00] to-orange-400",
-    bg: "bg-orange-50",
-    text: "text-[#FF7A00]",
-    trendUp: true,
-  },
-  {
-    id: "month",
-    label: "This Month",
-    value: "0",
-    sub: "August 2026",
-    icon: TrendingUp,
-    gradient: "from-violet-500 to-purple-400",
-    bg: "bg-violet-50",
-    text: "text-violet-600",
-    trendUp: true,
-  },
-  {
-    id: "pending",
-    label: "Pending",
-    value: "$0",
-    sub: "Awaiting release",
-    icon: Clock,
-    gradient: "from-yellow-400 to-amber-300",
-    bg: "bg-yellow-50",
-    text: "text-yellow-600",
-    trendUp: null,
-  },
-  {
-    id: "withdrawn",
-    label: "Withdrawn",
-    value: "$0",
-    sub: "To your bank",
-    icon: Wallet,
-    gradient: "from-emerald-500 to-teal-400",
-    bg: "bg-emerald-50",
-    text: "text-emerald-600",
-    trendUp: null,
-  },
-];
 
 export default function EarningsPage() {
   const filtered = [];
