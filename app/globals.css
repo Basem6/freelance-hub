@@ -319,7 +319,10 @@
 .nav-link{
   animation: shake 0.9s ease-in-out  both alternate-reverse ;
 }
-
+.noscrol{
+  max-height: 100vh;
+  overflow: hidden;
+}
 @keyframes shake {
   0% {
     transform: rotate(0deg);

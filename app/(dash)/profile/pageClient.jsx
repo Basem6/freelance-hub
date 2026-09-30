@@ -4,10 +4,8 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 //hooks
-import { useShowToast } from '../../hooks/showToast';
-import { useAppSelector, useAppDispatch } from '@/app/lib/hooks';
+import { useAppSelector } from '@/app/lib/hooks';
 //reduxs
-import { updateUser } from '@/app/lib/Features/authSlice';
 import api from '@/app/utils/api';
 //motion
 import { motion } from 'framer-motion';
@@ -20,6 +18,7 @@ import Skillsmodel from '../../../components/profile/Skillsmodel';
 //animation
 import { fadeUp, staggerContainer } from '../../lib/constants/animations';
 import Portfoliomodel from '../../../components/profile/Portfoliomodel';
+import Languagesmodel from '../../../components/profile/Languagesmodel';
 
 export default function PageClient() {
 const user = useAppSelector(state => state.auth.user);
@@ -46,7 +45,7 @@ ds()
 },[]) 
 
 return (
-    <div className="flex min-h-screen min-w-full bg-white overflow-hidden">
+    <div className="flex profile-page min-h-screen min-w-full bg-white overflow-hidden">
     {/* Main Content */}
     <div className="flex-1 overflow-y-auto">
         <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-6">
@@ -62,8 +61,11 @@ return (
             
             {/* Profile Info */}
             <div className="md:px-6 px-1 py-8 relative ">
-                <div className="flex flex-row gap-5 items-center  mb-2">
-                <Avatar user={user}></Avatar>
+                <div className="flex flex-row gap-5 md:px-0 relative px-5 items-center  mb-2">
+                <div className='size-19 overflow-hidden'>
+                    <Avatar user={user} online={true}></Avatar>
+                    
+                </div>
                 <div className="flex-1 pb-2">
                     <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4 mb-2">
                     <h2 className="md:text-3xl  font-semibold text-[#111111]">{user?.fullName || 'User Name'}</h2>
@@ -129,7 +131,7 @@ return (
                 <motion.div variants={fadeUp} className="bg-white p-6 rounded-2xl border-gray-300/60 border">
                 <div className='flex justify-between min-w-full items-center'> 
                     <h3 className="text-2xl text-[#111111]">Languages</h3>
-                    <div className='size-7 rounded-full border border-orange-400 flex justify-center items-center'>                     <div className='size-7 rounded-full border border-orange-400 flex justify-center items-center'> {technicalData?.languages.length?<Pen className='text-orange-400 hover:text-orange-600 ' size={15}></Pen>:<Plus className='text-orange-400 hover:text-orange-600 hover:rotate-180 duration-200 transition-colors transition-transform' size={15}></Plus>}</div></div>
+                    <div className='size-7 rounded-full border border-orange-400 flex justify-center items-center'>                     <div className='size-7 rounded-full border border-orange-400 flex justify-center items-center'> {technicalData?.languages.length?<Pen  className='text-orange-400 hover:text-orange-600 ' size={15}></Pen>:<Plus onClick={()=>{setmodel("languages")}} className='text-orange-400 hover:text-orange-600 hover:rotate-180 duration-200 transition-colors transition-transform' size={15}></Plus>}</div></div>
                 </div>
                 <div className="space-y-4">
                 </div>
@@ -200,14 +202,11 @@ return (
 
                     className="text-sm font-medium text-[#FF7A00] transition-colors hover:text-orange-600"
                     >
-                    <div className='size-7 rounded-full border border-orange-400 flex justify-center items-center'>                     <div className='size-7 rounded-full border border-orange-400 flex justify-center items-center'><Plus onClick={()=>{setmodel("portfolio")}} className='text-orange-400 hover:text-orange-600 hover:rotate-180 duration-200  transition-transform' size={15}></Plus></div></div>
+                    <div className='size-7 rounded-full border border-orange-400 flex justify-center items-center'>                     <div className='size-7 rounded-full border border-orange-400 flex justify-center items-center'><Plus onClick={()=>{setmodel("portfolio");if(document.querySelector(".parent")){document.querySelector(".parent").classList.add("noscrol")}}} className='text-orange-400 hover:text-orange-600 hover:rotate-180 duration-200  transition-transform' size={15}></Plus></div></div>
                     </div>
                 </div>
 
                 <div className="relative min-h-36">
-                    {/* ========================= */}
-                    {/* Freelancer Portfolio */}
-                    {/* ========================= */}
                     {user?.role === "freelancer" ? (
                     user?.portfolio?.length > 0 ? (
                         <div className="flex flex-wrap gap-4">
@@ -267,9 +266,6 @@ return (
                         </div>
                     )
                     ) : (
-                    /* ========================= */
-                    /* Client Projects */
-                    /* ========================= */
                     user?.role ==="client"? (
                         <div className="flex min-w-full flex-wrap gap-3">
                         {Projects?.slice(0, 3).map((project) => {
@@ -357,7 +353,8 @@ return (
     {/*window overlay*/}
     <AnimatePresence>
     {model ==="skills" && <Skillsmodel setmodel={setmodel} />}
-    {/* {model ==="portfolio" && <Portfoliomodel setmodel={setmodel} />} */}
+    {model ==="portfolio" && <Portfoliomodel setmodel={setmodel} />}
+    {model ==="languages" && <Languagesmodel setmodel={setmodel} />}
     </AnimatePresence>
     </div>
 );

@@ -137,7 +137,7 @@ return (
             />
 
             {filteredSuggestions.length > 0 && (
-            <div className="absolute z-10 mt-2 w-full rounded-xl border border-gray-200 bg-white p-2 shadow-lg">
+            <div className="absolute z-10 mt-2 w-full rounded-xl border border-gray-200 bg-white p-2 max-h-55 no-scrollbar overflow-scroll">
                 {filteredSuggestions.map((skill) => (
                 <button
                     key={skill}

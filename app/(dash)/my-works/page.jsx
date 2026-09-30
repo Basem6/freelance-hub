@@ -1,32 +1,24 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
 import { useAppSelector, useAppDispatch } from '@/app/lib/hooks';
-import { logout, updateUser } from '@/app/lib/Features/authSlice';
+import { updateUser } from '@/app/lib/Features/authSlice';
 import api from '@/app/utils/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Briefcase, Eye, Star, Search, Grid, List, Plus, 
-  ChevronDown, Edit2, Trash2, ExternalLink, Play, 
+  Briefcase, Eye, Star, Search, Plus, 
+  ChevronDown, Edit2, Trash2, ExternalLink,
   X, Check, UploadCloud
 } from 'lucide-react';
 import { compressImage } from '@/app/utils/compressImage';
 import Link from 'next/link';
 import OptionSelect from '@/components/ui/OptionSelect';
+import { specialtyOptions } from '../../lib/constants/specialtyOptions';
 
-const CATEGORY_OPTIONS = [
-  'Web Development',
-  'UI/UX Design',
-  'Mobile App',
-  'Marketing',
-  'Data Science',
-];
 
 const DEFAULT_COVER_IMAGE = 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80';
 
 export default function MyWorksPage() {
-  const router = useRouter();
   const user = useAppSelector(state => state.auth.user);
   const dispatch = useAppDispatch();
   const [setLoading] = useState(true);
@@ -74,11 +66,6 @@ export default function MyWorksPage() {
     const initialize = async () => {
       try {
         const authRes = await api.get('/api/auth/me');
-        if (!authRes.data.success) {
-          dispatch(logout());
-          router.push('/login');
-          return;
-        }
         if(authRes.data.user.role==="client"){
           return;
         }
@@ -109,13 +96,13 @@ export default function MyWorksPage() {
 
   // New Work Form State
   const [newWork, setNewWork] = useState({
-    title: '', category: CATEGORY_OPTIONS[0], description: '', liveUrl: '', githubUrl: '', featured: false, tags: [], coverImage: ''
+    title: '', category: specialtyOptions[0], description: '', liveUrl: '', githubUrl: '', featured: false, tags: [], coverImage: ''
   });
   const [tagInput, setTagInput] = useState('');
   const [coverImagePreview, setCoverImagePreview] = useState('');
   const [isUploadingCover, setIsUploadingCover] = useState(false);
 
-  const categories = ['All', ...CATEGORY_OPTIONS];
+  const categories = ['All', ...specialtyOptions];
   
   const filteredWorks = works.filter(work => {
     const matchesCategory = activeCategory === 'All' || work.category === activeCategory;
@@ -129,7 +116,6 @@ export default function MyWorksPage() {
   });
 
   const totalWorks = works.length;
-  const totalViews = works.reduce((sum, w) => sum + w.views, 0);
   const featuredWorks = works.filter(w => w.featured).length;
 
   const handleDelete = async (id) => {
@@ -146,11 +132,6 @@ export default function MyWorksPage() {
     }
   };
 
-  const toggleFeature = (id) => {
-    const nextWorks = works.map(w => w.id === id ? { ...w, featured: !w.featured } : w);
-    setWorks(nextWorks);
-    syncPortfolioToUser(nextWorks);
-  };
 
   const handleAddTag = (e) => {
     if (e.key === 'Enter' && tagInput.trim()) {
@@ -226,7 +207,7 @@ export default function MyWorksPage() {
       setCoverImagePreview('');
       setNewWork({
         title: '',
-        category: CATEGORY_OPTIONS[0],
+        category: specialtyOptions[0],
         description: '',
         liveUrl: '',
         githubUrl: '',

@@ -1,10 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useAppDispatch, useAppSelector } from '@/app/lib/hooks';
-import { logout } from '@/app/lib/Features/authSlice';
+import { useAppSelector } from '@/app/lib/hooks';
 import api from '@/app/utils/api';
 import { Briefcase, CalendarDays, DollarSign, Tag, PlusCircle, CheckCircle2 } from 'lucide-react';
 import OptionSelect from '@/components/ui/OptionSelect';
@@ -20,8 +18,6 @@ const initialProject = {
 };
 
 export default function ProjectsPage() {
-  const router = useRouter();
-  const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.auth.user);
   const [projectData, setProjectData] = useState(initialProject);
   const [skills, setSkills] = useState([]);
@@ -32,24 +28,6 @@ export default function ProjectsPage() {
   const [messageType, setMessageType] = useState('success');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [projectsLoading, setProjectsLoading] = useState(false);
-
-  useEffect(() => {
-    const initialize = async () => {
-      try {
-        const res = await api.get('/api/auth/me');
-        if (!res.data.success) {
-          dispatch(logout());
-          router.push('/login');
-          return;
-        }
-
-      } catch (error) {
-        dispatch(logout());
-        router.push('/login');
-      } 
-    };
-    initialize();
-  }, []);
   
   useEffect(()=>{
     const ds= async  function (){

@@ -1,11 +1,11 @@
 import Image from "next/image";
 
-export default function Avatar({ user, size = 100, className = "" }) {
+export default function Avatar({ user, size = 100, className = ""  , online=false}) {
     const imageUrl = user?.image || "/avatars/avatar-1.png";
     const altText = user?.fullName || "User Avatar";
 
     return (
-        <div className={`relative size-26 rounded-full overflow-hidden shrink-0 ${className}`}>
+        <div className={`relative w-full h-full rounded-full  shrink-0 ${className}`}>
             <Image
                 src={imageUrl}
                 alt={altText}
@@ -17,6 +17,7 @@ export default function Avatar({ user, size = 100, className = "" }) {
                     e.currentTarget.src = "/avatars/avatar-1.png";
                 }}
             />
+            {online && <div className='absolute left-1 top-0 size-3 rounded-full bg-green-600 outline-4 outline-white'></div>}
         </div>
     );
 }

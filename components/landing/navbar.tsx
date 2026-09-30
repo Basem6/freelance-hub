@@ -316,8 +316,8 @@ return (
             alt="User photo"
             width={90}
             height={90}
-            quality={10}
-            className="object-cover"
+            quality={30}
+            className="object-contain"
           />
           
           </div>
