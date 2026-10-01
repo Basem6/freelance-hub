@@ -1,13 +1,34 @@
 "use client";
-
 import { useState } from "react";
 import { motion } from "framer-motion";
+
+//reduxs 
+import { updateTechnicalData } from '@/app/lib/Features/technicalData';
+import { useAppDispatch, useAppSelector } from "../../app/lib/hooks";
+
+//utils
+import api from "../../app/utils/api";
 import { compressImage } from "@/app/utils/compressImage";
+import {skillSuggestions} from "@/app/utils/skillSuggestions";
 
 // UI
 import { InputGroup } from "../ui/InputGroup";
-import { Image, Link2, X } from "lucide-react";
+import { Image, Link2, X , SquareArrowOutUpRight, Trash} from "lucide-react";
 import { AnimatePresence } from "framer-motion";
+import { useShowToast } from "../../app/hooks/showToast";
+
+const isValidUrl = (value) => {
+    try {
+        const url = new URL(value.trim());
+
+        return (
+            (url.protocol === "http:" || url.protocol === "https:") &&
+            Boolean(url.hostname)
+        );
+    } catch {
+        return false;
+    }
+};
 
 export default function Portfoliomodel({ setmodel }) {
     const initialWork = {
@@ -15,22 +36,60 @@ export default function Portfoliomodel({ setmodel }) {
         category: "",
         roleOwn: "",
         description: "",
+        liveUrl: "",
         coverImage: "",
         skills: [],
     };
+    const showToast = useShowToast();
+    const technicalData= useAppSelector(state => state.technicalData);
+    const dispatch = useAppDispatch()
     const [over , setover] = useState("")
     const [coverImagePreview, setCoverImagePreview] = useState("");
+    const [LinkPreview, setLinkPreview] = useState("");
     const [isUploadingCover, setIsUploadingCover] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
-
+    const [skillInput, setSkillInput] = useState("");
+    const [isSkillDropdownOpen, setIsSkillDropdownOpen] = useState(false);
     const [newWork, setNewWork] = useState(initialWork);
     const [text, setText] = useState("Add content");
 
+    const filteredSkills = skillSuggestions.filter((skill) => {
+        const query = skillInput.trim().toLowerCase();
+
+        if (!query) {
+            return !newWork.skills.includes(skill);
+        }
+
+        return (
+            !newWork.skills.includes(skill) &&
+            skill.toLowerCase().includes(query)
+        );
+    });
+
     const handleCancel = () => {
         setmodel(null);
+        if(document.querySelector(".parent")){document.querySelector(".parent").classList.remove("noscrol")}
     };
     const handleCancelOver = () => {
         setover(null);
+    };
+
+    const handleSaveLink = () => {
+        const trimmedUrl = newWork.liveUrl.trim();
+
+        if (!isValidUrl(trimmedUrl)) {
+            showToast({
+                message: "Please enter a valid URL starting with http:// or https://.",
+                type: "warning",
+            });
+            return;
+        }
+        setLinkPreview(trimmedUrl);
+        setNewWork((prev) => ({
+            ...prev,
+            liveUrl: trimmedUrl,
+        }));
+        handleCancelOver();
     };
 
     const handleChange = (event) => {
@@ -40,6 +99,40 @@ export default function Portfoliomodel({ setmodel }) {
             ...prev,
             [name]: value,
         }));
+    };
+
+    const handleSkillInputChange = (event) => {
+        const value = event.target.value;
+        setSkillInput(value);
+        setIsSkillDropdownOpen(true);
+    };
+
+    const handleSkillSelect = (skill) => {
+        const nextSkill = skill.trim();
+
+        if (!nextSkill || newWork.skills.includes(nextSkill)) {
+            return;
+        }
+
+        setNewWork((prev) => ({
+            ...prev,
+            skills: [...prev.skills, nextSkill],
+        }));
+        setSkillInput("");
+        setIsSkillDropdownOpen(false);
+    };
+
+    const handleSkillRemove = (skillToRemove) => {
+        setNewWork((prev) => ({
+            ...prev,
+            skills: prev.skills.filter((skill) => skill !== skillToRemove),
+        }));
+    };
+
+    const handleSkillBlur = () => {
+        window.setTimeout(() => {
+            setIsSkillDropdownOpen(false);
+        }, 120);
     };
 
     const handleImageUpload = async (event) => {
@@ -149,7 +242,62 @@ export default function Portfoliomodel({ setmodel }) {
             event.target.value = "";
         }
     };
+    const handleAddWork = async () => {
+    if (!newWork.title.trim() || !newWork.description.trim()) {
+        showToast({
+            message: "Please add a title and description before saving your work.",
+            type: "warning",
+        });
+        return;
+    }
 
+    const payload = {
+        ...newWork,
+        skills: Array.isArray(newWork.skills)
+            ? newWork.skills
+            : [],
+    };
+
+    console.log("Sending portfolio:", payload);
+
+    try {
+        const response = await api.post(
+            "/freelancer/work",
+            payload
+        );
+
+        console.log("Portfolio response:", response.data);
+
+        setCoverImagePreview("");
+        setNewWork(initialWork);
+        
+        showToast({
+            message: "Portfolio project added successfully.",
+            type: "sucess",
+        });
+        const portfolio = response.data.freelancer.portfolio || [];
+        dispatch(
+            updateTechnicalData({
+                portfolio,
+            })
+        );
+        console.log(technicalData.portfolio)
+        setmodel(null);
+
+    } catch (error) {
+        console.error(
+            "Error adding work:",
+            error?.response?.data || error
+        );
+
+        showToast({
+            message:
+                error?.response?.data?.message ||
+                "Unable to add work. Please try again.",
+            type: "error",
+        });
+    }
+};
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
             <motion.div
@@ -185,14 +333,14 @@ export default function Portfoliomodel({ setmodel }) {
                     <button
                         type="button"
                         onClick={handleCancel}
-                        className="rounded-xl p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+                        className="rounded-xl p-2 font-thin text-gray-800 transition-colors hover:bg-gray-100 hover:text-gray-600"
                     >
-                        <X size={18} />
+                        <X size={34} strokeWidth={1} />
                     </button>
                 </div>
 
                 {/* Content */}
-                <div className="p-6 pb-24">
+                <div className="p-6 ">
                     <InputGroup
                         label="Project title *"
                         type="text"
@@ -204,8 +352,8 @@ export default function Portfoliomodel({ setmodel }) {
 
                     <div className="my-10 flex flex-wrap justify-between gap-15">
                         {/* Left */}
-                        <div className="w-170">
-                            <div className="flex flex-col gap-10">
+                        <div className="w-120">
+                            <div className="flex flex-col gap-6">
                                 <InputGroup
                                     label="Your role"
                                     type="text"
@@ -224,19 +372,75 @@ export default function Portfoliomodel({ setmodel }) {
                                     placeholder="Enter a description for the project"
                                 />
 
-                                <InputGroup
-                                    label="Skills *"
-                                    type="text"
-                                    name="skills"
-                                    value={newWork.skills}
-                                    onChange={handleChange}
-                                    placeholder="Add skills relevant to this project"
-                                />
+                                <div className="space-y-2">
+                                    <InputGroup
+                                        label="Skills *"
+                                        type="text"
+                                        name="skills"
+                                        value={skillInput}
+                                        onChange={handleSkillInputChange}
+                                        onFocus={() => setIsSkillDropdownOpen(true)}
+                                        onBlur={handleSkillBlur}
+                                        placeholder="Add skills relevant to this project"
+                                        autoComplete="off"
+                                    />
+
+                                    {isSkillDropdownOpen && (
+                                        <div className="absolute z-20">
+                                            <div className="max-h-40 w-67  overflow-y-auto rounded-xl border border-gray-200 bg-white ">
+                                                {filteredSkills.length > 0 ? (
+                                                    filteredSkills.map((skill) => (
+                                                        <button
+                                                            key={skill}
+                                                            type="button"
+                                                            onMouseDown={(event) =>
+                                                                event.preventDefault()
+                                                            }
+                                                            onClick={() =>
+                                                                handleSkillSelect(skill)
+                                                            }
+                                                            className="flex w-full items-center justify-between px-3 py-2 text-left text-sm text-gray-700 transition-colors hover:bg-orange-50 hover:text-orange-700"
+                                                        >
+                                                            <span>{skill}</span>
+                                                        </button>
+                                                    ))
+                                                ) : (
+                                                    <div className="px-3 py-2 text-xs text-gray-500">
+                                                        No skills found
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {newWork.skills.length > 0 && (
+                                        <div className="flex flex-wrap gap-2 pt-1">
+                                            {newWork.skills.map((skill) => (
+                                                <span
+                                                    key={skill}
+                                                    className="inline-flex items-center gap-2 rounded-full border border-orange-200 bg-orange-50 px-2.5 py-1 text-xs font-medium text-orange-700"
+                                                >
+                                                    {skill}
+                                                    <button
+                                                        type="button"
+                                                        onClick={() =>
+                                                            handleSkillRemove(skill)
+                                                        }
+                                                        className="flex h-4 w-4 items-center justify-center rounded-full bg-orange-100 text-orange-700 transition-colors hover:bg-orange-200"
+                                                        aria-label={`Remove ${skill}`}
+                                                    >
+                                                        <X size={11} />
+                                                    </button>
+                                                </span>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
 
                         {/* Right */}
-                        <div className="flex flex-col gap-6   w-130">
+                        <div className="flex flex-col gap-5 grow    w-140">
                             {/* Upload Box */}
                             <div className="order-2 flex h-50 w-full flex-col items-center justify-center gap-4 rounded-xl border border-dashed border-orange-400">
                                 <div className="flex gap-4">
@@ -309,7 +513,7 @@ export default function Portfoliomodel({ setmodel }) {
                                         scale: 0.92,
                                         y: 20,
                                     }}
-                                className="relative border-2 border-orange-400 order-1 h-50 w-full overflow-hidden rounded-xl">
+                                className="relative border-2 border-orange-400  order-1  min-w-full  overflow-hidden rounded-xl">
                                     <img
                                         src={coverImagePreview}
                                         alt="Work cover preview"
@@ -330,7 +534,20 @@ export default function Portfoliomodel({ setmodel }) {
                                             }
                                         `}
                                     />
-
+                                    <div className=" absolute right-2.5 top-2.5 flex items-center  justify-center rounded-full bg-gray-100 size-9">
+                                    <Trash
+                                    className="text-gray-600 hover:text-orange-300 transition-colors duration-200 cursor-pointer"
+                                    onClick={() => {
+                                        setCoverImagePreview("");
+                                        setNewWork((prev) => ({
+                                            ...prev,
+                                            coverImage: "",
+                                        }));
+                                    }}
+                                    size={18}
+                                    strokeWidth={1}
+                                />
+                                    </div>
                                     {/* Upload Overlay */}
                                     {isUploadingCover && (
                                         <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/10">
@@ -351,6 +568,48 @@ export default function Portfoliomodel({ setmodel }) {
                                     )}
                                 </motion.div>
                             )}
+                            {LinkPreview && (
+                                <motion.div 
+                                    initial={{
+                                        opacity: 0,
+                                        scale: 0.90,
+                                        y: 20,
+                                    }}
+                                    animate={{
+                                        opacity: 1,
+                                        scale: 1,
+                                        y: 0,
+                                    }}
+                                    exit={{
+                                        opacity: 0,
+                                        scale: 0.90,
+                                        y: 20,
+                                    }}
+                                    className="relative order-1 h-50 w-full flex  border-2 border-orange-400  items-center justify-between gap-4   border-dashe  rounded-xl">
+                                    
+                                        <div className="flex  items-center justify-between w-full gap-2 p-7">
+                                            <a href={LinkPreview} target="_blank" rel="noopener noreferrer" className="text-sm border-b border-black/90 hover:opacity-75 text-gray-700">
+                                                {LinkPreview}
+                                            </a>
+                                            <SquareArrowOutUpRight size={20}  strokeWidth={1.2} />
+                                        </div>                          
+                                        <div className=" absolute right-2.5 top-2.5 flex items-center  justify-center rounded-full bg-gray-100 size-9">
+                                        <Trash
+                                        className="text-gray-600 hover:text-orange-300 transition-colors duration-200 cursor-pointer"
+                                        onClick={() => {
+                                            setLinkPreview("");
+                                            setNewWork((prev) => ({
+                                                ...prev,
+                                                liveUrl: "",
+                                            }));
+                                        }}
+                                        size={18}
+                                        strokeWidth={1}
+                                    />
+                                        </div>
+                                
+                                </motion.div>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -360,14 +619,15 @@ export default function Portfoliomodel({ setmodel }) {
                     <button
                         type="button"
                         onClick={handleCancel}
-                        className="rounded-xl border border-gray-200 px-5 py-2 font-semibold text-gray-700 transition-colors hover:bg-gray-50"
+                        className="rounded-xl cursor-pointer hover:opacity-80 border border-gray-200 px-5 py-2 font-semibold text-gray-700 transition-colors hover:bg-gray-50"
                     >
                         Cancel
                     </button>
 
                     <button
                         type="button"
-                        className="rounded-xl bg-gradient-to-r from-[#FF7A00] to-orange-500 px-5 py-2 font-semibold text-white transition-all hover:shadow-lg hover:shadow-orange-200 disabled:cursor-not-allowed disabled:opacity-60"
+                        onClick={handleAddWork}
+                        className="rounded-xl cursor-pointer hover:opacity-80  bg-gradient-to-r from-[#FF7A00] to-orange-500 px-5 py-2 font-semibold text-white   disabled:cursor-not-allowed disabled:opacity-60"
                     >
                         Save
                     </button>
@@ -424,7 +684,14 @@ export default function Portfoliomodel({ setmodel }) {
                             
                             {/* {content} */}
                             <div className="p-6">
-                                <InputGroup label={"Paste a web link to an article or website"} placeholder={"add a website link"} type="text"></InputGroup>
+                                <InputGroup
+                                    label="Paste a web link to an article or website"
+                                    placeholder="add a website link"
+                                    type="url"
+                                    name="liveUrl"
+                                    value={newWork.liveUrl}
+                                    onChange={handleChange}
+                                />
                             </div>
                             {/* Footer */}
                             <div className="flex items-center justify-end gap-5 px-6 py-4">
@@ -438,7 +705,8 @@ export default function Portfoliomodel({ setmodel }) {
                     
                             <button
                                 type="button"
-                                
+
+                                onClick={handleSaveLink}
                                 className="rounded-xl bg-gradient-to-r from-[#FF7A00] to-orange-500 px-5 py-2 font-semibold text-white transition-all hover:shadow-lg hover:shadow-orange-200 disabled:cursor-not-allowed disabled:opacity-60"
                             >
                                 {"Save"}

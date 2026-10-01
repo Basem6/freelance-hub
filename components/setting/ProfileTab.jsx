@@ -320,6 +320,7 @@ return (
             options={countryOptions}
             placeholder="Select a country"
             onChange={(country) => setFormData((prev) => ({ ...prev, country }))}
+            isSearch={true}
             />
         </div>
         

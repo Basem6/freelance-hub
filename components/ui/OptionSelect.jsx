@@ -10,6 +10,7 @@ onChange,
 placeholder = 'Select an option',
 className = '',
 buttonClassName = '',
+isSearch = false,
 }) {
 const [isOpen, setIsOpen] = useState(false);
 const [search, setSearch] = useState('');
@@ -95,7 +96,7 @@ return (
             : 'border-gray-200 hover:border-[#FF7A00] hover:bg-white'
         } ${buttonClassName}`}
     >
-        {isOpen ? (
+        {isOpen && isSearch ? (
         <>
             <Search className="mr-2 h-4 w-4 shrink-0 text-gray-400" />
 

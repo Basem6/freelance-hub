@@ -36,7 +36,7 @@ export default function DashboardSidebar({ activePage = 'dashboard' }) {
 
     const freelancerNavItems = [
         { id: 'profile', label: 'My Profile', icon: CircleUserRound, href: '/profile' },
-        { id: 'home', label: 'Home', icon: House, href: '/' },
+        { id: 'home', label: 'Home', icon: House, href: '/nx/findwork' },
         { id: 'Propoals', label: 'Propoals', icon: Briefcase, href: '/my-offers' },
         { id: 'messages', label: 'Messages', icon: MessageSquare, href: '/messages', badge: notifications.length },
         { id: 'earnings', label: 'Earnings', icon: DollarSign, href: '/earnings' },
@@ -142,7 +142,7 @@ export default function DashboardSidebar({ activePage = 'dashboard' }) {
             {/* Sidebar */}
             <aside
                 ref={sidebarRef}
-                className={`z-9999 flex fixed md:sticky left-0 top-0 min-h-screen w-64 flex-col gap-2 overflow-y-auto overflow-x-hidden bg-gray-100 transition-transform duration-300 ${
+                className={`z-9999 flex fixed md:sticky left-0 top-0 min-h-screen w-72 flex-col gap-2 overflow-y-auto overflow-x-hidden bg-gray-100 transition-transform duration-300 ${
                     isMobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
                 }`}
             >
