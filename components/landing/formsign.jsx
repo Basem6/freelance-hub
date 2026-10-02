@@ -8,10 +8,9 @@ import { setUser } from "../../app/lib/Features/authSlice.js";
 import { useSearchParams } from "next/navigation";
 import { useShowToast } from "../../app/hooks/showToast.js";
 import { UserRound } from "lucide-react";
-import { MapPin } from "lucide-react";
-import { LockKeyhole } from "lucide-react";
-import { Mail } from "lucide-react";
-import { Loader } from "lucide-react";
+import OptionSelect from '@/components/ui/OptionSelect';
+import { countryOptions } from '@/app/lib/constants/countryOptions';
+import { Mail ,Loader ,LockKeyhole } from "lucide-react";
 const Formsign = () => {
   const searchParams = useSearchParams();
   const role = searchParams.get("role");
@@ -23,7 +22,6 @@ const Formsign = () => {
       userName: "",
       email: "",
       password: "",
-      age: "",
       country:"",
       activeRole:role,
   });
@@ -75,7 +73,6 @@ const Formsign = () => {
           credentials: "include",
           body: JSON.stringify({
           fullName:data.userName,
-          age:data.age,
           country:data.country,
           email: data.email,
           password: data.password,
@@ -136,13 +133,16 @@ const Formsign = () => {
           <LockKeyhole strokeWidth={1} />
           <input type="password" className="input" onChange={handleChange} name="password" value={data.password} placeholder="Enter your Password" />
         </div>
-        <div className="flex-column">
-          <label>Country </label>
-        </div>
-        <div className="inputForm">
-          <MapPin strokeWidth={1} />
-          <input type="text" className="input" name="country" value={data.country} onChange={handleChange} placeholder="Enter your Country" />
-        </div>
+          <div className="space-y-1.5">
+              <label className="block text-sm font-semibold text-gray-700">Country</label>
+              <OptionSelect
+              value={data.country}
+              options={countryOptions}
+              placeholder="Select a country"
+              onChange={(country) => setData((prev) => ({ ...prev, country }))}
+              isSearch={true}
+              />
+          </div>
         <button disabled={loading} className={`button-submit ${loading ? 'opacity-50 cursor-no-drop' : 'cursor-pointer opacity-100'}`} type="submit">
           <div className='flex justify-center items-center gap-2'>
           <div>Sign Up</div>
