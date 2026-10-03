@@ -1,5 +1,5 @@
 'use client'
-import { ThemeToggle } from '@/components/theme-toggle'
+import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { cn } from '../../app/lib/utils'
 import {  Menu, Sun, X } from 'lucide-react'
@@ -8,7 +8,7 @@ import { useRef, useEffect, useState, useCallback  } from 'react'
 import Link from "next/link";
 import { useSocketContext } from '../../app/providers/SocketProvider';
 import { useAppDispatch, useAppSelector } from '@/app/lib/hooks'
-import { logout, setUser } from '@/app/lib/Features/authSlice'
+import { logout } from '@/app/lib/Features/authSlice'
 import { useRouter } from "next/navigation";
 import api from '../../app/utils/api'
 import gsap from "gsap";
@@ -76,8 +76,7 @@ const handleLogout = async () => {
         await api.post("/api/auth/logout", {}, {
             withCredentials: true,
         });
-        dispatch(logout()); // امسح بيانات المستخدم من Redux
-        router.push("/");
+        dispatch(logout()); 
     } catch (error) {
         console.log(error);
     }

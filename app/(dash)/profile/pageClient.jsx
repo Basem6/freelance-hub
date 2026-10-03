@@ -1,6 +1,6 @@
 'use client';
 //core
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 //hooks
@@ -11,31 +11,114 @@ import api from '@/app/utils/api';
 import { motion } from 'framer-motion';
 import { AnimatePresence } from 'framer-motion';
 // icons
-import { MapPin, Briefcase,ExternalLink,Pen,Plus,ChevronLeft,ChevronRight} from 'lucide-react';
+import { MapPin, Ellipsis ,Briefcase,ExternalLink,Pen,Plus,ChevronLeft,ChevronRight} from 'lucide-react';
 //ui
 import Avatar from '../../../components/ui/Avatar';
-import Skillsmodel from '../../../components/profile/Skillsmodel';
-//animation
-import { fadeUp, staggerContainer } from '../../lib/constants/animations';
 import Portfoliomodel from '../../../components/profile/Portfoliomodel';
 import Languagesmodel from '../../../components/profile/Languagesmodel';
-import { Ellipsis } from 'lucide-react';
+import ProfileRecordModel from '../../../components/profile/ProfileRecordModel';
+import Skillsmodel from '../../../components/profile/Skillsmodel';
+//utils 
+import  { registerOutsideClick, unregisterOutsideClick } from '@/app/hooks/ClickOutside'
+//animation
+import gsap from 'gsap';
+import { fadeUp, staggerContainer } from '../../lib/constants/animations';
+import Experiencemodel from '../../../components/profile/ExperienceModel';
+import Deletemodel from '../../../components/profile/Deletemodel';
 
 export default function PageClient() {
 const user = useAppSelector(state => state.auth.user);
 const technicalData= useAppSelector(state => state.technicalData);
 const [model , setmodel ] = useState(null)
 const [Projects , setProjects] = useState([])
-const [setProjectsLoading] = useState(false)
+const [projectsLoading, setProjectsLoading] = useState(false)
 const [visiblePortfolioCards, setVisiblePortfolioCards] = useState(3)
 const [portfolioCarouselIndex, setPortfolioCarouselIndex] = useState(0)
 const [portfolioTouchStartX, setPortfolioTouchStartX] = useState(null)
+const [selectedPortfolioItem, setSelectedPortfolioItem] = useState(null)
 const DEFAULT_COVER_IMAGE = 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80';
 const portfolioItems = Array.isArray(technicalData.portfolio) ? technicalData.portfolio : []
 const portfolioMaxPage = Math.max(0, Math.ceil(portfolioItems.length / visiblePortfolioCards) - 1)
 const portfolioStartIndex = portfolioCarouselIndex * visiblePortfolioCards
 const shouldShowPortfolioArrows = user?.role === 'freelancer' && portfolioItems.length > visiblePortfolioCards
 
+const [activeMenu, setActiveMenu] = useState(null);
+const portfolioMenuRefs = useRef(new Map());
+
+const getPortfolioMenuRef = (id) => {
+    let menuRef = portfolioMenuRefs.current.get(id);
+    if (!menuRef) {
+        menuRef = { current: null };
+        portfolioMenuRefs.current.set(id, menuRef);
+    }
+    return menuRef;
+};
+const handleEditPortfolio = (item) => {
+    setSelectedPortfolioItem(item);
+    setmodel('portfolio');
+};
+const handleDeletePortfolio = async (item) => {  
+setmodel("DeletePortfolio")
+setSelectedPortfolioItem(item)
+
+}
+const closePortfolioMenu = (id, menuRef) => {
+    const menu = menuRef.current?.querySelector('[data-portfolio-menu-panel]');
+    unregisterOutsideClick(menuRef);
+    if (!menu) {
+        setActiveMenu((current) => current === id ? null : current);
+        return;
+    }
+
+    gsap.killTweensOf(menu);
+    gsap.to(menu, {
+        opacity: 0,
+        y: 8,
+        duration: 0.2,
+        onComplete: () => {
+            setActiveMenu((current) => current === id ? null : current);
+            unregisterOutsideClick(menuRef);
+        },
+    });
+};
+
+const togglePortfolioMenu = (id, menuRef) => {
+    if (activeMenu === id) {
+        closePortfolioMenu(id, menuRef);
+        return;
+    }
+
+    setActiveMenu(id);
+    requestAnimationFrame(() => {
+        const menu = menuRef.current?.querySelector('[data-portfolio-menu-panel]');
+        if (!menu) return;
+
+        gsap.fromTo(menu, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.2 });
+        registerOutsideClick(menuRef, () => closePortfolioMenu(id, menuRef));
+    });
+};
+
+useEffect(() => () => {
+    portfolioMenuRefs.current.forEach((menuRef) => {
+        const menu = menuRef.current?.querySelector('[data-portfolio-menu-panel]');
+        if (menu) gsap.killTweensOf(menu);
+        unregisterOutsideClick(menuRef);
+    });
+}, []);
+
+useEffect(() => {
+    if (activeMenu === null) return;
+
+    const handleKeyDown = (event) => {
+        if (event.key === 'Escape') {
+            const menuRef = portfolioMenuRefs.current.get(activeMenu);
+            if (menuRef) closePortfolioMenu(activeMenu, menuRef);
+        }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+}, [activeMenu]);
 useEffect(() => {
     const handleResize = () => {
         setVisiblePortfolioCards(window.innerWidth < 768 ? 4 : 3)
@@ -92,7 +175,7 @@ ds()
 },[]) 
 
 return (
-    <div className="flex flex-col  h-fit  md:p-8 max-w-7xl mx-auto  gap-3.5 ">
+    <div className="flex flex-col overflow-hidden  h-fit  md:p-8 max-w-7xl mx-auto  gap-3.5 ">
     {/* Main Content */}
     
     <motion.div 
@@ -135,8 +218,7 @@ return (
         
         {/* Left Column */}
         <div className="space-y-6">
-            
-            {/* About */}
+
             {user?.role==="freelancer"?
             <motion.div variants={fadeUp} className="bg-white p-6 rounded-2xl  ">
             <h3 className="text-2xl text-[#111111] mb-4">{user?.major || 'Freelancer'}</h3>
@@ -145,39 +227,89 @@ return (
                 "Passionate UI/UX Designer with 5+ years creating scalable web applications and beautiful user interfaces."}
                 </p>
             </motion.div>:""}
+
             <motion.div variants={fadeUp} className="bg-white p-6 rounded-2xl ">
             <div className='flex justify-between min-w-full items-center'> 
                 <h3 className="text-2xl text-[#111111]">Education</h3>
-                <div className='size-7 rounded-full border border-orange-400 flex justify-center items-center'>                     <div className='size-7 rounded-full border border-orange-400 flex justify-center items-center'> {technicalData?.education.length?<Pen className='text-orange-400 hover:text-orange-600 ' size={15}></Pen>:<Plus className='text-orange-400 hover:text-orange-600 hover:rotate-180 duration-200 transition-colors transition-transform' size={15}></Plus>}</div></div>
+                <div className='size-7 rounded-full border border-orange-400 flex justify-center items-center'>                     <div className='size-7 rounded-full border border-orange-400 flex justify-center items-center'> {technicalData?.education?.length?<Pen onClick={()=>setmodel("education")} className='text-orange-400 hover:text-orange-600 ' size={15}></Pen>:<Plus onClick={()=>setmodel("education")} className='text-orange-400 hover:text-orange-600 hover:rotate-180 duration-200 transition-colors transition-transform' size={15}></Plus>}</div></div>
             </div>
             <div className="space-y-4">
             </div>
             </motion.div>
-            <motion.div variants={fadeUp} className="bg-white p-6 rounded-2xl">
-            <div className='flex justify-between min-w-full items-center'> 
-                <h3 className="text-2xl text-[#111111]">Languages</h3>
-                <div className='size-7 rounded-full border border-orange-400 flex justify-center items-center'>                     <div className='size-7 rounded-full border border-orange-400 flex justify-center items-center'> {technicalData?.languages.length?<Pen  className='text-orange-400 hover:text-orange-600 ' size={15}></Pen>:<Plus onClick={()=>{setmodel("languages")}} className='text-orange-400 hover:text-orange-600 hover:rotate-180 duration-200 transition-colors transition-transform' size={15}></Plus>}</div></div>
+            <motion.div
+            variants={fadeUp}
+            className="rounded-2xl bg-white p-6"
+            >
+            {/* Header */}
+            <div className="flex items-center justify-between">
+                <h3 className="text-2xl  text-[#111111]">
+                Languages
+                </h3>
+
+                <div className="flex items-center gap-3">
+                {technicalData?.languages?.length > 0 && (
+                    <button
+                    type="button"
+                    onClick={() => setmodel("Editlanguages")}
+                    className="flex size-7 items-center justify-center rounded-full border border-orange-400 transition-colors hover:bg-orange-50"
+                    >
+                    <Pen
+                        size={15}
+                        className="text-orange-400 transition-colors hover:text-orange-600"
+                    />
+                    </button>
+                )}
+
+                <button
+                    type="button"
+                    onClick={() => setmodel("Newlanguage")}
+                    className="flex size-7 items-center justify-center rounded-full border border-orange-400 transition-all duration-200 hover:bg-orange-50"
+                >
+                    <Plus
+                    size={15}
+                    className="text-orange-400 transition-all duration-200 hover:rotate-180 hover:text-orange-600"
+                    />
+                </button>
+                </div>
             </div>
-            <div className="space-y-4">
+
+            {/* Languages */}
+            <div className="mt-4 flex flex-col gap-3">
+                {technicalData?.languages?.length > 0 ? (
+                technicalData.languages.map((item, index) => (
+                    <div
+                    key={`${item.language}-${index}`}
+                    className="flex items-center gap-2 text-sm text-gray-600"
+                    >
+                    <span className="text-gray-900">
+                        {item.language}:
+                    </span>
+
+                    <span className=' text-gray-800/70'>{item.proficiency}</span>
+                    </div>
+                ))
+                ) : (   ""
+                )}
             </div>
             </motion.div>
+
         </div>
 
         {/* Right Column */}
-        <div className="lg:col-span-2 border-l border-gray-200/40 space-y-6">
+        <div className="lg:col-span-2  border-l border-gray-200/40 space-y-6">
             
             {/* Skills */}
             
             <motion.div variants={fadeUp} className="bg-white p-6 ">
             <div className='flex justify-between min-w-full items-center'> 
                 <h3 className="text-2xl text-[#111111]">Skills</h3>
-                <div className='size-7 rounded-full border border-orange-400 flex justify-center items-center'> {technicalData?.skills.length?<Pen onClick={()=>{setmodel("skills")}} className='text-orange-400 hover:text-orange-600 ' size={15}></Pen>:<Plus onClick={()=>{setmodel("skills")}} className='text-orange-400 hover:text-orange-600 hover:rotate-180 duration-200 transition-colors transition-transform' size={15}></Plus>}</div>
+                <div className='size-7 rounded-full border border-orange-400 flex justify-center items-center'> {technicalData?.skills?.length?<Pen onClick={()=>{setmodel("skills")}} className='text-orange-400 hover:text-orange-600 ' size={15}></Pen>:<Plus onClick={()=>{setmodel("skills")}} className='text-orange-400 hover:text-orange-600 hover:rotate-180 duration-200 transition-colors transition-transform' size={15}></Plus>}</div>
             </div>
                     
 
-                <div className={`flex pt-3 gap-2 ${technicalData?.skills.length?"justify-start":"justify-center"} flex-wrap`}>
+                <div className={`flex pt-3 gap-2 ${technicalData?.skills?.length?"justify-start":"justify-center"} flex-wrap`}>
                 
-                {technicalData?.skills.length>0?technicalData?.skills.map((skill, i) => (
+                {technicalData?.skills?.length>0?technicalData?.skills?.map((skill, i) => (
                 
                 <div key={i} className=''>
                     
@@ -233,35 +365,66 @@ return (
                 </div>
             </div>
 
-            <div className="relative min-h-36 overflow-hidden" onTouchStart={handlePortfolioTouchStart} onTouchEnd={handlePortfolioTouchEnd}>
+            <div className="relative min-h-36 " aria-busy={projectsLoading} onTouchStart={handlePortfolioTouchStart} onTouchEnd={handlePortfolioTouchEnd}>
                 {user?.role === "freelancer" ? (
                 portfolioItems.length > 0 ? (
                     <div className="flex gap-3 md:flex-nowrap  flex-wrap min-w-full">
-                    {portfolioItems.slice(portfolioStartIndex, portfolioStartIndex + visiblePortfolioCards).map((item, i) => (
+                    {portfolioItems.slice(portfolioStartIndex, portfolioStartIndex + visiblePortfolioCards).map((item, i) => {
+                        const portfolioItemId = item._id || `portfolio-${portfolioStartIndex + i}`;
+                        const menuRef = getPortfolioMenuRef(portfolioItemId);
+                        return (
                         <div
-                        key={item._id || `portfolio-${i}`}
-                        className="group relative flex   h-40   w-[47%] flex-col gap-1.5 overflow-hidden rounded-sm transition-all md:h-48 cursor-pointer"
+                        key={portfolioItemId}
+                        className="group relative flex group    h-40   w-[47%] flex-col gap-1.5  rounded-sm  md:h-48 cursor-pointer"
                         >
-                        <div className="w-full h-full overflow-hidden rounded-sm">
-                            <img
-                                src={
-                                item.coverImage ||
-                                DEFAULT_COVER_IMAGE
-                                }
-                                alt={item.title || "Portfolio work"}
-                                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                            />
+                            <div className="w-full h-full overflow-hidden rounded-sm">
+                                <img
+                                    src={
+                                    item.coverImage ||
+                                    DEFAULT_COVER_IMAGE
+                                    }
+                                    alt={item.title || "Portfolio work"}
+                                    className={`h-full w-full object-cover group-hover:brightness-80 transition-all duration-200 ${activeMenu === portfolioItemId ? "brightness-80" : ""}`}
+                                />
+                            </div>
+                            <div>
+                                <h4 className=" text-sm text-gray-800">
+                                {item.title||"Untitled Project"}
+                                </h4>
+                            </div>
+                            <div ref={menuRef} className="absolute z-50 top-2 right-2">
+                                <button
+                                    type="button"
+                                    aria-label={`Portfolio actions for ${item.title || "Untitled Project"}`}
+                                    aria-haspopup="menu"
+                                    aria-expanded={activeMenu === portfolioItemId}
+                                    onClick={() => togglePortfolioMenu(portfolioItemId, menuRef)}
+                                    className={`bg-white size-8 border flex items-center justify-center rounded-full border-orange-400 opacity-0 transition-opacity ${activeMenu === portfolioItemId ? "opacity-100" : ""} group-hover:opacity-100 focus-visible:opacity-100`}
+                                >
+                                    <Ellipsis size={16} className="text-orange-400" />
+                                </button>
+                                {activeMenu === portfolioItemId && (
+                                <div data-portfolio-menu-panel role="menu" className="absolute right-0 w-20 z-50 mt-2 md:w-52 rounded-xl border border-gray-100 bg-white p-1.5 text-gray-700 shadow-lg shadow-gray-200/60">
+                                    <ul className="flex flex-col">
+                                        <li>
+                                            <button type="button" role="menuitem" onClick={() => handleEditPortfolio(item)} className="flex w-full cursor-pointer items-center gap-2 rounded-lg px-3 py-2.5 text-left text-sm transition hover:bg-orange-50 hover:text-[#FF7A00]">
+                                                <p className="text-sm">Edit</p>
+                                            </button>
+                                        </li>
+
+                                        <li>
+                                            <button type="button" role="menuitem" onClick={() => handleDeletePortfolio(item)} className="flex w-full cursor-pointer items-center gap-2 rounded-lg px-3 py-2.5 text-left text-sm text-red-600 transition hover:bg-red-50">
+                                                <p className="text-sm">Delete</p>
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
+                            )}
+                            </div>
+                            
                         </div>
-                        <div>
-                            <h4 className=" text-sm text-gray-800">
-                            {item.title||"Untitled Project"}
-                            </h4>
-                        </div>
-                        <div   className="absolute  bg-white  size-8 border flex items-center justify-center rounded-full border-orange-400 top-2 right-2 opacity-0 transition-opacity group-hover:opacity-100">
-                            <Ellipsis size={16} className="text-orange-400" />
-                        </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                     </div>
                 ) : (
                     <div className="flex flex-col items-center justify-center min-h-58 ">
@@ -346,7 +509,14 @@ return (
             className='rounded-2xl    border border-gray-300/60 bg-white p-6'>
             <div className='flex justify-between min-w-full items-center'> 
                 <h3 className="text-2xl text-[#111111]">Experience</h3>
-                <div className='size-7 rounded-full border border-orange-400 flex justify-center items-center'>                     <div className='size-7 rounded-full border border-orange-400 flex justify-center items-center'> {technicalData?.experience.length?<Pen className='text-orange-400 hover:text-orange-600 ' size={15}></Pen>:<Plus className='text-orange-400 hover:text-orange-600 hover:rotate-180 duration-200 transition-colors transition-transform' size={15}></Plus>}</div></div>
+                <div className='size-7 rounded-full border border-orange-400 flex justify-center items-center'>
+                    <div className='size-7 rounded-full border border-orange-400 flex justify-center items-center'> 
+                        {technicalData?.experience?.length?
+                        <Pen onClick={()=>setmodel("Experience")} className='text-orange-400 hover:text-orange-600 ' size={15}></Pen>
+                        :<Plus onClick={()=>setmodel("Experience")} className='text-orange-400 hover:text-orange-600 hover:rotate-180 duration-200 transition-colors transition-transform' size={15}>
+                        </Plus>}
+                    </div>
+                </div>
             </div>
             
             <div className='flex min-h-65 justify-center items-center flex-col'>
@@ -363,15 +533,19 @@ return (
                 </Image>
                 </div>
                 <div className=' text-gray-800/60'>Add Any Experience to help you grow</div>
-                <button className='text-orange-500/90 my-2 hover:text-orange-500  border-b border-white   hover:border-orange-400'>Add Experience</button>
+                <button onClick={()=>setmodel("experience")} className='text-orange-500/90 my-2 hover:text-orange-500  border-b border-white   hover:border-orange-400'>Add Experience</button>
             </div>
 
     </motion.div>
     {/*window overlay*/}
     <AnimatePresence>
         {model ==="skills" && <Skillsmodel setmodel={setmodel} />}
-        {model ==="portfolio" && <Portfoliomodel setmodel={setmodel} />}
-        {model ==="languages" && <Languagesmodel setmodel={setmodel} />}
+        {model ==="portfolio" && <Portfoliomodel   setmodel={setmodel} selectedPortfolioItem={selectedPortfolioItem} />}
+        {model ==="Newlanguage" ? <Languagesmodel setmodel={setmodel} newlanguage={true} /> : ""}
+        {model ==="Editlanguages" && <Languagesmodel setmodel={setmodel} newlanguage={false} />}
+        {(model ==="education") && <ProfileRecordModel type={model} setmodel={setmodel} />}
+        {(model ==="Experience") && <Experiencemodel  setmodel={setmodel} />}
+        {(model ==="DeletePortfolio") && <Deletemodel item={selectedPortfolioItem}  setmodel={setmodel} />}
     </AnimatePresence>
     </div>
 );

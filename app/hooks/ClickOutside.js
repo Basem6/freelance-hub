@@ -1,5 +1,6 @@
 let currentRef = null;
 let currentClose = null;
+let listenerRegistered = false;
 
 const handleClick = (e) => {
   
@@ -9,19 +10,26 @@ const handleClick = (e) => {
   }
 };
 
-document.addEventListener("mousedown", handleClick);
-
 export const registerOutsideClick = (ref, closeFn) => {
-   // اقفل القديمة الأول
   if (currentClose && currentRef !== ref) {
     currentClose();
   }
 
   currentRef = ref;
   currentClose = closeFn;
+  if (!listenerRegistered) {
+    document.addEventListener("mousedown", handleClick);
+    listenerRegistered = true;
+  }
 };
 
-export const unregisterOutsideClick = () => {
+export const unregisterOutsideClick = (ref) => {
+  if (ref && currentRef !== ref) return;
+
   currentRef = null;
   currentClose = null;
+  if (listenerRegistered) {
+    document.removeEventListener("mousedown", handleClick);
+    listenerRegistered = false;
+  }
 };

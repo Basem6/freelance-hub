@@ -30,29 +30,29 @@ const isValidUrl = (value) => {
     }
 };
 
-export default function Portfoliomodel({ setmodel }) {
+export default function Portfoliomodel({ setmodel, selectedPortfolioItem }) {
     const initialWork = {
-        title: "",
-        category: "",
-        roleOwn: "",
-        description: "",
-        liveUrl: "",
-        coverImage: "",
-        skills: [],
+        title: selectedPortfolioItem?.title || "",
+        category:selectedPortfolioItem?.category || "",
+        roleOwn: selectedPortfolioItem?.roleOwn || "",
+        description:    selectedPortfolioItem?.description || "",
+        liveUrl: selectedPortfolioItem?.liveUrl || "",
+        coverImage: selectedPortfolioItem?.coverImage || "",
+        skills:selectedPortfolioItem?.skills || [],
     };
     const showToast = useShowToast();
     const technicalData= useAppSelector(state => state.technicalData);
     const dispatch = useAppDispatch()
     const [over , setover] = useState("")
-    const [coverImagePreview, setCoverImagePreview] = useState("");
-    const [LinkPreview, setLinkPreview] = useState("");
+    const [loading , setloading] = useState(false)
+    const [coverImagePreview, setCoverImagePreview] = useState(selectedPortfolioItem?.coverImage || "");
+    const [LinkPreview, setLinkPreview] = useState(selectedPortfolioItem?.liveUrl || "");
     const [isUploadingCover, setIsUploadingCover] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
     const [skillInput, setSkillInput] = useState("");
     const [isSkillDropdownOpen, setIsSkillDropdownOpen] = useState(false);
     const [newWork, setNewWork] = useState(initialWork);
     const [text, setText] = useState("Add content");
-
     const filteredSkills = skillSuggestions.filter((skill) => {
         const query = skillInput.trim().toLowerCase();
 
@@ -146,7 +146,7 @@ export default function Portfoliomodel({ setmodel }) {
         setCoverImagePreview(previewUrl);
         setIsUploadingCover(true);
         setUploadProgress(0);
-
+        setloading(true)
         try {
             // Compress image
             const compressedImage = await compressImage(file);
@@ -221,7 +221,7 @@ export default function Portfoliomodel({ setmodel }) {
 
         } catch (error) {
             console.error("Cover image upload error:", error);
-
+            setloading(false)
             setCoverImagePreview("");
             setNewWork((prev) => ({
                 ...prev,
@@ -238,6 +238,7 @@ export default function Portfoliomodel({ setmodel }) {
                 setIsUploadingCover(false);
                 setUploadProgress(0);
             }, 400);
+            setloading(false)
 
             event.target.value = "";
         }
@@ -297,7 +298,8 @@ export default function Portfoliomodel({ setmodel }) {
             type: "error",
         });
     }
-};
+    };
+    const handleEditWork= async () => {}
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
             <motion.div
@@ -626,10 +628,11 @@ export default function Portfoliomodel({ setmodel }) {
 
                     <button
                         type="button"
-                        onClick={handleAddWork}
-                        className="rounded-xl cursor-pointer hover:opacity-80  bg-gradient-to-r from-[#FF7A00] to-orange-500 px-5 py-2 font-semibold text-white   disabled:cursor-not-allowed disabled:opacity-60"
+                        disabled={loading}
+                        onClick={selectedPortfolioItem?handleEditWork:handleAddWork}
+                        className={`rounded-xl  ${loading?"opacity-40  hover:opacity-40 cursor-no-drop":"opacity-100   hover:opacity-80 cursor-pointer"}  bg-gradient-to-r from-[#FF7A00] to-orange-500 px-5 py-2 font-semibold text-white`}
                     >
-                        Save
+                        {selectedPortfolioItem ? "Edit" : "Save"}
                     </button>
                 </div>
             </motion.div>
@@ -705,11 +708,10 @@ export default function Portfoliomodel({ setmodel }) {
                     
                             <button
                                 type="button"
-
                                 onClick={handleSaveLink}
-                                className="rounded-xl bg-gradient-to-r from-[#FF7A00] to-orange-500 px-5 py-2 font-semibold text-white transition-all hover:shadow-lg hover:shadow-orange-200 disabled:cursor-not-allowed disabled:opacity-60"
+                                className={`rounded-xl bg-gradient-to-r  from-[#FF7A00] to-orange-500 px-5 py-2 font-semibold text-white transition-all hover:shadow-lg hover:shadow-orange-200 disabled:cursor-not-allowed disabled:opacity-60`}
                             >
-                                {"Save"}
+                                Save
                             </button>
                             </div>
                         </motion.div>
@@ -720,4 +722,3 @@ export default function Portfoliomodel({ setmodel }) {
         </div>
     );
 }
-

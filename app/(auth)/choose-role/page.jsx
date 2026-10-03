@@ -50,15 +50,15 @@ export default function ChooseRolePage() {
     }, [])
 
     return (
-        <div className="flex min-h-screen pt-10 flex-col bg-gradient-to-b from-orange-50 via-white to-gray-100 text-[#171717]">
+        <div className="flex min-h-screen overflow-hidden pt-10 flex-col bg-gradient-to-b from-orange-50 via-white to-gray-100 text-[#171717]">
         
 
-            <main className="flex flex-1 items-center justify-center px-5 py-12 sm:px-8 sm:py-16">
+            <main className="flex flex-1  overflow-hidden items-center justify-center px-5 py-12 sm:px-8 sm:py-16">
                 <motion.div
                     initial={reduceMotion ? false : { opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: reduceMotion ? 0 : 0.4, ease: 'easeOut' }}
-                    className="w-full max-w-[900px]"
+                    className="w-full "
                 >
                     <div className="mx-auto max-w-[620px] text-center">
                         <p className="text-sm font-semibold text-[#FF7A00]">GETTING STARTED</p>
@@ -91,7 +91,7 @@ export default function ChooseRolePage() {
                                     whileTap={reduceMotion ? undefined : { scale: 0.995 }}
                                     className={`relative  flex group w-fit flex-col rounded-sm border p-3 text-start focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF7A00] focus-visible:ring-offset-2 `}
                                 >
-                                    <span className={`inline-flex  opacity-80 hover:opacity-100 transition-opacity duration-200  size-50  bg-gradient-to-br from-orange-50/20 from-[0%] via-orange-300/90 via-[45%] to-orange-50/30 to-[100%] items-center justify-center rounded-lg transition-colors`}>
+                                    <span className={`inline-flex  opacity-80 hover:opacity-100 transition-opacity duration-200 size-30  md:size-50  bg-gradient-to-br from-orange-50/20 from-[0%] via-orange-300/90 via-[45%] to-orange-50/30 to-[100%] items-center justify-center rounded-lg`}>
                                         <Icon size={41} strokeWidth={1.4} aria-hidden="true" />
                                     </span>
 
@@ -99,7 +99,7 @@ export default function ChooseRolePage() {
                                         <span>{role.title}</span>
                                         <span className="group-hover:translate-x-2 transition-transform duration-200"><ArrowRight size={20} strokeWidth={1.5} /></span>
                                     </span>
-                                    <span className="mt-2 text-center max-w-[340px] text-sm leading-6 text-gray-500" dir="auto">
+                                    <span className="mt-2 text-center text-xs  md:text-sm leading-6 text-gray-500" dir="auto">
                                         {role.description}
                                     </span>
                                 </motion.button>

@@ -6,7 +6,6 @@ import { cn } from '../../app/lib/utils'
 import { useAppSelector } from '@/app/lib/hooks';
 export default function Btns(){
     const user = useAppSelector((state)=>state.auth.user)
-    console.log(user)
     return(
         <Reveal delay={240}>
                     <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row lg:justify-start">

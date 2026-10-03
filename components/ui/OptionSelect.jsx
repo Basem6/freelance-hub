@@ -136,7 +136,7 @@ return (
             aria-haspopup="listbox"
             aria-expanded={isOpen}
             onClick={handleOpen}
-            className="flex w-full items-center justify-between text-left"
+            className={`flex w-full items-center justify-between text-left ${className}`}
         >
             <span
             className={!selectedLabel ? 'text-gray-400' : 'text-gray-700'}
