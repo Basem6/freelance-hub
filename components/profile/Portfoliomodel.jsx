@@ -30,7 +30,7 @@ const isValidUrl = (value) => {
     }
 };
 
-export default function Portfoliomodel({ setmodel, selectedPortfolioItem }) {
+export default function Portfoliomodel({ setmodel, selectedPortfolioItem  , setSelectedPortfolioItem}) {
     const initialWork = {
         title: selectedPortfolioItem?.title || "",
         category:selectedPortfolioItem?.category || "",
@@ -69,6 +69,7 @@ export default function Portfoliomodel({ setmodel, selectedPortfolioItem }) {
     const handleCancel = () => {
         setmodel(null);
         if(document.querySelector(".parent")){document.querySelector(".parent").classList.remove("noscrol")}
+        setSelectedPortfolioItem(null)
     };
     const handleCancelOver = () => {
         setover(null);

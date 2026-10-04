@@ -17,7 +17,7 @@ export default function Avatar({ user, size = 100, className = ""  , online=fals
                     e.currentTarget.src = "/avatars/avatar-1.png";
                 }}
             />
-            {online && <div className='absolute left-1 top-0 size-3 rounded-full bg-green-600 outline-4 outline-white'></div>}
+            {online && <div className='absolute left-1 top-1 size-3 rounded-full bg-green-600 outline-4 outline-white'></div>}
         </div>
     );
 }

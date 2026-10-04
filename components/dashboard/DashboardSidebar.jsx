@@ -18,7 +18,7 @@ export default function DashboardSidebar({ activePage = 'dashboard' }) {
     
     const pathname = usePathname();
     const { notifications, setNotifications } = useSocketContext();
-    const [isCollapsed, setIsCollapsed] = useState(false);
+    const [isCollapsed, setIsCollapsed] = useState(true);
     const [isLogoHovered, setIsLogoHovered] = useState(false);
     const [isMobileOpen, setIsMobileOpen] = useState(false);
     
@@ -44,7 +44,6 @@ export default function DashboardSidebar({ activePage = 'dashboard' }) {
     ];
 
     const navItems = user?.role === 'client' ? clientNavItems : freelancerNavItems;
-
     useEffect(() => {
         if (pathname.startsWith("/messages")) {
             setNotifications([]);
@@ -62,7 +61,7 @@ export default function DashboardSidebar({ activePage = 'dashboard' }) {
 
         if (newState) {
             // Collapse
-            gsap.to(sidebarRef.current, { width: 60, duration: 0.7 });
+            gsap.to(sidebarRef.current, { width: 50, duration: 0.7 });
             gsap.to(".link-text", { opacity: 0, duration: 0.1 });
             gsap.to(".link-badge", { opacity: 0, duration: 0.1 });
             gsap.to(logoPanelRef.current, { x: -10, opacity: 0, duration: 0.1 });
@@ -142,14 +141,14 @@ export default function DashboardSidebar({ activePage = 'dashboard' }) {
             {/* Sidebar */}
             <aside
                 ref={sidebarRef}
-                className={`z-9999 flex fixed md:sticky left-0 top-0 min-h-screen w-72 flex-col gap-2 overflow-y-auto overflow-x-hidden bg-gray-100 transition-transform duration-300 ${
+                className={`z-9999 flex fixed md:sticky left-0 top-0 min-h-screen w-65  md:w-12.5 flex-col gap-2 overflow-y-auto overflow-x-hidden bg-gray-100 transition-transform duration-300 ${
                     isMobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
                 }`}
             >
                 {isCollapsed?
-                <div className="flex  items-center justify-between gap-3 border-b border-gray-100 px-3 py-4 min-w-full">
+                <div className="flex  items-center justify-between gap-3 border-b border-gray-100 px-2.5 py-4 min-w-full">
                     <div
-                        className="relative h-[37px] w-[37px] group"
+                        className="relative size-7.5 group"
                         onMouseEnter={() => setIsLogoHovered(true)}
                         onMouseLeave={() => setIsLogoHovered(false)}
                     >
@@ -157,9 +156,9 @@ export default function DashboardSidebar({ activePage = 'dashboard' }) {
                         <Image
                             src="/logo.svg"
                             alt="logo"
-                            width={37}
-                            height={37}
-                            className={`absolute inset-0 min-w-[37px] transition-all duration-300 ${
+                            width={30}
+                            height={30}
+                            className={`absolute inset-0 min-w-[30px] transition-all duration-300 ${
                                 isLogoHovered ? 'opacity-0' : 'opacity-100'
                             }`}
                         />
@@ -191,15 +190,17 @@ export default function DashboardSidebar({ activePage = 'dashboard' }) {
                         <X size={20} />
                     </button>
                 </div>:
-                <div className="flex  items-center justify-between gap-3 border-b border-gray-100 px-3 py-4 min-w-full">
-                <div className='relative h-[37px] w-[37px] group'
+                <div className="flex  items-center justify-between gap-3 border-b border-gray-100 px-2.5 py-4 min-w-full">
+                <div className='relative size-7.5 group'
                 >
                     <Image
                         src="/logo.svg"
                         alt="logo"
-                        width={37}
-                        height={37}
-                        className='absolute inset-0 min-w-[37px] transition-all duration-300'
+                        width={30}
+                        height={30}
+                        className={`absolute inset-0 min-w-[30px] transition-all duration-300 ${
+                            isLogoHovered ? 'opacity-0' : 'opacity-100'
+                        }`}
                     />
                 </div>
 
@@ -218,7 +219,7 @@ export default function DashboardSidebar({ activePage = 'dashboard' }) {
                 }
 
                 {/* Navigation Items */}
-                <nav ref={linksContainerRef} className="flex-1 flex flex-col gap-1 px-3 py-4 ">
+                <nav ref={linksContainerRef} className="flex-1 flex flex-col gap-1 px-1.5 py-4 ">
                     {navItems.map((item , ind) => {
                         const Icon = item.icon;
                         const active = isActive(item);
@@ -228,24 +229,24 @@ export default function DashboardSidebar({ activePage = 'dashboard' }) {
                                     
                                     onMouseMove={(e)=>handleanimation(e)}
                                     
-                                    className={`w-full flex items-center relative space-x-3  py-2.5 rounded-xl transition-all duration-200 cursor-pointer group ${
+                                    className={`w-full flex items-center relative gap-1.5   py-2.5 rounded-xl transition-all duration-200 cursor-pointer group ${
                                         active
                                             ? 'bg-orange-50 text-[#FF7A00]'
-                                            : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
+                                            : 'text-gray-800 hover:bg-gray-50 hover:text-gray-900'
                                     }`}
                                 >
                                     <div className=''>
                                     <Icon
-                                        size={22}
-                                        strokeWidth={1.2}
+                                        size={20}
+                                        strokeWidth={1}
 
                                         className={`shrink-0 mx-2  duration-300 transition-transform ${
-                                            active ? 'text-[#FF7A00]' : 'text-gray-400 group-hover:text-gray-600'
+                                            active ? 'text-[#FF7A00]' : 'text-gray-700 group-hover:text-gray-600'
                                         }`}
                                     />
                                     </div>
                                     <span
-                                        className={`link-text whitespace-nowrap font-medium text-sm flex-1 ${
+                                        className={`link-text md:opacity-0 whitespace-nowrap font-medium text-sm flex-1 ${
                                             active ? 'text-[#FF7A00]' : ''
                                         }`}
                                     >

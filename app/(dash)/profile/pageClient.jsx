@@ -11,7 +11,7 @@ import api from '@/app/utils/api';
 import { motion } from 'framer-motion';
 import { AnimatePresence } from 'framer-motion';
 // icons
-import { MapPin, Ellipsis ,Briefcase,ExternalLink,Pen,Plus,ChevronLeft,ChevronRight} from 'lucide-react';
+import { MapPin, Ellipsis ,Briefcase,ExternalLink,Pen,Plus,ChevronLeft,ChevronRight,ChevronDown} from 'lucide-react';
 //ui
 import Avatar from '../../../components/ui/Avatar';
 import Portfoliomodel from '../../../components/profile/Portfoliomodel';
@@ -36,8 +36,11 @@ const [visiblePortfolioCards, setVisiblePortfolioCards] = useState(3)
 const [portfolioCarouselIndex, setPortfolioCarouselIndex] = useState(0)
 const [portfolioTouchStartX, setPortfolioTouchStartX] = useState(null)
 const [selectedPortfolioItem, setSelectedPortfolioItem] = useState(null)
+const [bioExpanded, setBioExpanded] = useState(false)
 const DEFAULT_COVER_IMAGE = 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80';
 const portfolioItems = Array.isArray(technicalData.portfolio) ? technicalData.portfolio : []
+const freelancerBio = technicalData?.bio || "Passionate UI/UX Designer with 5+ years creating scalable web applications and beautiful user interfaces."
+const shouldCollapseBio = freelancerBio.length > 200
 const portfolioMaxPage = Math.max(0, Math.ceil(portfolioItems.length / visiblePortfolioCards) - 1)
 const portfolioStartIndex = portfolioCarouselIndex * visiblePortfolioCards
 const shouldShowPortfolioArrows = user?.role === 'freelancer' && portfolioItems.length > visiblePortfolioCards
@@ -175,7 +178,7 @@ ds()
 },[]) 
 
 return (
-    <div className="flex flex-col overflow-hidden  h-fit  md:p-8 max-w-7xl mx-auto  gap-3.5 ">
+    <div className="flex flex-col  overflow-hidden  h-fit  md:p-8 max-w-7xl mx-auto  gap-3.5 ">
     {/* Main Content */}
     
     <motion.div 
@@ -190,7 +193,7 @@ return (
         {/* Profile Info */}
         <div className="md:px-6 px-1 py-8 relative ">
             <div className="flex flex-row gap-5 md:px-0 relative px-5 items-center  mb-2">
-            <div className='size-19 overflow-hidden'>
+            <div className='size-25 overflow-hidden'>
                 <Avatar user={user} online={true}></Avatar>
                 
             </div>
@@ -221,26 +224,109 @@ return (
 
             {user?.role==="freelancer"?
             <motion.div variants={fadeUp} className="bg-white p-6 rounded-2xl  ">
-            <h3 className="text-2xl text-[#111111] mb-4">{user?.major || 'Freelancer'}</h3>
-                <p className="text-gray-600 leading-relaxed">
-                {user?.bio||
-                "Passionate UI/UX Designer with 5+ years creating scalable web applications and beautiful user interfaces."}
-                </p>
+            <h3 className="text-2xl text-[#111111] mb-4">{technicalData?.major || 'Freelancer'}</h3>
+                <motion.p
+                    id="freelancer-bio"
+                    animate={{ height: !shouldCollapseBio || bioExpanded ? 'auto' : '4.875rem' }}
+                    transition={{ duration: 0.3, ease: 'easeInOut' }}
+                    className="overflow-hidden text-gray-600 leading-relaxed"
+                >
+                    {freelancerBio}
+                </motion.p>
+                {shouldCollapseBio && (
+                    <button
+                        type="button"
+                        aria-expanded={bioExpanded}
+                        aria-controls="freelancer-bio"
+                        onClick={() => setBioExpanded((expanded) => !expanded)}
+                        className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-orange-500 transition-colors hover:text-orange-600"
+                    >
+                        {bioExpanded ? 'Show less' : 'Show more'}
+                        <ChevronDown
+                            size={14}
+                            aria-hidden="true"
+                            className={`transition-transform duration-300 ${bioExpanded ? 'rotate-180' : 'rotate-0'}`}
+                        />
+                    </button>
+                )}
             </motion.div>:""}
+            <motion.div
+                variants={fadeUp}
+                className="rounded-2xl bg-white px-6"
+            >
+                <div className="flex min-w-full items-center justify-between">
+                    <h3 className="text-2xl text-[#111111]">
+                        Education
+                    </h3>
 
-            <motion.div variants={fadeUp} className="bg-white p-6 rounded-2xl ">
-            <div className='flex justify-between min-w-full items-center'> 
-                <h3 className="text-2xl text-[#111111]">Education</h3>
-                <div className='size-7 rounded-full border border-orange-400 flex justify-center items-center'>                     <div className='size-7 rounded-full border border-orange-400 flex justify-center items-center'> {technicalData?.education?.length?<Pen onClick={()=>setmodel("education")} className='text-orange-400 hover:text-orange-600 ' size={15}></Pen>:<Plus onClick={()=>setmodel("education")} className='text-orange-400 hover:text-orange-600 hover:rotate-180 duration-200 transition-colors transition-transform' size={15}></Plus>}</div></div>
-            </div>
-            <div className="space-y-4">
-            </div>
+                    <button
+                        type="button"
+                        onClick={() => setmodel("education")}
+                        className="flex size-7 items-center justify-center rounded-full border border-orange-400"
+                    >
+                        <Plus
+                            className="text-orange-400 transition-all duration-200 hover:rotate-180 hover:text-orange-600"
+                            size={15}
+                        />
+                    </button>
+                </div>
+
+                <div className="mt-3">
+                    {technicalData?.education?.length > 0 ? (
+                        technicalData.education.map((education, index) => (
+                            <div
+                                key={education._id || index}
+                                className="flex flex-col gap-1 border-b border-gray-100 pb-4 last:border-0"
+                            >
+                                {/* School */}
+                                <div className="text-base font-medium text-black/95">
+                                    {education.school}
+                                </div>
+
+                                {/* Degree */}
+                                {education.degree && (
+                                    <div className="text-sm text-gray-700/80">
+                                        {education.degree}
+                                    </div>
+                                )}
+
+                                {/* Field */}
+                                {education.fieldOfStudy && (
+                                    <div className="text-sm text-gray-500">
+                                        {education.fieldOfStudy}
+                                    </div>
+                                )}
+
+                                {/* Date */}
+                                {(education.startYear || education.endYear) && (
+                                    <div className="text-xs text-gray-400">
+                                        {education.startYear }
+                                        {education.startYear  &&
+                                        education.endYear 
+                                            ? " — "
+                                            : ""}
+                                        {education.endYear}
+                                    </div>
+                                )}
+
+                                {/* Description */}
+                                {education.description && (
+                                    <p className="mt-1 text-sm leading-6 text-gray-500">
+                                        {education.description}
+                                    </p>
+                                )}
+                            </div>
+                        ))
+                    ) : (
+                        ""
+                    )}
+                </div>
             </motion.div>
             <motion.div
             variants={fadeUp}
             className="rounded-2xl bg-white p-6"
             >
-            {/* Header */}
+                
             <div className="flex items-center justify-between">
                 <h3 className="text-2xl  text-[#111111]">
                 Languages
@@ -345,7 +431,7 @@ return (
             {/* Portfolio / Projects Preview */}
             <motion.div
             variants={fadeUp}
-            className=" border-t md:w-190 border-gray-300/60 bg-white p-6 "
+            className=" border-t w-full border-gray-300/60 bg-white p-6 "
             >
             <div className="mb-6 flex items-center justify-between gap-3">
                 <h3 className="text-2xl text-[#111111]">
@@ -375,7 +461,7 @@ return (
                         return (
                         <div
                         key={portfolioItemId}
-                        className="group relative flex group    h-40   w-[47%] flex-col gap-1.5  rounded-sm  md:h-48 cursor-pointer"
+                        className="group relative flex     h-40   w-[32%] flex-col gap-1.5  rounded-sm  md:h-48 cursor-pointer"
                         >
                             <div className="w-full h-full overflow-hidden rounded-sm">
                                 <img
@@ -505,46 +591,83 @@ return (
     </motion.div>
 
     <motion.div
-            variants={fadeUp}
-            className='rounded-2xl    border border-gray-300/60 bg-white p-6'>
-            <div className='flex justify-between min-w-full items-center'> 
-                <h3 className="text-2xl text-[#111111]">Experience</h3>
-                <div className='size-7 rounded-full border border-orange-400 flex justify-center items-center'>
-                    <div className='size-7 rounded-full border border-orange-400 flex justify-center items-center'> 
-                        {technicalData?.experience?.length?
-                        <Pen onClick={()=>setmodel("Experience")} className='text-orange-400 hover:text-orange-600 ' size={15}></Pen>
-                        :<Plus onClick={()=>setmodel("Experience")} className='text-orange-400 hover:text-orange-600 hover:rotate-180 duration-200 transition-colors transition-transform' size={15}>
-                        </Plus>}
+        variants={fadeUp}
+        className="rounded-2xl border border-gray-300/60 bg-white p-6"
+    >
+        {/* Header */}
+        <div className="flex min-w-full items-center justify-between">
+            <h3 className="text-2xl text-[#111111]">
+                Experience
+            </h3>
+
+            <button
+                type="button"
+                onClick={() => setmodel("experience")}
+                className="flex size-7 items-center justify-center rounded-full border border-orange-400"
+            >
+                <Plus
+                    className="text-orange-400 transition-all duration-200 hover:rotate-180 hover:text-orange-600"
+                    size={15}
+                />
+            </button>
+        </div>
+
+        {/* Experiences */}
+        {technicalData?.experience?.length > 0 ? (
+            <div className="mt-6 space-y-5">
+                {technicalData?.experience.map((experience, index) => (
+                    <div
+                        key={experience._id || index}
+                        className="border-b border-gray-100 pb-5 last:border-0"
+                    >
+                        <h4 className="text-base font-semibold text-gray-900">
+                            {experience.title}
+                        </h4>
+
+                        {experience.description && (
+                            <p className="mt-2 text-sm leading-6 text-gray-500">
+                                {experience.description}
+                            </p>
+                        )}
                     </div>
-                </div>
+                ))}
             </div>
-            
-            <div className='flex min-h-65 justify-center items-center flex-col'>
-                <div>
-                <Image
-                src={"photoMeaning/icons8-file-192.svg"}
-                alt='icon'
-                width={100}
-                height={100}
-                quality={10}
-                className='object-contain w-full h-full'
+        ) : (
+            /* Empty State */
+            <div className="flex min-h-65 flex-col items-center justify-center">
+                <div className="size-24">
+                    <Image
+                        src="/photoMeaning/icons8-file-192.svg"
+                        alt="No experience"
+                        width={100}
+                        height={100}
+                        quality={10}
+                        className="h-full w-full object-contain"
+                    />
+                </div>
+
+                <div className="text-gray-800/60">
+                    Add any experience to help you grow
+                </div>
+
+                <button
+                    type="button"
+                    onClick={() => setmodel("experience")}
+                    className="my-2 border-b border-white text-orange-500/90 transition-colors hover:border-orange-400 hover:text-orange-500"
                 >
-
-                </Image>
-                </div>
-                <div className=' text-gray-800/60'>Add Any Experience to help you grow</div>
-                <button onClick={()=>setmodel("experience")} className='text-orange-500/90 my-2 hover:text-orange-500  border-b border-white   hover:border-orange-400'>Add Experience</button>
+                    Add Experience
+                </button>
             </div>
-
+        )}
     </motion.div>
     {/*window overlay*/}
     <AnimatePresence>
         {model ==="skills" && <Skillsmodel setmodel={setmodel} />}
-        {model ==="portfolio" && <Portfoliomodel   setmodel={setmodel} selectedPortfolioItem={selectedPortfolioItem} />}
+        {model ==="portfolio" && <Portfoliomodel   setmodel={setmodel} selectedPortfolioItem={selectedPortfolioItem}  setSelectedPortfolioItem={setSelectedPortfolioItem}/>}
         {model ==="Newlanguage" ? <Languagesmodel setmodel={setmodel} newlanguage={true} /> : ""}
         {model ==="Editlanguages" && <Languagesmodel setmodel={setmodel} newlanguage={false} />}
         {(model ==="education") && <ProfileRecordModel type={model} setmodel={setmodel} />}
-        {(model ==="Experience") && <Experiencemodel  setmodel={setmodel} />}
+        {(model ==="experience") && <Experiencemodel  setmodel={setmodel} />}
         {(model ==="DeletePortfolio") && <Deletemodel item={selectedPortfolioItem}  setmodel={setmodel} />}
     </AnimatePresence>
     </div>

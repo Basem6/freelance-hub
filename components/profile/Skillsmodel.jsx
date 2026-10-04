@@ -49,12 +49,9 @@ const handleSubmit = async () => {
 
     try {
     const payload = {
-        major: technicalData.major?.trim() || "",
-        specialty: technicalData.specialty?.trim() || "",
         skills: technicalData.skills.filter(
         (skill) => skill.trim()
         ),
-        bio: technicalData.bio?.trim() || "",
     };
 
     const response = await fetch(

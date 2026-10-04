@@ -46,12 +46,12 @@ const handleChange = (event) => {
 const handleSubmit = async (event) => {
     event.preventDefault();
     if (!technicalData.major?.trim()) {
-    showToast({ message: "select the mahjor", type: "warning" });
+    showToast({ message: "select the major", type: "warning" });
     return;
     }
 
     if (!technicalData.skills || technicalData.skills.length === 0) {
-    showToast({ message: "add one skill at", type: "warning" });
+    showToast({ message: "add one skill at least", type: "warning" });
     return;
     }
     setloading(true)
@@ -186,8 +186,8 @@ return (
         <label className="block text-sm font-semibold text-gray-700">Summary</label>
         <textarea
             rows="6"
-            name="summary"
-            value={technicalData?.summary}
+            name="bio"
+            value={technicalData?.bio}
             onChange={handleChange}
             placeholder="Write a short professional summary about the user..."
             className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#FF7A00]/30 focus:border-[#FF7A00] transition-all bg-gray-50 focus:bg-white resize-none"
