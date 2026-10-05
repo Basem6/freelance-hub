@@ -43,6 +43,7 @@ useEffect(() => {
 
 const handleCancel = () => {
     setmodel(null);
+    if(document.querySelector(".parent")){document.querySelector(".parent").classList.remove("noscrol")}
 };
 
 const handleAddLanguage = async () => {
@@ -144,7 +145,7 @@ const saveLanguages = async (updatedLanguages) => {
         languages: data.freelancer.languages,
         })
     );
-
+    if(document.querySelector(".parent")){document.querySelector(".parent").classList.remove("noscrol")}
     showToast({
         message: newlanguage
         ? "Language added successfully"

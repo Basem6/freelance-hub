@@ -39,7 +39,7 @@ const handleCancel = () => {
         skills: user?.skills || [],
     })
     );
-
+    if(document.querySelector(".parent")){document.querySelector(".parent").classList.remove("noscrol")}
     setSkillInput("");
     setmodel(null);
 };
@@ -82,6 +82,7 @@ const handleSubmit = async () => {
     });
 
     setmodel(null);
+    if(document.querySelector(".parent")){document.querySelector(".parent").classList.remove("noscrol")}
     } catch (error) {
     console.error(
         "Technical settings error:",

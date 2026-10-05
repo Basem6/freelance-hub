@@ -61,13 +61,13 @@ export default function DashboardSidebar({ activePage = 'dashboard' }) {
 
         if (newState) {
             // Collapse
-            gsap.to(sidebarRef.current, { width: 50, duration: 0.7 });
+            gsap.to(sidebarRef.current, { width: 50, duration: 0.3 });
             gsap.to(".link-text", { opacity: 0, duration: 0.1 });
             gsap.to(".link-badge", { opacity: 0, duration: 0.1 });
             gsap.to(logoPanelRef.current, { x: -10, opacity: 0, duration: 0.1 });
         } else {
             // Expand
-            gsap.to(sidebarRef.current, { width: 260, duration: 0.7 });
+            gsap.to(sidebarRef.current, { width: 260, duration: 0.3 });
             gsap.to(".link-text", { opacity: 1, duration: 0.4 });
             gsap.to(".link-badge", { opacity: 1, duration: 0.4 });
             gsap.to(logoPanelRef.current, { x: 0, opacity: 1, duration: 0.1 });

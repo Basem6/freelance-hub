@@ -1,7 +1,7 @@
 'use client'
 import { useMemo, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { SlidersHorizontal, X, Bookmark,AlertCircle, MapPin, Clock} from 'lucide-react'
+import { SlidersHorizontal, X, Bookmark,AlertCircle, MapPin, Clock, Search} from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { specialtyOptions } from '@/app/lib/constants/specialtyOptions';
@@ -105,8 +105,8 @@ return (
         </div>
 
         {/* Client */}
-        <div className="flex items-center gap-6 ">
-            <div className='flex items-center gap-2.5 rounded-xl py-3'>
+        <div className="flex items-center gap-3 md:gap-6 ">
+            <div className='flex items-center gap-2 rounded-xl py-3'>
                 <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full">
                     <Image
                     src={p.clientId?.image || '/avatars/avatar-1.png'}
@@ -303,7 +303,7 @@ return (
     {/* Main */}
 
     <div className="px-4  sm:px-6 gap-10 flex w-full ">
-        <div className="flex gap-7 w-3/4 flex-col">
+        <div className="flex gap-7 w-full md:w-3/4 flex-col">
             <AutoSlide></AutoSlide>
             <div className="w-full">
 
@@ -319,27 +319,12 @@ return (
                         setSearch(e.target.value)
                         setVisibleCount(6)
                     }}
-                    placeholder="Search projects..."
-                    className="w-full rounded-xl border border-gray-200 py-3 pl-11 pr-4 text-sm outline-none transition-all focus:border-[#FF7A00] focus:ring-2 focus:ring-[#FF7A00]/20"
+                    placeholder="Search for jobs"
+                    className="w-full rounded-md border border-gray-200 py-3 pl-13 pr-4 text-sm outline-none transition-all focus:ring-1 focus:ring-[#333]/70"
                     />
-
-                    <svg
-                    className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    >
-                    <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="m21 21-4.35-4.35m2.35-5.65a8 8 0 1 1-16 0 8 8 0 0 1 16 0Z"
-                    />
-                    </svg>
+                    <div className='absolute left-4 top-1/2 size-6 -translate-y-1/2 flex items-center'><Search size={28} strokeWidth={1}></Search></div>
                 </div>
-                <div className='grow'>
-                <OptionSelect value={sort} options={[{ value: 'newest', label: 'Newest First' }, { value: 'oldest', label: 'Oldest First' }, { value: 'budget_high', label: 'Highest Budget' }, { value: 'budget_low', label: 'Lowest Budget' }, { value: 'proposals_low', label: 'Fewest Proposals' }]} onChange={setSort} buttonClassName="bg-white w-full  px-4 py-3" />
-                </div>
+                    
                 <button
                     type="button"
                     onClick={() => setDrawerOpen(true)}
@@ -414,7 +399,7 @@ return (
                 )}
             </div>
         </div>
-        <div className='w-1/4'>
+        <div className='w-1/4 hidden md:block'>
         <FindWorkAside></FindWorkAside>
         </div>
     </div>

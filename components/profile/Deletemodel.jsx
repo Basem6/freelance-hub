@@ -19,6 +19,7 @@ const [loading, setLoading] = useState(false);
 const handleCancel = () => {
     if (loading) return;
     setmodel(null);
+    if(document.querySelector(".parent")){document.querySelector(".parent").classList.remove("noscrol")}
 };
 
 const handleSubmit = async () => {
@@ -58,7 +59,7 @@ const handleSubmit = async () => {
         portfolio: data.freelancer.portfolio,
         })
     );
-
+    if(document.querySelector(".parent")){document.querySelector(".parent").classList.remove("noscrol")}
     showToast({
         message: "Portfolio project deleted successfully",
         type: "sucess",

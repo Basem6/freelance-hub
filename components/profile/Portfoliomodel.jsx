@@ -285,7 +285,7 @@ export default function Portfoliomodel({ setmodel, selectedPortfolioItem  , setS
         );
         console.log(technicalData.portfolio)
         setmodel(null);
-
+        if(document.querySelector(".parent")){document.querySelector(".parent").classList.remove("noscrol")}
     } catch (error) {
         console.error(
             "Error adding work:",
@@ -300,7 +300,57 @@ export default function Portfoliomodel({ setmodel, selectedPortfolioItem  , setS
         });
     }
     };
-    const handleEditWork= async () => {}
+    const handleEditWork= async () => {
+        if (!newWork.title.trim() || !newWork.description.trim()) {
+        showToast({
+            message: "Please add a title and description before saving your work.",
+            type: "warning",
+        });
+        return;
+    }
+
+    const payload = {
+        ...newWork,
+        skills: Array.isArray(newWork.skills)
+            ? newWork.skills
+            : [],
+    };
+
+    try {
+        const response = await api.patch(
+            `/freelancer/ubdatework/${selectedPortfolioItem._id}`,
+            payload
+        );
+
+        setCoverImagePreview("");
+        setNewWork(initialWork);
+        
+        showToast({
+            message: "Portfolio project ubdated successfully.",
+            type: "sucess",
+        });
+        const portfolio = response.data.freelancer.portfolio || [];
+        dispatch(
+            updateTechnicalData({
+                portfolio,
+            })
+        );
+        setmodel(null);
+        if(document.querySelector(".parent")){document.querySelector(".parent").classList.remove("noscrol")}
+    } catch (error) {
+        console.error(
+            "Error ubdating work:",
+            error?.response?.data || error
+        );
+
+        showToast({
+            message:
+                error?.response?.data?.message ||
+                "Unable to ubdate work. Please try again.",
+            type: "error",
+        });
+    }
+    }
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
             <motion.div

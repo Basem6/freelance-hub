@@ -5,12 +5,12 @@ import { useState } from 'react';
 import {
     ArrowRight,
     BriefcaseBusiness,
-    Check,
     CircleUserRound,
     Eye,
     LockKeyhole,
     Settings,
-} from 'lucide-react';
+} from 'lucide-react'; 
+import Avatar from "@/components/ui/Avatar"
 import { useAppSelector } from '@/app/lib/hooks';
 
 export default function FindWorkAside() {
@@ -34,20 +34,29 @@ export default function FindWorkAside() {
     const completion = Math.round((completedItems / checklist.length) * 100);
 
     return (
-        <div className="flex flex-col  overflow-hidden  h-fit  md:py-8   gap-3.5 ">
-            <section className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-                <div className="flex items-start justify-between gap-3">
+        <div className="flex flex-col  overflow-hidden  h-fit  md:py-0   gap-3.5 ">
+                <section className="rounded-2xl bg-gray-100/60  p-5">
+                
+                <div className="flex flex-row gap-5 md:px-0 relative px-5 items-center  mb-2">
+                        <div className='size-16 overflow-hidden'>
+                            <Avatar user={user} ></Avatar>
+                        </div>
+                        <div className="flex flex-col">
+                            <h2 className="text-xl w-25 truncate text-[#111111]">{user?.fullName || 'User Name'}</h2>
+                            <h2 className="text-sm   text-gray-700/80">{user?.major || 'Freelnacer'}</h2>
+                        
+                        </div>
+                </div>
+                <div className="flex items-start justify-between gap-3 py-2">
                     <div>
-                        <h2 className="text-base font-semibold text-gray-900">Complete your profile</h2>
-                        <p className="mt-1 text-sm text-gray-500">
-                            {completedItems} of {checklist.length} steps complete
-                        </p>
+                        <h2 className="text-base  text-gray-900">Complete your profile</h2>
+                        
                     </div>
-                    <span className="text-sm font-semibold text-orange-500">{completion}%</span>
+                    <span className="text-sm font-semibold text-black">{completion}%</span>
                 </div>
 
                 <div
-                    className="mt-4 h-2 overflow-hidden rounded-full bg-orange-50"
+                    className="mt-4 h-1 overflow-hidden rounded-full bg-orange-50"
                     role="progressbar"
                     aria-label="Profile completion"
                     aria-valuenow={completion}
@@ -55,42 +64,15 @@ export default function FindWorkAside() {
                     aria-valuemax={100}
                 >
                     <div
-                        className="h-full rounded-full bg-orange-500 transition-[width] duration-500"
+                        className="h-full rounded-full bg-black/90 transition-[width] duration-500"
                         style={{ width: `${completion}%` }}
                     />
                 </div>
-
-                <ul className="mt-4 space-y-3">
-                    {checklist.map((item) => (
-                        <li key={item.label} className="flex items-center gap-2.5 text-sm">
-                            <span
-                                className={`flex size-5 shrink-0 items-center justify-center rounded-full ${
-                                    item.complete
-                                        ? 'bg-green-100 text-green-700'
-                                        : 'border border-gray-300 text-transparent'
-                                }`}
-                            >
-                                <Check size={12} aria-hidden="true" />
-                            </span>
-                            <span className={item.complete ? 'text-gray-500' : 'text-gray-800'}>
-                                {item.label}
-                            </span>
-                        </li>
-                    ))}
-                </ul>
-
-                <Link
-                    href="/profile"
-                    className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-orange-500 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-orange-600"
-                >
-                    Improve your profile
-                    <ArrowRight size={15} aria-hidden="true" />
-                </Link>
             </section>
 
-            <section className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+            <section className="rounded-2xl bg-gray-100/60 p-5">
                 <div className="flex items-center gap-2">
-                    <Eye size={17} className="text-orange-500" aria-hidden="true" />
+                    <Eye size={17} className="text-black/80" aria-hidden="true" />
                     <h2 className="text-base font-semibold text-gray-900">Profile visibility</h2>
                 </div>
                 <p className="mt-1 text-sm text-gray-500">
@@ -139,9 +121,9 @@ export default function FindWorkAside() {
                 </Link>
             </section>
 
-            <section className="rounded-2xl border border-orange-100 bg-orange-50/70 p-5">
+            <section className="rounded-2xl bg-gray-100/60 p-5">
                 <div className="flex items-start gap-3">
-                    <BriefcaseBusiness size={18} className="mt-0.5 shrink-0 text-orange-600" aria-hidden="true" />
+                    <BriefcaseBusiness size={18} className="mt-0.5 shrink-0 text-black/90" aria-hidden="true" />
                     <div>
                         <h2 className="text-sm font-semibold text-gray-900">Stand out to clients</h2>
                         <p className="mt-1 text-sm leading-relaxed text-gray-600">

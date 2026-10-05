@@ -7,6 +7,7 @@ import { updateTechnicalData } from "@/app/lib/Features/technicalData";
 import { useAppDispatch } from "@/app/lib/hooks";
 import { useShowToast } from "@/app/hooks/showToast";
 import Loadingbtn from "@/components/ui/Loadingbtn";
+import { useAppSelector } from "../../app/lib/hooks";
 
 const EMPTY_EDUCATION = {
     school: "",
@@ -116,7 +117,7 @@ export default function EducationModal({ setmodel }) {
                 message: "Education saved successfully.",
                 type: "sucess",
             });
-
+            if(document.querySelector(".parent")){document.querySelector(".parent").classList.remove("noscrol")}
             setmodel(null);
         } catch (error) {
             console.error("Education update error:", error);
@@ -135,7 +136,7 @@ export default function EducationModal({ setmodel }) {
             <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                onClick={() => !isSaving && setmodel(null)}
+                onClick={() => {!isSaving && setmodel(null); if(document.querySelector(".parent")){document.querySelector(".parent").classList.remove("noscrol")}}}
                 className="absolute inset-0 bg-black/15"
             />
 
@@ -160,7 +161,7 @@ export default function EducationModal({ setmodel }) {
 
                     <button
                         type="button"
-                        onClick={() => setmodel(null)}
+                        onClick={() => {setmodel(null);  if(document.querySelector(".parent")){document.querySelector(".parent").classList.remove("noscrol")}}}
                         disabled={isSaving}
                         className="rounded-xl p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
                     >
@@ -211,7 +212,7 @@ export default function EducationModal({ setmodel }) {
                     <div className="flex justify-end gap-5 border-t border-gray-100 px-6 py-4">
                         <button
                             type="button"
-                            onClick={() => setmodel(null)}
+                            onClick={() => {setmodel(null);  if(document.querySelector(".parent")){document.querySelector(".parent").classList.remove("noscrol")}}}
                             disabled={isSaving}
                             className="rounded-xl border border-gray-200 px-5 py-2 font-semibold text-gray-700 hover:bg-gray-50"
                         >

@@ -24,6 +24,7 @@ export default function Experiencemodel({ setmodel }) {
     const handleCancel = () => {
         if (isSaving) return;
         setmodel(null);
+        if(document.querySelector(".parent")){document.querySelector(".parent").classList.remove("noscrol")}
     };
 
     const handleChange = (e) => {
@@ -82,7 +83,7 @@ export default function Experiencemodel({ setmodel }) {
                     experience: data.freelancer.experience,
                 })
             );
-
+            if(document.querySelector(".parent")){document.querySelector(".parent").classList.remove("noscrol")}
             showToast({
                 message: "Experience saved successfully.",
                 type: "sucess",
