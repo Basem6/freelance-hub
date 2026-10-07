@@ -11,6 +11,10 @@ async function getProject(id) {
       headers: {
         Cookie: `authToken=${authToken || ''}`,
       },
+      next: {
+        revalidate: 300,
+      },
+    
     }
   )
 
@@ -32,7 +36,11 @@ async function getproposal(projectId) {
       headers: {
         Cookie: `authToken=${authToken || ''}`,
       },
-      cache: "no-store",
+      
+      next: {
+        revalidate: 300,
+      },
+    
     }
   )
 

@@ -98,6 +98,7 @@ export default function ProjectDetailsClient({ project, proposals: initialPropos
       setSelectedProposal(null);
     }
   };
+  console.log(project)
   return (
     <div className="min-h-screen bg-[#F8F8F8] font-sans text-[#111111] pb-24">
 
@@ -143,7 +144,7 @@ export default function ProjectDetailsClient({ project, proposals: initialPropos
         )}
       </AnimatePresence>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-18">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-18 ">
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
@@ -159,12 +160,9 @@ export default function ProjectDetailsClient({ project, proposals: initialPropos
 
             <motion.div
               variants={staggerContainer}
-              initial="hidden"
-              animate="visible"
-              className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm relative overflow-hidden"
+              
+              className="bg-white rounded-2xl p-8 border border-gray-100  relative overflow-hidden"
             >
-              <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-[#FF7A00] to-orange-400" />
-
               {/* Status */}
               <motion.div
                 variants={fadeInUp}
@@ -332,11 +330,10 @@ export default function ProjectDetailsClient({ project, proposals: initialPropos
 
 
             <motion.div
-              initial="hidden"
-              whileInView="visible"
+              
               viewport={{ once: true }}
               variants={fadeInUp}
-              className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm"
+              className="bg-white rounded-2xl p-8 border border-gray-100"
             >
 
               <h2 className="text-2xl font-bold mb-6">
@@ -414,16 +411,11 @@ export default function ProjectDetailsClient({ project, proposals: initialPropos
 
             </motion.div>
 
-            {/* ==================================================
-                Applicants
-            ================================================== */}
-
             <motion.div
-              initial="hidden"
-              whileInView="visible"
+            
               viewport={{ once: true }}
               variants={fadeInUp}
-              className="bg-white rounded-2xl md:p-8 p-2 py-5 border border-gray-100 shadow-sm"
+              className="bg-white rounded-2xl md:p-8 p-2 py-5 border border-gray-100 "
             >
 
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
@@ -437,8 +429,7 @@ export default function ProjectDetailsClient({ project, proposals: initialPropos
               {/* Real proposals */}
               <motion.div
                 variants={staggerContainer}
-                initial="hidden"
-                animate="visible"
+              
                 className="space-y-4"
               >
 
@@ -488,10 +479,9 @@ export default function ProjectDetailsClient({ project, proposals: initialPropos
               ================================================== */}
 
               <motion.div
-                variants={slideInRight}
-                initial="hidden"
-                animate="visible"
-                className="bg-white rounded-2xl p-6 border border-gray-100 shadow-lg shadow-gray-200/40"
+               
+                
+                className="bg-white rounded-2xl p-6 border border-gray-100"
               >
 
                 {/* Budget */}
@@ -531,7 +521,7 @@ export default function ProjectDetailsClient({ project, proposals: initialPropos
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => setShowProposal(true)}
-                    className="w-full py-3.5 px-4 bg-gradient-to-r from-[#FF7A00] to-orange-500 hover:from-orange-600 hover:to-orange-500 text-white rounded-xl font-bold text-base shadow-lg shadow-orange-500/30 transition-all flex items-center justify-center gap-2"
+                    className="w-full py-3.5 px-4 bg-gradient-to-r from-[#da710f] to-orange-500 hover:from-orange-600 hover:to-orange-500 text-white rounded-xl font-bold text-base  transition-all flex items-center justify-center gap-2"
                   >
                     Submit a Proposal
                   </motion.button>
@@ -542,7 +532,7 @@ export default function ProjectDetailsClient({ project, proposals: initialPropos
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => router.push(`/messages?userId=${project?.clientId._id|| project?.client?._id}`)}
-                    className="w-full py-3.5 px-4 bg-gradient-to-r from-[#FF7A00] to-orange-500 hover:from-orange-600 hover:to-orange-500 text-white rounded-xl font-bold text-base shadow-lg shadow-orange-500/30 transition-all"
+                    className="w-full py-3.5 px-4 bg-gradient-to-r from-[#FF7A00] to-orange-500 hover:from-orange-600 hover:to-orange-500 text-white rounded-xl font-bold text-base  transition-all"
                   >
                     Send a Message
                   </motion.button>
@@ -712,7 +702,7 @@ function ProposalCard({ proposal, project, user, isMenuOpen, onToggleMenu, onAct
 
   return (
     <motion.div
-      variants={fadeInUp}
+      
       className="group md:p-5 p-2 border border-gray-100 hover:border-orange-200 rounded-xl hover:shadow-md  transition-all bg-white relative"
     >
 
@@ -804,7 +794,7 @@ function ProposalCard({ proposal, project, user, isMenuOpen, onToggleMenu, onAct
 
             </span>
 
-         
+            
           </div>
 
           {/* Cover Letter */}

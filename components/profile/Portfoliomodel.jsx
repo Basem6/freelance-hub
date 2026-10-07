@@ -283,7 +283,6 @@ export default function Portfoliomodel({ setmodel, selectedPortfolioItem  , setS
                 portfolio,
             })
         );
-        console.log(technicalData.portfolio)
         setmodel(null);
         if(document.querySelector(".parent")){document.querySelector(".parent").classList.remove("noscrol")}
     } catch (error) {
@@ -335,6 +334,7 @@ export default function Portfoliomodel({ setmodel, selectedPortfolioItem  , setS
                 portfolio,
             })
         );
+        setSelectedPortfolioItem(null)
         setmodel(null);
         if(document.querySelector(".parent")){document.querySelector(".parent").classList.remove("noscrol")}
     } catch (error) {

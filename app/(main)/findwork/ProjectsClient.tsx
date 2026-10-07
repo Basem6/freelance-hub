@@ -1,5 +1,5 @@
 'use client'
-import { useMemo, useState } from 'react'
+import {  useMemo, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { SlidersHorizontal, X, Bookmark,AlertCircle, MapPin, Clock, Search} from 'lucide-react'
 import Link from 'next/link'
@@ -10,6 +10,7 @@ import AutoSlide from '@/components/ui/AutoSlide'
 import Radio from "@/components/ui/rating"
 import {timeAgo} from "@/app/utils/handletime"
 import FindWorkAside from "@/app/(dash)/nx/findwork/FindWorkAside"
+import { useAppSelector } from '@/app/lib/hooks'
 
 const STATUS_LABELS = {
 open: 'Open',
@@ -151,7 +152,7 @@ const [filters, setFilters] = useState<any>({})
 const [sort, setSort] = useState('newest')
 const [drawerOpen, setDrawerOpen] = useState(false)
 const [visibleCount, setVisibleCount] = useState(6)
-
+const user = useAppSelector(state => state.auth.user);
 const filtered = useMemo(() => {
     let result = [...projects]
 
@@ -304,7 +305,9 @@ return (
 
     <div className="px-4  sm:px-6 gap-10 flex w-full ">
         <div className="flex gap-7 w-full md:w-3/4 flex-col">
+        {user&&
             <AutoSlide></AutoSlide>
+        }
             <div className="w-full">
 
                 {/* Search */}
@@ -399,9 +402,11 @@ return (
                 )}
             </div>
         </div>
+        {user && 
         <div className='w-1/4 hidden md:block'>
         <FindWorkAside></FindWorkAside>
         </div>
+        }   
     </div>
 
     {/* Mobile Drawer */}

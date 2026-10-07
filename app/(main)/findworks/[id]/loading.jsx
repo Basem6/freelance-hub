@@ -10,7 +10,6 @@ return (
 
             {/* Project Header */}
             <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm relative overflow-hidden animate-pulse">
-            <div className="absolute top-0 left-0 w-1 h-full bg-orange-100" />
 
             {/* Status badges */}
             <div className="flex flex-wrap gap-2 mb-4">

@@ -461,7 +461,7 @@ return (
                         return (
                         <div
                         key={portfolioItemId}
-                        className="group relative flex     h-40   w-[32%] flex-col gap-1.5  rounded-sm  md:h-48 cursor-pointer"
+                        className="group relative flex w-[47.6%]     h-40   md:w-[32%] flex-col gap-1.5  rounded-sm  md:h-48 cursor-pointer"
                         >
                             <div className="w-full h-full overflow-hidden rounded-sm">
                                 <img
