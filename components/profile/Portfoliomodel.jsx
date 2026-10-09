@@ -41,7 +41,6 @@ export default function Portfoliomodel({ setmodel, selectedPortfolioItem  , setS
         skills:selectedPortfolioItem?.skills || [],
     };
     const showToast = useShowToast();
-    const technicalData= useAppSelector(state => state.technicalData);
     const dispatch = useAppDispatch()
     const [over , setover] = useState("")
     const [loading , setloading] = useState(false)
@@ -768,7 +767,7 @@ export default function Portfoliomodel({ setmodel, selectedPortfolioItem  , setS
                         </motion.div>
                     </div>
                 )
-                    }
+                }
             </AnimatePresence>
         </div>
     );

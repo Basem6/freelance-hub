@@ -1,7 +1,7 @@
 
 export default function Loading() {
 return (
-    <div className="min-h-screen bg-[#F8F8F8] font-sans text-[#111111] pb-24">
+    <div className="min-h-screen bg-white font-sans text-[#111111] pb-24">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-18">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 

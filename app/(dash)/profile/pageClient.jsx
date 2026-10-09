@@ -30,7 +30,6 @@ export default function PageClient() {
 const user = useAppSelector(state => state.auth.user);
 const technicalData= useAppSelector(state => state.technicalData);
 const [model , setmodel ] = useState(null)
-const [Projects , setProjects] = useState([])
 const [projectsLoading, setProjectsLoading] = useState(false)
 const [visiblePortfolioCards, setVisiblePortfolioCards] = useState(3)
 const [portfolioCarouselIndex, setPortfolioCarouselIndex] = useState(0)
@@ -158,24 +157,6 @@ const handlePortfolioTouchEnd = (event) => {
     }
     setPortfolioTouchStartX(null)
 }
-
-useEffect(()=>{
-    const ds= async  function (){
-    if (user?.role === 'client') {
-        setProjectsLoading(true);
-        try {
-            const projectRes = await api.get('/my-projects');
-            const backendProjects = projectRes?.data?.projects ?? projectRes?.data ?? [];
-            setProjects(Array.isArray(backendProjects) ? backendProjects : []);
-        } catch (error) {
-            console.error('Error fetching client projects:', error);
-        } finally {
-            setProjectsLoading(false);
-        }
-    }
-}
-ds()
-},[]) 
 
 return (
     <div className="flex flex-col  overflow-hidden  h-fit  md:p-8 max-w-7xl mx-auto  gap-3.5 ">
@@ -522,58 +503,7 @@ return (
 
                     </div>
                 )
-                ) : (
-                user?.role ==="client"? (
-                    <div className="flex min-w-full flex-wrap gap-3">
-                    {Projects?.slice(0, 3).map((project) => {
-                        const pid = project.id ?? project._id;
-
-                        return (
-                        <Link
-                            href={`/projects/${pid}`}
-                            key={pid}
-                            className="w-50 grow overflow-hidden rounded-3xl border border-gray-200 bg-white px-6 py-3 shadow-sm transition hover:shadow-md"
-                        >
-                            <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-                            <div>
-                                <div className="inline-flex items-center gap-2 rounded-full bg-orange-50 px-3 py-1 text-sm font-semibold text-orange-700">
-                                <Briefcase size={16} />
-
-                                {project.category}
-                                </div>
-
-                                <h3 className="mt-4 text-xl font-semibold text-[#111111]">
-                                {project.title}
-                                </h3>
-                            </div>
-
-                        
-                            </div>
-
-                            <div className="mt-6 flex flex-wrap gap-2">
-                            {(project.skills || []).map(
-                                (skill, index) => (
-                                <span
-                                    key={`${skill}-${index}`}
-                                    className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700"
-                                >
-                                    {skill}
-                                </span>
-                                )
-                            )}
-                            </div>
-                        </Link>
-                        );
-                    })}
-                    </div>
-                ) : (
-                    <div className="flex min-h-36 items-center justify-center">
-                        <p className="text-lg font-medium text-gray-400">
-                            No Projects yet
-                        </p>
-                    </div>
-                )
-                )}
+                ) :""}
             </div>
             {shouldShowPortfolioArrows && (
                     <div className="flex gap-3 mt-2 justify-end">

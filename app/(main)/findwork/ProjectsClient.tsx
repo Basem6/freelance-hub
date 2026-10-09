@@ -77,7 +77,7 @@ return (
         {/* Title + Description */}
 
         <div>
-        <div className="mb-0.5 hover:border-gray-800 text-lg w-fit border-b border-gray-800/0 -2 text-base  font-Inter leading-snug text-[#111111]">
+        <div className="hover:border-gray-800 w-fit  border-b-2 border-gray-800/0  text-base  font-Inter leading-4 mb-0-5 text-[#111111]">
             {p.title}
         </div>
 

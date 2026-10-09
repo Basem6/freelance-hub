@@ -30,17 +30,16 @@ import { timeAgo } from "../../../utils/handletime";
 import { useShowToast } from "../../../hooks/showToast";
 
 
-export default function ProjectDetailsClient({ project, proposals: initialProposals }) {
+export default function ProjectDetailsClient({ project }) {
   const router = useRouter();
   const showToast = useShowToast()
-  const [proposals, setProposals] = useState(initialProposals || []);
+  const [proposals, setProposals] = useState(project.proposals || []);
   const user = useAppSelector((state) => state.auth.user);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [showProposal, setShowProposal] = useState(false);
   const [openProposalMenu, setOpenProposalMenu] = useState(null);
   const [proposalDialog, setProposalDialog] = useState(null);
   const [selectedProposal, setSelectedProposal] = useState(null);
-  // Get client info - handle both data structures
   const clientInfo = project?.clientId || project?.client || {};
   const clientName = clientInfo?.fullName || clientInfo?.name || "Client";
   const clientImage = clientInfo?.image || "/avatars/avatar-1.png";
@@ -100,7 +99,7 @@ export default function ProjectDetailsClient({ project, proposals: initialPropos
   };
   console.log(project)
   return (
-    <div className="min-h-screen bg-[#F8F8F8] font-sans text-[#111111] pb-24">
+    <div className="min-h-screen bg-white font-sans text-[#111111] pb-24">
 
       <AnimatePresence>
         {showProposal && (
@@ -148,15 +147,8 @@ export default function ProjectDetailsClient({ project, proposals: initialPropos
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-          {/* ==================================================
-              Main Column
-          ================================================== */}
 
           <div className="lg:col-span-2 space-y-8">
-
-            {/* ==================================================
-                Project Header
-            ================================================== */}
 
             <motion.div
               variants={staggerContainer}

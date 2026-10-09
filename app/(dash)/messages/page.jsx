@@ -572,11 +572,9 @@ export default function MessagesPage() {
               </div>
 
               {/* Message Input */}
-              <div className="bg-white border-t border-gray-100 px-4 py-3 shrink-0">
-                <div className="flex items-end space-x-3">
-                  <button className="p-2 rounded-xl hover:bg-gray-100 text-gray-400 shrink-0 transition-colors">
-                    <Paperclip size={20} />
-                  </button>
+              <div className=" border-t border-gray-100  px-4 py-3  ">
+                <div className="flex items-center space-x-3">
+                
                   <div className="flex-1 relative">
                     <textarea
                       value={messageInput}
@@ -593,15 +591,12 @@ export default function MessagesPage() {
                       style={{ minHeight: '48px' }}
                     />
                   </div>
-                  <button className="p-2 rounded-xl hover:bg-gray-100 text-gray-400 shrink-0 transition-colors">
-                    <Smile size={20} />
-                  </button>
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={handleSend}
                     disabled={!messageInput.trim() || sending}
-                    className="shrink-0 w-11 h-11 bg-linear-to-br from-[#FF7A00] to-orange-500 text-white rounded-xl flex items-center justify-center shadow-md shadow-orange-200 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                    className="shrink-0 w-11 h-11 bg-linear-to-br from-[#FF7A00] to-orange-500 text-white rounded-xl flex items-center justify-center  disabled:opacity-40 disabled:cursor-not-allowed transition-all"
                   >
                     <Send size={18} />
                   </motion.button>

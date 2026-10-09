@@ -3,12 +3,13 @@ import { jwtDecode } from 'jwt-decode'
 
 // صفحة الـ freelancer الرئيسية
 const FREELANCER_HOME = 'nx/findwork'
+const CLIENT_HOME = '/nx/client/dashboard'
 
 // صفحات الـ freelancer بس
-const freelancerOnly = ['/my-works', '/earnings']
+const freelancerOnly = ['/earnings','/profile']
 
 // صفحات الـ client بس
-const clientOnly = ['/projects', "/freelancers"]
+const clientOnly = ['nx/client/dashboard','nx/browse/talent']
 
 // الصفحات المحمية (محتاجة توكن)
 const protectedRoutes = [
@@ -22,6 +23,8 @@ const protectedRoutes = [
     '/hire',
     '/findwork',
     '/nx/findwork',
+    '/nx/client/dashboard',
+    '/nx/browse/talent'
 ]
 
 const authPages = ['/login', '/register']
@@ -79,10 +82,22 @@ export function proxy(request) {
         if (userRole === 'freelancer' && isHomePage) {
             return NextResponse.redirect(new URL(FREELANCER_HOME, request.url))
         }
-
+         // Freelancer على الصفحة الرئيسية → findwork
+        if (userRole === 'client' && isHomePage) {
+            return NextResponse.redirect(new URL(CLIENT_HOME, request.url))
+        }
         // مسجل دخول وبيفتح login/register
         if (isAuthPage) {
-            const target = userRole === 'freelancer' ? FREELANCER_HOME : '/'
+            let target;
+            if(userRole==="freelancer"){
+                target=FREELANCER_HOME
+            }
+            else if(userRole==="client"){
+                target=CLIENT_HOME
+            }
+            else{
+                target="/"
+            }
             return NextResponse.redirect(new URL(target, request.url))
         }
     }
@@ -93,7 +108,6 @@ export function proxy(request) {
 export const config = {
     matcher: [
         '/', // ضروري عشان الـ middleware يشتغل على الرئيسية
-        '/dashboard/:path*',
         '/profile/:path*',
         '/projects/:path*',
         '/settings/:path*',
@@ -104,6 +118,6 @@ export const config = {
         '/earnings/:path*',
         '/hire/:path*',
         '/findwork/:path*',
-        '/nx/findwork/:path*',
+        '/nx/:path*',
     ],
 }

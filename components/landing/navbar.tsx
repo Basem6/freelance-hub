@@ -1,10 +1,9 @@
 'use client'
-import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { cn } from '../../app/lib/utils'
 import {  Menu, Sun, X } from 'lucide-react'
 import Image from "next/image";
-import { useRef, useEffect, useState, useCallback  } from 'react'
+import { useRef, useEffect, useState } from 'react'
 import Link from "next/link";
 import { useSocketContext } from '../../app/providers/SocketProvider';
 import { useAppDispatch, useAppSelector } from '@/app/lib/hooks'
@@ -13,7 +12,7 @@ import { useRouter } from "next/navigation";
 import api from '../../app/utils/api'
 import gsap from "gsap";
 import  { registerOutsideClick, unregisterOutsideClick } from '@/app/hooks/ClickOutside'
-import { Search, Bell,  TrendingUp , Settings , BadgeQuestionMark, CircleUserRound , LogOut  , ChevronDown} from "lucide-react";
+import { Bell,  TrendingUp , Settings , BadgeQuestionMark, CircleUserRound , LogOut  , ChevronDown} from "lucide-react";
 
 const NAV_LINKS = [
   { label: 'Home', href: '/' },
