@@ -65,9 +65,7 @@ return (
             </span>
             <span className="flex items-center gap-1">
             
-            {p?.proposals?.filter(
-                (proposal: any) => proposal.status !== "withdrawn"
-            ).length || 0}{" "}
+            {p?.proposals?.length || 0}{" "}
             proposals
             </span>
 

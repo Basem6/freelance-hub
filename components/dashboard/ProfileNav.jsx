@@ -58,18 +58,20 @@ export default function ProfileNav({nav1Ref}){
                     </li>
                     </Link>
                     <div className="sperator  border-b border-gray-400/20 py-1"></div>
-                    <Link onClick={()=>setActiveMenu("")} href={`/profile`}>
+                    <Link onClick={()=>setActiveMenu("")} href={`${user.role==="freelancer"?"/profile":"/settings"}`}>
                     <li className=' hover:bg-gray-200/80 mt-1 px-2 py-1.5 rounded-sm cursor-pointer flex gap-3 items-center '>
                         <CircleUserRound size={17} strokeWidth={1} />
                         <p className='text-sm '>My Profile</p>
                     </li>
                     </Link>
+                    {user.role==="freelancer"&&
                     <Link onClick={()=>setActiveMenu("")} href={"/earnings"}>
                     <li className=' hover:bg-gray-200/80 px-2 py-1.5 rounded-sm cursor-pointer flex gap-3 items-center '>
                         <TrendingUp size={17} strokeWidth={1}/>
                         <p className='text-sm '>Stats and Trend</p>
                     </li>
                     </Link>
+                    }
                     <Theme></Theme>
                     <Link onClick={()=>setActiveMenu("")} href={`/settings`}>
                     <li className=' hover:bg-gray-200/80 px-2 py-1.5 rounded-sm  cursor-pointer flex gap-3 items-center'>

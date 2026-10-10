@@ -563,16 +563,7 @@ export default function ProjectDetailsClient({ project }) {
 
                   </div>
 
-                  <div className="flex justify-between items-center text-sm">
-
-                    <span className="text-gray-500">
-                      Last viewed
-                    </span>
-
-                    <span className="font-semibold">
-                      {project?.lastViewed ?? "Recently"}
-                    </span>
-                  </div>
+                  
                   {project?.freelancerId &&
                   <div className="flex justify-between items-center text-sm">
 

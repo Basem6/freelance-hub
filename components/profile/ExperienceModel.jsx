@@ -8,6 +8,8 @@ import { useState } from "react";
 import { InputGroup } from "../ui/InputGroup";
 import { useShowToast } from "@/app/hooks/showToast";
 import Loadingbtn from "@/components/ui/Loadingbtn";
+import gsap from "gsap";
+import { useEffect } from "react";
 
 export default function Experiencemodel({ setmodel }) {
     const technicalData = useAppSelector((state) => state.technicalData);
@@ -102,36 +104,40 @@ export default function Experiencemodel({ setmodel }) {
             setIsSaving(false);
         }
     };
-
+useEffect(()=>{
+    if(document.querySelector(".mobile-nav")){
+        gsap.to(".mobile-nav",{
+            bottom:0,
+            duration:0.3
+        })
+    }
+},[setmodel])
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0  z-9999 flex items-center justify-center p-4">
             {/* Overlay */}
             <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 onClick={handleCancel}
-                className="absolute inset-0 bg-black/15"
+                className="absolute inset-0  z-9998 bg-black/15"
             />
 
             {/* Modal */}
             <motion.div
                 initial={{
                     opacity: 0,
-                    scale: 0.92,
                     y: 20,
                 }}
                 animate={{
                     opacity: 1,
-                    scale: 1,
                     y: 0,
                 }}
                 exit={{
                     opacity: 0,
-                    scale: 0.92,
                     y: 20,
                 }}
-                className="relative w-full max-w-3xl rounded-2xl bg-white shadow-2xl"
+                className={`${window.matchMedia("(max-width: 767px)").matches ? "mobile-nav" : "desktop-nav"}  md:relative  absolute md:bottom-auto -bottom-1/3  rounded-t-2xl w-full  z-9999 max-w-3xl md:rounded-2xl bg-white shadow-2xl`}
             >
                 {/* Header */}
                 <div className="flex items-center justify-between border-b border-gray-100 p-6">

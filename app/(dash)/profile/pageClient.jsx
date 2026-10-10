@@ -1,12 +1,9 @@
 'use client';
 //core
 import { useEffect, useRef, useState } from 'react';
-import Link from 'next/link';
 import Image from 'next/image';
 //hooks
 import { useAppSelector } from '@/app/lib/hooks';
-//reduxs
-import api from '@/app/utils/api';
 //motion
 import { motion } from 'framer-motion';
 import { AnimatePresence } from 'framer-motion';
@@ -25,6 +22,7 @@ import gsap from 'gsap';
 import { fadeUp, staggerContainer } from '../../lib/constants/animations';
 import Experiencemodel from '../../../components/profile/ExperienceModel';
 import Deletemodel from '../../../components/profile/Deletemodel';
+import ShowWork from '../../../components/profile/ShowWork';
 
 export default function PageClient() {
 const user = useAppSelector(state => state.auth.user);
@@ -59,7 +57,7 @@ const handleEditPortfolio = (item) => {
     setSelectedPortfolioItem(item);
     setmodel('portfolio');
 };
-const handleDeletePortfolio = async (item) => {  
+const handleDeletePortfolio = (item) => {  
 setmodel("DeletePortfolio")
 setSelectedPortfolioItem(item)
 
@@ -157,7 +155,15 @@ const handlePortfolioTouchEnd = (event) => {
     }
     setPortfolioTouchStartX(null)
 }
-
+const showWork= (e,item)=>{
+    console.log(e.target.classList.contains("image"))
+    if(e.target.classList.contains("image")){
+        setmodel("showWork")
+        setSelectedPortfolioItem(item)
+        console.log(e.target.classList.contains("image"))
+        console.log(item)
+    }
+}
 return (
     <div className="flex flex-col  overflow-hidden  h-fit  md:p-8 max-w-7xl mx-auto  gap-3.5 ">
     {/* Main Content */}
@@ -442,16 +448,17 @@ return (
                         return (
                         <div
                         key={portfolioItemId}
+                        onClick={(e)=>showWork(e, item)}
                         className="group relative flex w-[47.6%]     h-40   md:w-[32%] flex-col gap-1.5  rounded-sm  md:h-48 cursor-pointer"
                         >
-                            <div className="w-full h-full overflow-hidden rounded-sm">
+                            <div className="w-ful image h-full overflow-hidden rounded-sm">
                                 <img
                                     src={
                                     item.coverImage ||
                                     DEFAULT_COVER_IMAGE
                                     }
                                     alt={item.title || "Portfolio work"}
-                                    className={`h-full w-full object-cover group-hover:brightness-80 transition-all duration-200 ${activeMenu === portfolioItemId ? "brightness-80" : ""}`}
+                                    className={`h-full image w-full object-cover group-hover:brightness-80 transition-all duration-200 ${activeMenu === portfolioItemId ? "brightness-80" : ""}`}
                                 />
                             </div>
                             <div>
@@ -459,7 +466,7 @@ return (
                                 {item.title||"Untitled Project"}
                                 </h4>
                             </div>
-                            <div ref={menuRef} className="absolute z-50 top-2 right-2">
+                            <div ref={menuRef} className="absolute Ellipsis  z-50 top-2 right-2">
                                 <button
                                     type="button"
                                     aria-label={`Portfolio actions for ${item.title || "Untitled Project"}`}
@@ -599,6 +606,7 @@ return (
         {(model ==="education") && <ProfileRecordModel type={model} setmodel={setmodel} />}
         {(model ==="experience") && <Experiencemodel  setmodel={setmodel} />}
         {(model ==="DeletePortfolio") && <Deletemodel item={selectedPortfolioItem}  setmodel={setmodel} />}
+        {(model ==="showWork") && <ShowWork selectedPortfolioItem={selectedPortfolioItem}  setSelectedPortfolioItem={setSelectedPortfolioItem} setmodel={setmodel} />}
     </AnimatePresence>
     </div>
 );

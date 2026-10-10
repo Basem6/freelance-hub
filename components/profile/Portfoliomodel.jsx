@@ -16,6 +16,8 @@ import { InputGroup } from "../ui/InputGroup";
 import { Image, Link2, X , SquareArrowOutUpRight, Trash} from "lucide-react";
 import { AnimatePresence } from "framer-motion";
 import { useShowToast } from "../../app/hooks/showToast";
+import gsap from "gsap";
+import { useEffect } from "react";
 
 const isValidUrl = (value) => {
     try {
@@ -350,25 +352,30 @@ export default function Portfoliomodel({ setmodel, selectedPortfolioItem  , setS
         });
     }
     }
+    useEffect(()=>{
+        if(document.querySelector(".mobile-nav")){
+            gsap.to(".mobile-nav",{
+                bottom:0,
+                duration:0.3
+            })
+        }
+    },[setmodel])
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <div className="fixed inset-0  z-9999 flex items-center justify-center">
             <motion.div
                 initial={{
                     opacity: 0,
-                    scale: 0.92,
                     y: 20,
                 }}
                 animate={{
                     opacity: 1,
-                    scale: 1,
                     y: 0,
                 }}
                 exit={{
                     opacity: 0,
-                    scale: 0.92,
                     y: 20,
                 }}
-                className="relative flex min-h-screen max-h-screen w-full flex-col overflow-y-auto bg-white px-2 md:px-18"
+                className={`${window.matchMedia("(max-width: 767px)").matches ? "mobile-nav" : "desktop-nav"}  relative flex min-h-screen max-h-screen w-full flex-col overflow-y-auto bg-white px-2 md:px-18`}
             >
                 {/* Header */}
                 <div className="flex items-start md:items-center justify-between border-b border-gray-100 p-10">

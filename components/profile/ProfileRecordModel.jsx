@@ -8,6 +8,8 @@ import { useAppDispatch } from "@/app/lib/hooks";
 import { useShowToast } from "@/app/hooks/showToast";
 import Loadingbtn from "@/components/ui/Loadingbtn";
 import { useAppSelector } from "../../app/lib/hooks";
+import gsap from "gsap";
+import { useEffect } from "react";
 
 const EMPTY_EDUCATION = {
     school: "",
@@ -130,28 +132,33 @@ export default function EducationModal({ setmodel }) {
             setIsSaving(false);
         }
     };
-
+    useEffect(()=>{
+        if(document.querySelector(".mobile-nav")){
+            gsap.to(".mobile-nav",{
+                bottom:0,
+                duration:0.3
+            })
+        }
+    },[setmodel])
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0  z-9999 flex items-center justify-center p-4">
             <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 onClick={() => {!isSaving && setmodel(null); if(document.querySelector(".parent")){document.querySelector(".parent").classList.remove("noscrol")}}}
-                className="absolute inset-0 bg-black/15"
+                className="absolute  z-9998 inset-0 bg-black/15"
             />
 
             <motion.div
                 initial={{
                     opacity: 0,
-                    scale: 0.92,
                     y: 20,
                 }}
                 animate={{
                     opacity: 1,
-                    scale: 1,
                     y: 0,
                 }}
-                className="relative max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl bg-white shadow-2xl"
+                className={`${window.matchMedia("(max-width: 767px)").matches ? "mobile-nav" : "desktop-nav"}  md:relative  absolute md:bottom-auto -bottom-1/3 rounded-t-2xl z-9999 max-h-[90vh]  w-full max-w-3xl overflow-y-auto md:rounded-2xl bg-white shadow-2xl`}
             >
                 {/* Header */}
                 <div className="flex items-center justify-between border-b border-gray-100 p-6">

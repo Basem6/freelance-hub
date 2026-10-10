@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",
+    "@lottiefiles/dotlottie-react": "^0.20.0",
     "@react-oauth/google": "^0.13.5",
     "@reduxjs/toolkit": "^2.12.0",
     "@vercel/analytics": "^1.6.1",

@@ -1,7 +1,7 @@
-export default function ClientDashboard(){
+import ClientPage from "./pageClient";
+
+export default function Page(){
     return (
-        <div className="min-h-screen bg-red-200 flex items-center"> 
-            
-        </div>
+        <ClientPage></ClientPage>
     )
 }

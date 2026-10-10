@@ -11,6 +11,8 @@ import { updateTechnicalData} from "@/app/lib/Features/technicalData";
 import { useShowToast } from "@/app/hooks/showToast";
 import { handleAddSkill } from "../../app/utils/Skills/addskill";
 import { handleRemoveSkill } from "../../app/utils/Skills/removeskill";
+import gsap from "gsap";
+import { useEffect } from "react";
 
 export default function Skillsmodel({ setmodel }) {
 const dispatch = useAppDispatch();
@@ -98,36 +100,40 @@ const handleSubmit = async () => {
     setLoadingApi(false);
     }
 };
-
+useEffect(()=>{
+    if(document.querySelector(".mobile-nav")){
+        gsap.to(".mobile-nav",{
+            bottom:0,
+            duration:0.3
+        })
+    }
+},[setmodel])
 return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0  z-9999 flex items-center justify-center p-4">
     {/* Overlay */}
     <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         onClick={handleCancel}
-        className="absolute inset-0 bg-black/15"
+        className="absolute  z-9998 inset-0 bg-black/15"
     />
 
     {/* Modal */}
     <motion.div
         initial={{
         opacity: 0,
-        scale: 0.92,
         y: 20,
         }}
         animate={{
         opacity: 1,
-        scale: 1,
         y: 0,
         }}
         exit={{
         opacity: 0,
-        scale: 0.92,
         y: 20,
         }}
-        className="relative w-full max-w-3xl rounded-2xl bg-white shadow-2xl"
+        className={`${window.matchMedia("(max-width: 767px)").matches ? "mobile-nav" : "desktop-nav"} md:relative  absolute md:bottom-auto -bottom-1/3 rounded-t-2xl  z-9999 w-full max-w-3xl md:rounded-2xl bg-white shadow-sm`}
     >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-gray-100 p-6">
