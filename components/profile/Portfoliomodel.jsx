@@ -246,59 +246,61 @@ export default function Portfoliomodel({ setmodel, selectedPortfolioItem  , setS
         }
     };
     const handleAddWork = async () => {
-    if (!newWork.title.trim() || !newWork.description.trim()) {
-        showToast({
-            message: "Please add a title and description before saving your work.",
-            type: "warning",
-        });
-        return;
-    }
+        if (loading) return;
 
-    const payload = {
-        ...newWork,
-        skills: Array.isArray(newWork.skills)
-            ? newWork.skills
-            : [],
-    };
+        if (!newWork.title.trim() || !newWork.description.trim()) {
+            showToast({
+                message: "Please add a title and description before saving your work.",
+                type: "warning",
+            });
+            return;
+        }
 
-    console.log("Sending portfolio:", payload);
+        const payload = {
+            ...newWork,
+            skills: Array.isArray(newWork.skills) ? newWork.skills : [],
+        };
 
-    try {
-        const response = await api.post(
-            "/freelancer/work",
-            payload
-        );
+        setloading(true);
 
-        console.log("Portfolio response:", response.data);
+        try {
+            const response = await api.post("/freelancer/work", payload);
+            const portfolio = response.data?.freelancer?.portfolio;
 
-        setCoverImagePreview("");
-        setNewWork(initialWork);
-        
-        showToast({
-            message: "Portfolio project added successfully.",
-            type: "sucess",
-        });
-        const portfolio = response.data.freelancer.portfolio || [];
-        dispatch(
-            updateTechnicalData({
-                portfolio,
-            })
-        );
-        setmodel(null);
-        if(document.querySelector(".parent")){document.querySelector(".parent").classList.remove("noscrol")}
-    } catch (error) {
-        console.error(
-            "Error adding work:",
-            error?.response?.data || error
-        );
+            if (!Array.isArray(portfolio)) {
+                throw new Error(
+                    response.data?.message ||
+                        "Unexpected response while adding portfolio project."
+                );
+            }
 
-        showToast({
-            message:
-                error?.response?.data?.message ||
-                "Unable to add work. Please try again.",
-            type: "error",
-        });
-    }
+            setCoverImagePreview("");
+            setNewWork(initialWork);
+            dispatch(updateTechnicalData({ portfolio }));
+            showToast({
+                message: "Portfolio project added successfully.",
+                type: "sucess",
+            });
+            setmodel(null);
+            if (document.querySelector(".parent")) {
+                document.querySelector(".parent").classList.remove("noscrol");
+            }
+        } catch (error) {
+            console.error(
+                "Error adding work:",
+                error?.response?.data || error
+            );
+
+            showToast({
+                message:
+                    error?.response?.data?.message ||
+                    error?.message ||
+                    "Unable to add work. Please try again.",
+                type: "error",
+            });
+        } finally {
+            setloading(false);
+        }
     };
     const handleEditWork= async () => {
         if (!newWork.title.trim() || !newWork.description.trim()) {

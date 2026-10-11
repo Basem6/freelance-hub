@@ -5,6 +5,7 @@ export default function BottomNav({
     backDisabled = false,
     nextDisabled = false,
     isLastStep = false,
+    isLoading = false,
 }) {
     return (
         <nav
@@ -31,10 +32,14 @@ export default function BottomNav({
             <button
                 type="button"
                 onClick={onNext}
-                disabled={nextDisabled}
+                disabled={nextDisabled || isLoading}
                 className="rounded-md border border-orange-400/80 bg-orange-400 px-4 py-2 text-gray-50 transition hover:bg-orange-500 disabled:cursor-not-allowed disabled:opacity-50"
             >
-                {isLastStep ? "Post job" : "Next"}
+                {isLoading
+                    ? "Posting..."
+                    : isLastStep
+                      ? "Post"
+                      : "Next"}
             </button>
         </nav>
     );

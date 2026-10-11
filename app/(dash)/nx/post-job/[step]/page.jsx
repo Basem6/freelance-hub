@@ -9,6 +9,9 @@ import {
     JOB_POST_DRAFT_STORAGE_KEY,
     useJobPost,
 } from "../JobPostContext";
+import api from "../../../../utils/api";
+import { updateUser } from "@/app/lib/Features/authSlice";
+import { useAppDispatch, useAppSelector } from "@/app/lib/hooks";
 
 const steps = ["title", "skills", "duration", "budget", "description"];
 
@@ -74,22 +77,25 @@ export default function Page() {
     const { step } = useParams();
     const router = useRouter();
     const { work, update, storageError } = useJobPost();
+    const dispatch = useAppDispatch();
+    const user = useAppSelector((state) => state.auth.user);
     const [skillInput, setSkillInput] = useState("");
     const [submitted, setSubmitted] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitError, setSubmitError] = useState("");
     const currentIndex = steps.indexOf(step);
     const filteredSuggestions = skillInput.trim()
-        ? skillSuggestions
-              .filter(
-                  (skill) =>
-                      skill.toLowerCase().includes(skillInput.trim().toLowerCase()) &&
-                      !work.skills.some(
-                          (selectedSkill) =>
-                              selectedSkill.toLowerCase() === skill.toLowerCase()
-                      )
-              )
-              .slice(0, 8)
-        : [];
+            ? skillSuggestions
+                .filter(
+                    (skill) =>
+                        skill.toLowerCase().includes(skillInput.trim().toLowerCase()) &&
+                        !work.skills.some(
+                            (selectedSkill) =>
+                                selectedSkill.toLowerCase() === skill.toLowerCase()
+                        )
+                )
+                .slice(0, 8)
+            : [];
 
     if (currentIndex === -1) {
         notFound();
@@ -120,47 +126,84 @@ export default function Page() {
         setSkillInput("");
     }
 
-    function handleNext() {
-        if (!valid) return;
+    async function handleNext() {
+        if (!valid || isSubmitting) return;
 
         if (isLastStep) {
+            setIsSubmitting(true);
             try {
-                let savedJobs;
-
-                try {
-                    savedJobs = JSON.parse(
-                        window.localStorage.getItem("freelanceHub.jobPosts") || "[]"
-                    );
-                } catch {
-                    throw new Error(
-                        "Saved job data on this device is invalid. Clear this site's stored data and try again."
-                    );
-                }
-
-                if (!Array.isArray(savedJobs)) {
-                    throw new Error(
-                        "Saved job data on this device is invalid. Clear this site's stored data and try again."
-                    );
-                }
-
-                const postedJob = {
+                const { data } = await api.post("/api/client/addproject", {
                     ...work,
                     budget: Number(work.budget),
-                    id: `${Date.now()}`,
-                    createdAt: new Date().toISOString(),
-                };
+                });
 
-                window.localStorage.setItem(
-                    "freelanceHub.jobPosts",
-                    JSON.stringify([...savedJobs, postedJob])
+                if (data?.success === false) {
+                    throw new Error(data?.message || "Unable to post your project.");
+                }
+
+                const projectResponse =
+                    data?.project ||
+                    data?.data?.project ||
+                    (data?.data?._id && data?.data?.title ? data.data : null) ||
+                    (data?._id && data?.title ? data : null);
+                const createdProject =
+                    projectResponse && typeof projectResponse === "object"
+                        ? projectResponse
+                        : null;
+                const returnedProjects =
+                    data?.postedProjects ||
+                    data?.user?.postedProjects ||
+                    data?.client?.postedProjects;
+                const projectId =
+                    createdProject?._id ||
+                    createdProject?.id ||
+                    data?.projectId ||
+                    data?._id ||
+                    `project-${Date.now()}`;
+                const newProject = {
+                    ...work,
+                    budget: Number(work.budget),
+                    ...createdProject,
+                    id: projectId,
+                };
+                const currentProjects = Array.isArray(user?.postedProjects)
+                    ? user.postedProjects
+                    : [];
+
+                dispatch(
+                    updateUser({
+                        postedProjects: Array.isArray(returnedProjects)
+                            ? returnedProjects
+                            : [
+                                  ...currentProjects.filter(
+                                      (project) =>
+                                          project._id !== projectId &&
+                                          project.id !== projectId
+                                  ),
+                                  newProject,
+                              ],
+                    })
                 );
-                window.localStorage.removeItem(JOB_POST_DRAFT_STORAGE_KEY);
+
                 setSubmitError("");
                 setSubmitted(true);
-            } catch {
+
+                try {
+                    window.localStorage.removeItem(JOB_POST_DRAFT_STORAGE_KEY);
+                } catch (error) {
+                    console.error("Project posted, but the saved draft could not be cleared:", error);
+                    setSubmitError(
+                        "Your project was posted, but its saved draft could not be cleared from this browser."
+                    );
+                }
+            } catch (error) {
                 setSubmitError(
-                    "Could not save this job on this device. Check your browser storage settings and try again."
+                    error.response?.data?.message ||
+                    error.message ||
+                    "Unable to post your project. Please try again."
                 );
+            } finally {
+                setIsSubmitting(false);
             }
             return;
         }
@@ -184,26 +227,21 @@ export default function Page() {
                         />
                     </div>
                     <h1 className="mt-3 text-3xl font-semibold tracking-tight text-gray-900">
-                        Job post saved!
+                        Your project is live now
                     </h1>
                     <p className="mt-3 max-w-md text-sm leading-6 text-gray-600">
-                        Your job post is saved in this browser. It has not been
-                        published online because this flow is not connected to a
-                        server.
+                        Your project has been published and is now available to freelancers.
                     </p>
-                    <div className="mt-6 w-full rounded-xl border border-gray-200 bg-gray-50 p-5 text-left">
-                        <h2 className="font-semibold text-gray-900">{work.title}</h2>
-                        <p className="mt-2 text-sm text-gray-600">
-                            Budget: ${Number(work.budget).toLocaleString()} USD
+                    {submitError && (
+                        <p role="status" className="mt-3 text-sm text-amber-700">
+                            {submitError}
                         </p>
-                        <p className="mt-1 text-sm text-gray-600">
-                            Skills: {work.skills.join(", ")}
-                        </p>
-                    </div>
+                    )}
+                    
                     <button
                         type="button"
                         onClick={() => router.push("/nx/client/dashboard")}
-                        className="mt-6 rounded-md bg-orange-500 px-5 py-3 font-medium text-white transition hover:bg-orange-600"
+                        className="mt-6 rounded-md cursor-pointer bg-orange-500 px-5 py-3 font-medium text-white transition hover:bg-orange-600"
                     >
                         Go to dashboard
                     </button>
@@ -213,8 +251,8 @@ export default function Page() {
     }
 
     return (
-        <main className="min-h-screen min-w-full pb-24">
-            <section className="mx-auto flex min-h-[calc(100vh-6rem)] w-full max-w-6xl flex-col items-center justify-center gap-10 px-5 py-12 md:flex-row md:gap-20">
+        <main className="max-h-screen  overflow-y-auto min-w-full pb-24">
+            <section className="mx-auto flex min-h-full w-full max-w-6xl flex-col items-center justify-center gap-10 px-5 py-12 md:flex-row md:gap-20">
                 <div className="w-full max-w-md">
                     <p className="pb-2 text-sm text-gray-500">
                         <span className="pr-3">
@@ -432,14 +470,15 @@ export default function Page() {
                     {submitError}
                 </p>
             )}
-            <div className="fixed md:sticky min-w-full inset-x-0 bottom-0 z-50 bg-white">
+            <div className="fixed md:sticky md:max-h-2 min-w-full inset-x-0 bottom-0 z-50 bg-white">
                 <BottomNav
                     progress={(currentIndex + 1) / steps.length}
                     onBack={() => router.push(`/nx/post-job/${steps[currentIndex - 1]}`)}
                     onNext={handleNext}
-                    backDisabled={currentIndex === 0}
-                    nextDisabled={!valid}
+                    backDisabled={currentIndex === 0 || isSubmitting}
+                    nextDisabled={!valid || isSubmitting}
                     isLastStep={isLastStep}
+                    isLoading={isSubmitting}
                 />
             </div>
         </main>
