@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-
+import { cookies } from 'next/headers';
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 
 // ── Extract a JWT token from the backend's JSON payload ─────────────────────
@@ -133,4 +133,31 @@ export function clearAuthCookie(response) {
 
 export function getAuthToken(request) {
   return request.cookies.get('authToken')?.value || null;
+}
+
+// ── For Server Components: call the backend directly with the cookie token ───
+export async function serverFetch(backendPath, options = {}) {
+  const cookieStore = await cookies();
+  const token = cookieStore.get('authToken')?.value;
+
+  if (!token) {
+    return { ok: false, status: 401, data: null };
+  }
+
+  try {
+    const response = await fetch(`${API_URL}${backendPath}`, {
+      ...options,
+      headers: {
+        ...(options.headers || {}),
+        Authorization: `Bearer ${token}`,
+      },
+      cache: 'no-store',
+    });
+
+    const data = await readResponse(response);
+    return { ok: response.ok, status: response.status, data };
+  } catch (err) {
+    console.error('[serverFetch] fetch error →', err.message);
+    return { ok: false, status: 502, data: null };
+  }
 }
