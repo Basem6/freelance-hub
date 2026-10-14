@@ -11,12 +11,14 @@ import  { registerOutsideClick, unregisterOutsideClick } from '@/app/hooks/Click
 import ProfileNav from './ProfileNav';
 import { ClientNavItems, FreelancerNavItems } from '../../app/lib/constants/NavItems';
 import { usePathname } from 'next/navigation';
+import NotificationNav from './NotificationNav';
 
 export default function DashboardSidebar() {
     const [activeMenu,setActiveMenu]=useState("")
     const sidebarRef = useRef();
     const logoPanelRef = useRef();
     const nav1Ref = useRef(null)
+    const nav3Ref = useRef(null)
     const [active , setActive]=useState(null)
     const activeIconRef = useRef(null);
     const pathname = usePathname();
@@ -24,7 +26,6 @@ export default function DashboardSidebar() {
     const [isCollapsed, setIsCollapsed] = useState(true);
     const [isLogoHovered, setIsLogoHovered] = useState(false);
     const [isMobileOpen, setIsMobileOpen] = useState(false);
-    
     const user = useAppSelector((state) => state.auth.user);
     const openNav = (ref, id) => {
     
@@ -232,25 +233,34 @@ export default function DashboardSidebar() {
                         return (
                             <Link key={item.id} href={item.href||""} onClick={() =>{setActive(ind); setIsMobileOpen(false)}}>
                                 <div
-                                    
                                     onMouseMove={(e)=>handleanimation(e)}
-                                    
+                                    onClick={()=>{
+                                        if(item.label==="Notifications"){
+                                            openNav(nav3Ref,"notification")
+                                            
+                                        }
+                                        else{
+                                            return;
+                                        }
+                                    }}
                                     className={`w-full flex items-center relative gap-1.5   py-2.5 rounded-md transition-all duration-200 cursor-pointer group ${
                                         active===ind
                                             ? 'bg-gray-300/50 text-gray-700'
                                             : 'text-gray-800 hover:bg-gray-50 hover:text-gray-900'
                                     }`}
                                 >
-                                    <div className=''>
+                                    <div className='relative'>
                                     <Icon
                                         size={20}
                                         strokeWidth={1}
-
+                                        
                                         className={`shrink-0 mx-2  duration-300 transition-transform ${
                                             active ? 'text-gray-900' : 'text-gray-700 group-hover:text-gray-600'
                                         }`}
                                     />
+                                    {item.label==="Notifications" && <div className={`bg-red-500 scale-0 ${notifications.length?"scale-100":"scale-0"}  transition-transform duration-200 size-1.5 rounded-full absolute right-2 top-0.5`}></div>}
                                     </div>
+
                                     <span
                                         className={`link-text md:opacity-0 whitespace-nowrap font-medium text-sm flex-1 ${
                                             active ? 'text-gray-900' : ''
@@ -270,6 +280,7 @@ export default function DashboardSidebar() {
                 </nav>
             </aside>
             {activeMenu==="profile" && <ProfileNav nav1Ref={nav1Ref} ></ProfileNav> }
+            {activeMenu==="notification" && <NotificationNav nav3Ref={nav3Ref} closeNav={closeNav}  ></NotificationNav> }
         </div>
         </>
     );

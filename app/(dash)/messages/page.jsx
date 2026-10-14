@@ -5,115 +5,14 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useAppSelector, useAppDispatch } from '@/app/lib/hooks';
 import api from '@/app/utils/api';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  Search, Send, Paperclip, MoreVertical,
-  ChevronLeft, CheckCheck, MessageSquare,
-  Smile,
-} from 'lucide-react';
+import {Search, Send,  MoreVertical,ChevronLeft, CheckCheck, MessageSquare,} from 'lucide-react';
 import { useSocketContext } from '../../providers/SocketProvider';
-const getEntityId = (entity) => entity?.id || entity?._id || entity?.userId || entity?.user?._id || entity?.user?.id;
+import {normalizeMessage} from "../../utils/normalize/normalizeMessage"
+import {normalizeConversation} from "../../utils/normalize/normalizeConversation"
 
-const normalizeMessage = (message, currentUserId) => {
-  message = message || {};
-  const senderId = getEntityId(message.sender) || message.senderId || message.from;
+import {ConversationItem} from "../../../components/messages/ConversationItem"
+import {MessageBubble} from "../../../components/messages/MessageBubble"
 
-  return {
-  ...message,
-  id: String(message.id || message._id || `m${Date.now()}-${Math.random()}`),
-  text: message.body || message.content || message.message || '',
-  from: senderId && currentUserId && String(senderId) === String(currentUserId) ? 'me' : 'other',
-  time: message.time || (message.createdAt
-    ? new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    : 'Now'),
-  };
-};
-
-const normalizeConversation = (conversation, currentUserId) => {
-  conversation = conversation || {};
-  const participants = Array.isArray(conversation.participants) ? conversation.participants : [];
-  const otherParticipant = participants.find((participant) => (
-    String(getEntityId(participant)) !== String(currentUserId)
-  ));
-
-  return {
-  ...conversation,
-  id: String(conversation.id || conversation._id || conversation.conversationId || ''),
-  participantId: getEntityId(conversation.otherUser) || getEntityId(conversation.participant) || getEntityId(otherParticipant) || conversation.participantId,
-  name: conversation.name || conversation.otherUser?.name || conversation.otherUser?.fullName || conversation.participant?.name || conversation.participant?.fullName || otherParticipant?.name || otherParticipant?.fullName || 'Conversation',
-  avatar: conversation.avatar || conversation.otherUser?.avatar || conversation.otherUser?.image || conversation.participant?.avatar || conversation.participant?.image || otherParticipant?.avatar || otherParticipant?.image || '/avatars/avatar-1.png',
-  lastMessage: conversation.lastMessage?.text || conversation.lastMessage?.body || conversation.lastMessage || '',
-  time: conversation.time || (conversation.updatedAt ? new Date(conversation.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''),
-  unread: conversation.unread || conversation.unreadCount || 0,
-  online: Boolean(otherParticipant?.online),
-  messages: (conversation.messages || []).map((message) => normalizeMessage(message, currentUserId)),
-  };
-};
-
-/* ─────────────── Components ─────────────── */
-function ConversationItem({ conv, isActive, onClick }) {
-  return (
-    <motion.div
-      whileHover={{ x: 2 }}
-      onClick={onClick}
-      className={`flex items-center space-x-3 px-4 py-3.5 cursor-pointer rounded-xl mx-2 transition-all ${
-        isActive ? 'bg-orange-50 border border-orange-100' : 'hover:bg-gray-50'
-      }`}
-    >
-      <div className="relative shrink-0">
-        <img
-          src={conv.avatar||"/avatars/avatar-1.png"}
-          alt={conv.name}
-          className={`w-11 h-11 rounded-full object-cover ring-2 ${isActive ? 'ring-orange-200' : 'ring-gray-100'}`}
-        />
-        {conv.online && (
-          <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-400 border-2 border-white rounded-full" />
-        )}
-      </div>
-
-      <div className="flex-1 min-w-0">
-        <div className="flex justify-between items-center mb-0.5">
-          <div className='flex flex-col gap-1'>
-            <span className={`text-sm font-semibold truncate ${isActive ? 'text-[#FF7A00]' : 'text-gray-900'}`}>
-              {conv.name}
-            </span>
-            <span className="text-xs text-gray-400 shrink-0 ml-1">{conv.lastMessage}</span>
-          </div>
-          
-          <span className="text-xs text-gray-400 shrink-0 ml-1">{conv.time}</span>
-        </div>
-        <div className="flex justify-between items-center">
-          
-        </div>
-      </div>
-    </motion.div>
-  );
-}
-
-function MessageBubble({ msg, isMe }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      className={`flex ${isMe ? 'justify-end' : 'justify-start'} mb-3`}
-    >
-      <div
-        className={`max-w-[72%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed shadow-sm ${
-          isMe
-            ? 'bg-linear-to-br from-[#FF7A00] to-orange-500 text-white rounded-br-md'
-            : 'bg-white text-gray-800 border border-gray-100 rounded-bl-md'
-        }`}
-      >
-        <p>{msg.text}</p>
-        <div className={`flex items-center justify-end mt-1 space-x-1 ${isMe ? 'opacity-70' : 'opacity-50'}`}>
-          <span className="text-[10px]">{msg.time}</span>
-          {isMe && <CheckCheck size={12} />}
-        </div>
-      </div>
-    </motion.div>
-  );
-}
-
-/* ─────────────── Main Page ─────────────── */
 export default function MessagesPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -380,10 +279,6 @@ export default function MessagesPage() {
     socket.off("notification:new", handleNewNotification);
   };
 }, [socket, currentUserId, activeConvId]);
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [activeConvId, conversations]);
-
   const handleSend = () => {
     const text = messageInput.trim();
 
@@ -455,12 +350,8 @@ export default function MessagesPage() {
       </div>
     );
   }
-
   return (
-    <div className="flex min-h-screen bg-white w-full">
-      <div className="flex-1 flex overflow-hidden" style={{ height: '100vh' }}>
-
-        {/* ── Conversation List ── */}
+    <div className="flex   overflow-hidden  max-h-svh bg-white w-full">
         <div
           className={`w-full md:w-80 lg:w-96 bg-white border-r border-gray-100 flex flex-col shrink-0 ${
             !showMobileList ? 'hidden md:flex' : 'flex'
@@ -487,7 +378,7 @@ export default function MessagesPage() {
           </div>
 
           {/* Conversations */}
-          <div className="flex-1 overflow-y-auto py-2 space-y-0.5">
+          <div className="flex-1 overflow-y-scroll hide-scrollbar py-2 space-y-0.5">
             {filteredConvs.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-40 text-gray-400">
                 <MessageSquare size={32} className="mb-2 opacity-40" />
@@ -547,7 +438,7 @@ export default function MessagesPage() {
               </div>
 
               {/* Messages */}
-              <div className="flex-1 overflow-y-auto px-5 py-4 space-y-1">
+              <div className="flex-1 hide-scrollbar overflow-y-auto px-5 py-4 space-y-1">
                 <div className="flex justify-center mb-4">
                   <span className="text-xs text-gray-400 bg-white px-3 py-1 rounded-full border border-gray-100 shadow-sm">
                     Today
@@ -616,7 +507,6 @@ export default function MessagesPage() {
             </div>
           )}
         </div>
-      </div>
     </div>
   );
 }

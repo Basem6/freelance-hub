@@ -1,94 +1,17 @@
 'use client'
+import {NAV_LINKS} from "@/app/lib/constants/NavItems"
 import { Button, buttonVariants } from '@/components/ui/button'
 import { cn } from '../../app/lib/utils'
-import {  Menu, Sun, X } from 'lucide-react'
-import Image from "next/image";
-import { useRef, useEffect, useState } from 'react'
+import {  Menu, X  ,ChevronDown} from 'lucide-react'
+import {  useState } from 'react'
 import Link from "next/link";
-import { useSocketContext } from '../../app/providers/SocketProvider';
-import { useAppDispatch, useAppSelector } from '@/app/lib/hooks'
-import { logout } from '@/app/lib/Features/authSlice'
-import { useRouter } from "next/navigation";
-import api from '../../app/utils/api'
-import gsap from "gsap";
-import  { registerOutsideClick, unregisterOutsideClick } from '@/app/hooks/ClickOutside'
-import { Bell,  TrendingUp , Settings , BadgeQuestionMark, CircleUserRound , LogOut  , ChevronDown} from "lucide-react";
 
-const NAV_LINKS = [
-  { label: 'Home', href: '/' },
-  { label: 'Find Work', href: '/findwork' },
-  { label: 'Hire talent', href: '/hire' },
-  { label: 'Pricing', href: '/pricing' },
-  { label: 'Messages', href: '/messages' },
-]
-
-export function Navbar() { 
-const { notifications }:any = useSocketContext(); 
-const [activeMenu, setActiveMenu] = useState(null);
-const nav1Ref = useRef(null);
-const nav2Ref = useRef(null);
-const nav3Ref = useRef(null);
-const router = useRouter();
-
-const {user}= useAppSelector((state:{auth: any}) => {
-  return state.auth;
-});
-const dispatch = useAppDispatch();
-const openNav = (ref:any, id:any) => {
-  
-  if (activeMenu === id) return;
-
-  setActiveMenu(id);
-
-  requestAnimationFrame(() => {
-    gsap.fromTo(ref.current,
-      { opacity: 0, y: 10 },
-      { opacity: 1, y: 0, duration: 0.3 }
-    );
-  });
-
-  registerOutsideClick(ref, () => closeNav(ref, id));
-};
-
-const closeNav = (ref:any, id:any) => {
-  gsap.to(ref.current, {
-    opacity: 0,
-    y: 10,
-    duration: 0.3,
-    onComplete: () => {
-      setActiveMenu((prev) => (prev === id ? null : prev));
-      unregisterOutsideClick();
-    },
-  });
-};
-
-const [scrolled, setScrolled] = useState(false)
+export function Navbar() {  
 const [open, setOpen] = useState(false)
-useEffect(() => {
-  const onScroll = () => setScrolled(window.scrollY > 12)
-  onScroll()
-  window.addEventListener('scroll', onScroll, { passive: true })
-  return () => window.removeEventListener('scroll', onScroll)
-}, [])
-const handleLogout = async () => {
-    try {
-        await api.post("/api/auth/logout", {}, {
-            withCredentials: true,
-        });
-        dispatch(logout()); 
-    } catch (error) {
-        console.log(error);
-    }
-};
 return (
   <header className="fixed inset-x-0 top-0 z-50 px-4 pt-3">
     <div
-      className={cn(
-        'mx-auto flex max-w-6xl items-center justify-between rounded-2xl border border-transparent px-4 py-2.5 transition-all duration-300 sm:px-5',
-        scrolled
-          ? 'glass border-border/60 shadow-lg shadow-primary/5'
-          : 'bg-transparent',
-      )}
+      className={cn('mx-auto flex max-w-6xl items-center justify-between rounded-2xl border border-transparent px-4 py-2.5 transition-all duration-300 sm:px-5')}
     >
       <a href="#" className="flex items-center gap-2" aria-label="FreelanceHub home">
         
@@ -97,14 +20,7 @@ return (
 
       <nav className="hidden items-center gap-1 md:flex" aria-label="Primary">
         {NAV_LINKS.map((link, index) => {
-          const hidden =
-            (index === 3 && user) ||
-            (index === 4 && !user);
-
-          if (hidden) return null;
-
           const hasDropdown = index === 1 || index === 2;
-
           return (
             <div
               key={link.href}
@@ -185,7 +101,6 @@ return (
         })}
       </nav>
 
-      {!user?
       <div className="flex items-center gap-1.5">
         <Link
           href="/choose-role"
@@ -215,167 +130,7 @@ return (
         >
           {open ? <X className="size-5" /> : <Menu className="size-5" />}
         </Button>
-      </div>:
-      <div className='flex gap-5 items-center'>
-        <div className="relative cursor-pointer" onClick={() => openNav(nav2Ref, "help")}>
-            <BadgeQuestionMark strokeWidth={1.2} />
-          {activeMenu === "help"  &&
-          <div className='absolute top-12 -right-6 w-60 select-none bg-white rounded-lg shadow-lg group-hover:block' ref={nav2Ref}>
-            <ul className='flex flex-col'>
-              <li className='px-4 py-2 hover:bg-gray-100 cursor-pointer rounded-t-md flex gap-3 items-center '>
-                  
-                  <p className='text-sm '>Help Center</p>
-              </li>
-              <li className='px-4 py-2 hover:bg-gray-100 cursor-pointer flex gap-3 items-center'>
-                  
-                  <p className='text-sm '>Hemma Updates</p>
-              </li>
-              <li className='px-4 py-2 hover:bg-gray-100 rounded-b-md cursor-pointer flex gap-3 items-center  '>
-              
-                  <p className='text-sm '>Your Questions</p>
-              </li>
-            </ul>
-          </div>
-          }
-        </div>
-        <div className="relative xs:rounded-full select-none rounded-lg p-2 cursor-pointer w-8 h-10 flex items-center justify-center" onClick={() => openNav(nav3Ref, "notfication")}>
-          <Bell
-            strokeWidth={1.2}
-            className="absolute bottom-2 right-0 select-none"
-            
-          />
-
-          {activeMenu === "notfication" && (
-            <div
-              className="absolute select-none top-12 right-0 w-56 bg-white rounded-lg min-h-56 h-auto   shadow-lg z-50"
-              ref={nav3Ref}
-            >
-              <ul
-                className={`flex flex-col select-none  items-center min-h-56 ${
-                  notifications.length === 0 ? "justify-center" : "justify-start"
-                }`}
-              >
-                  {notifications.length > 0 ? (
-                  <>
-                    {notifications.slice(0, 4).map((element:any, index:number) => (
-                      <li
-                        key={element._id || index}
-                        className={`py-2 hover:bg-gray-100 select-none min-w-full ${index===0 ?"rounded-t-lg":""} justify-center  flex gap-4 items-center`}
-                      >
-                        <span className="size-8 rounded-full overflow-hidden shrink-0">
-                          <Image
-                            src={element.message?.sender?.image || "/avatars/avatar-1.png"}
-                            alt={element.message?.sender?.fullName || "User"}
-                            width={32}
-                            height={32}
-                            className="w-full h-full object-cover"
-                          />
-                        </span>
-
-                        <p className="text-sm text-gray-700">
-                          {element.message?.sender?.fullName
-                            ? `${element.message.sender.fullName} sent a message`
-                            : "You have a new notification"}
-                        </p>
-                      </li>
-                    ))}
-
-                    {/* يظهر فقط لو فيه أكتر من 4 */}
-                    {notifications.length > 4 && (
-                      <li
-                        className="text-center py-2 text-sm text-orange-400 cursor-pointer hover:underline"
-                        onClick={() => {
-                          router.push("/messages")
-                        }}
-                      >
-                        Load More
-                      </li>
-                    )}
-                  </>
-                ) : (
-                  <li className="px-4 py-3 text-sm text-gray-500">
-                    No notifications
-                  </li>
-                )}
-              </ul>
-            </div>
-          )}
-
-    <div
-      className={`absolute top-2 right-0 size-2 rounded-full bg-red-500 transition-all origin-center ${
-        notifications.length === 0 ? "scale-0" : "scale-100"
-      } duration-300`}
-    />
-        </div>
-        <div className="relative">
-          <div className='size-10 rounded-full overflow-hidden cursor-pointer' onClick={() => openNav(nav1Ref, "profile")}>
-            <Image
-            src={user?.image || "/avatars/avatar-1.png"}
-            alt="User photo"
-            width={90}
-            height={90}
-            quality={30}
-            className="object-contain"
-          />
-          
-          </div>
-          {activeMenu ==="profile" &&
-          <div className='absolute top-12 select-none right-0 w-60 bg-white rounded-lg shadow-lg group-hover:block' ref={nav1Ref}>
-            <ul className='flex flex-col'>
-              <li className='px-3 py-2 hover:bg-gray-100 cursor-pointer rounded-t-md flex gap-3 items-center'>
-                <div className='size-8 rounded-full overflow-hidden'>
-                  <Image
-                  src={user.image?user.image:"/avatars/avatar-1.png"}
-                  alt="userphoto"
-                  width={100}
-                  height={100}
-                  className="object-cover  object-center"
-                />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm">
-                    {user.fullName}
-                  </p>
-
-                  <p className="truncate text-xs text-gray-500">
-                    {user.role}
-                  </p>
-              </div>
-              </li>
-              <Link href={`/profile`}>
-              <li className='px-4 py-2 hover:bg-gray-100 cursor-pointer flex gap-3 items-center '>
-                  <CircleUserRound strokeWidth={1.2} />
-                  <p className='text-sm '>Your Profile</p>
-              </li>
-              </Link>
-              <Link href={"/earnings"}>
-              <li className='px-4 py-2 hover:bg-gray-100 cursor-pointer flex gap-3 items-center  border-b border-gray-200'>
-                  <TrendingUp strokeWidth={1.2} />
-                  <p className='text-sm '>Stats and Trend</p>
-              </li>
-              </Link>
-              <li className='px-4 cursor-no-drop py-2 hover:bg-gray-100  flex gap-3 items-center  '>
-                  <Sun strokeWidth={1.2} />
-                  <p className='text-sm '>Themes</p>
-              </li>
-              <Link href={`/settings`}>
-              <li className='px-4 py-2 hover:bg-gray-100 cursor-pointer flex gap-3 items-center  border-b border-gray-200'>
-                <Settings strokeWidth={1.2} />
-                  <p className='text-sm '>Account Settings</p>
-              </li>
-              </Link>
-              <li className='px-4 py-2 hover:bg-gray-100 cursor-pointer rounded-b-md flex gap-3 items-center' onClick={handleLogout}>
-                <LogOut strokeWidth={1.2} />
-                <p className='text-sm '>Logout</p>
-              </li>
-            
-            </ul>
-          </div>
-          }
-        </div>
-
       </div>
-      } 
     </div>
 
     {open && (

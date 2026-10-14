@@ -35,3 +35,9 @@ export const FreelancerNavItems = (notifications = []) => [
 },
 ];
 
+export const NAV_LINKS= [
+    { label: 'Home', href: '/' },
+    { label: 'Find Work', href: '/findwork' },
+    { label: 'Hire talent', href: '/hire' },
+    { label: 'Pricing', href: '/pricing' },
+]

@@ -87,19 +87,9 @@ function MoreMenu({ project, onEdit, onClose }) {
 
             {open && (
                 <div className="absolute right-0 z-20 mt-2 w-48 overflow-hidden rounded-xl border border-gray-200 bg-white py-1 shadow-lg">
-                    <Link href={`/nx/projects/${id}`} className={itemClass}>
+                    <Link href={`/nx/projects/${id}/job-details`} className={itemClass}>
                         View job post
                     </Link>
-                    <button
-                        type="button"
-                        className={itemClass}
-                        onClick={() => {
-                            setOpen(false);
-                            onEdit?.(project);
-                        }}
-                    >
-                        Edit job post
-                    </button>
                     <button
                         type="button"
                         className={`${itemClass} text-red-600`}
@@ -119,7 +109,6 @@ function MoreMenu({ project, onEdit, onClose }) {
 // ── Main card ────────────────────────────────────────────────────────────
 export default function ProjectCard({ project, onEdit, onClose }) {
     const id = project._id || project.id;
-    console.log(project)
     const proposals = project?.proposals?.length || 0;
     const invited = project.invitedCount ?? 0;
     const maxInvites = project.maxInvites ?? 30;

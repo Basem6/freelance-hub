@@ -34,7 +34,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"
-, "app/categories/page.jsx", "app/landing/layout.jsx", "app/page.jsx"  ],
+, "app/categories/page.jsx", "app/landing/layout.jsx", "app/page.jsx", "components/dashboard/NotificationNav.jsx"  ],
   "exclude": [
     "node_modules"
   ]

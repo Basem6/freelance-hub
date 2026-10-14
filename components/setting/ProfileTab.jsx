@@ -243,6 +243,7 @@ const handleImage = (e) => {
     const url = URL.createObjectURL(e.target.files[0]);
     setPreview(url);;
 };
+
 return (
     <div className="bg-white rounded-2xl border-gray-300/60 border p-6 lg:p-8  max-w-full">
     {isUploading && (

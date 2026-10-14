@@ -35,7 +35,7 @@ export default function ProfileNav({nav1Ref}){
         <>
         <div className={`${window.matchMedia("(max-width: 767px)").matches ? "mobile-nav" : "desktop-nav"} fixed -bottom-1/3  left-0 z-9999 w-full select-none rounded-t-lg md:border md:border-gray-400/30  bg-white shadow-lg md:absolute md:bottom-auto md:left-auto md:right-0 md:top-14 md:w-70 md:translate-x-full md:rounded-lg`} ref={nav1Ref}>
             <ul className='flex flex-col gap-1 px-2 pt-2 pb-4'>
-                    <Link onClick={()=>setActiveMenu("")} href={`/profile`}>
+                    <Link onClick={()=>setActiveMenu("")} href={`${user?.role==="freelancer"?"/profile":"/settings"}`}>
                     <li className='px-2 py-1.5 hover:bg-gray-200/80 cursor-pointer rounded-sm flex gap-3 items-center'>
                         <div className='size-12 rounded-full overflow-hidden'>
                         <Image
@@ -58,7 +58,7 @@ export default function ProfileNav({nav1Ref}){
                     </li>
                     </Link>
                     <div className="sperator  border-b border-gray-400/20 py-1"></div>
-                    <Link onClick={()=>setActiveMenu("")} href={`${user.role==="freelancer"?"/profile":"/settings"}`}>
+                    <Link onClick={()=>setActiveMenu("")} href={`${user?.role==="freelancer"?"/profile":"/settings"}`}>
                     <li className=' hover:bg-gray-200/80 mt-1 px-2 py-1.5 rounded-sm cursor-pointer flex gap-3 items-center '>
                         <CircleUserRound size={17} strokeWidth={1} />
                         <p className='text-sm '>My Profile</p>

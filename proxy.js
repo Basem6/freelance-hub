@@ -13,7 +13,6 @@ const clientOnly = ['nx/client/dashboard','nx/browse/talent']
 
 // الصفحات المحمية (محتاجة توكن)
 const protectedRoutes = [
-    '/dashboard',
     '/profile',
     '/projects',
     '/settings',
@@ -70,12 +69,12 @@ export function proxy(request) {
 
         // Client بيحاول يدخل صفحات الـ Freelancer
         if (userRole === 'client' && isFreelancerRoute) {
-            return NextResponse.redirect(new URL('/profile', request.url))
+            return NextResponse.redirect(new URL(CLIENT_HOME, request.url))
         }
 
         // Freelancer بيحاول يدخل صفحات الـ Client
         if (userRole === 'freelancer' && isClientRoute) {
-            return NextResponse.redirect(new URL('/profile', request.url))
+            return NextResponse.redirect(new URL(FREELANCER_HOME, request.url))
         }
 
         // Freelancer على الصفحة الرئيسية → findwork

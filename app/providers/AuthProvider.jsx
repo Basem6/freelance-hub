@@ -15,8 +15,10 @@ import {
 } from "@/app/lib/Features/technicalData";
 
 import api from "@/app/utils/api";
+import { useRouter } from "next/navigation";
 
 export default function AuthProvider({ children }) {
+    const router = useRouter()
     const dispatch = useAppDispatch();
 
     useEffect(() => {
@@ -30,7 +32,6 @@ export default function AuthProvider({ children }) {
                     const user = res.data.user;
 
                     dispatch(setUser(user));
-
                     dispatch(
                         setTechnicalData({
                             major: user.major || "",

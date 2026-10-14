@@ -82,9 +82,9 @@ export default function ProposalsClient({ projectId, initialProposals = [] }) {
                         key={t.key}
                         type="button"
                         onClick={() => setTab(t.key)}
-                        className={`-mb-px cursor-pointer whitespace-nowrap border-b-2 pb-3 text-lg transition
+                        className={`-mb-px cursor-pointer whitespace-nowrap border-b-3 pb-3 text-lg transition
                             ${tab === t.key
-                                ? "border-orange-600 font-medium text-gray-900"
+                                ? "border-black/90  text-gray-900"
                                 : "border-transparent text-gray-500 hover:text-gray-800"}`}
                     >
                         {t.label} ({counts[t.key]})
@@ -162,16 +162,18 @@ export default function ProposalsClient({ projectId, initialProposals = [] }) {
                             proposal={proposal}
                             projectId={projectId}
                             onShortlist={() =>
-                                setStatus(
-                                    proposal,
-                                    proposal.status === "shortlisted" ? "active" : "shortlisted"
-                                )
+                                // setStatus(
+                                //     proposal,
+                                //     proposal.status === "shortlisted" ? "active" : "shortlisted"
+                                // )
+                                console.log("Shortlisted")
                             }
                             onArchive={() =>
-                                setStatus(
-                                    proposal,
-                                    proposal.status === "archived" ? "active" : "archived"
-                                )
+                                // setStatus(
+                                //     proposal,
+                                //     proposal.status === "archived" ? "active" : "archived"
+                                // )
+                                console.log("Archived")
                             }
                         />
                     ))

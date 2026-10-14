@@ -1,9 +1,5 @@
+import ProjectPeopleClient from "../ProjectPeopleClient";
 
 export default function Page() {
-return (
-        <div className="min-w-full min-h-screen">
-        
-        </div>
-
-)
+    return <ProjectPeopleClient kind="invites" initialRecords={[]} />;
 }
