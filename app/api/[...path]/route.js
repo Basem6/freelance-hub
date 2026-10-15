@@ -8,7 +8,10 @@ function backendPath(path) {
 
 async function handle(request, context) {
   const params = await context.params;
-  return proxyAuth(request, backendPath(params));
+  return proxyAuth(
+    request,
+    `${backendPath(params)}${new URL(request.url).search}`
+  );
 }
 
 export const GET = handle;

@@ -294,7 +294,7 @@ return (
         {/* Photo Upload */}
         <div className="flex items-center gap-6 pb-6 border-b border-gray-100 md:justify-start  justify-center">
         <div className="relative ">
-            <div className="size-35 rounded-full  overflow-hi">
+            <div className="size-35 rounded-full  overflow-hidden">
                 <img src={preview?preview:user?.image} alt="Profile" className="w-full h-full rounded-full object-cover" />
             </div>
             < label htmlFor="profile-photo" className="cursor-pointer absolute bottom-0 right-0 p-2 bg-white rounded-full border border-gray-100 text-gray-600 hover:text-[#FF7A00] transition-colors">

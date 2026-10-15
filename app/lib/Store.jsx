@@ -2,6 +2,7 @@ import { configureStore ,  combineReducers } from "@reduxjs/toolkit";
 import authReducer from "./Features/authSlice";
 import showReducer from "./Features/showSlice";
 import technicalDataReducer from "./Features/technicalData";
+import searchReducer from "./Features/searchSlice";
 
 import {
 persistStore,
@@ -13,7 +14,8 @@ import storage from "redux-persist/lib/storage";
 const rootReducer = combineReducers({
 auth: authReducer,
 show: showReducer,
-technicalData:technicalDataReducer
+technicalData: technicalDataReducer,
+search: searchReducer,
 });
 
 const persistConfig = {

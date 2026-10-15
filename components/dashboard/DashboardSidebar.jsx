@@ -12,12 +12,14 @@ import ProfileNav from './ProfileNav';
 import { ClientNavItems, FreelancerNavItems } from '../../app/lib/constants/NavItems';
 import { usePathname } from 'next/navigation';
 import NotificationNav from './NotificationNav';
+import FreelancerSearch from './FreelancerSearch';
 
 export default function DashboardSidebar() {
     const [activeMenu,setActiveMenu]=useState("")
     const sidebarRef = useRef();
     const logoPanelRef = useRef();
     const nav1Ref = useRef(null)
+    const nav2Ref = useRef(null)
     const nav3Ref = useRef(null)
     const [active , setActive]=useState(null)
     const activeIconRef = useRef(null);
@@ -58,7 +60,7 @@ export default function DashboardSidebar() {
     const navItems = user?.role === 'client' ?  ClientNavItems(notifications) : FreelancerNavItems(notifications);
 
     useEffect(() => {
-        if (pathname.startsWith("/messages")) {
+        if (pathname && pathname?.startsWith("/messages")) {
             setNotifications([]);
         }
     }, [pathname, setNotifications]);
@@ -239,6 +241,9 @@ export default function DashboardSidebar() {
                                             openNav(nav3Ref,"notification")
                                             
                                         }
+                                        else if(item.label==="Search"){
+                                            openNav(nav2Ref,"search")
+                                        }
                                         else{
                                             return;
                                         }
@@ -280,6 +285,7 @@ export default function DashboardSidebar() {
                 </nav>
             </aside>
             {activeMenu==="profile" && <ProfileNav nav1Ref={nav1Ref} ></ProfileNav> }
+            {activeMenu==="search" && <FreelancerSearch nav2Ref={nav2Ref} closeNav={closeNav}  ></FreelancerSearch> }
             {activeMenu==="notification" && <NotificationNav nav3Ref={nav3Ref} closeNav={closeNav}  ></NotificationNav> }
         </div>
         </>
