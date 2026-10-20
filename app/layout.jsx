@@ -1,5 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import localFont from "next/font/local";
 import "./globals.css";
 
 import SocketProvider from "./providers/SocketProvider";
@@ -19,6 +20,17 @@ const geistMono = Geist_Mono({
     variable: "--font-geist-mono",
 });
 
+const BoldHeadinFont = localFont({
+    src: [
+        {
+        path: "./fonts/SpaceGrotesk-SemiBold.ttf",
+        weight: "600",
+        style: "normal",
+        },
+    ],
+    variable: "--font-Bold-Heading",
+    display: "swap",
+    });
 export const metadata = {
     title: "Hemma",
     description: "Find Top Freelancers. Build Amazing Projects.",
@@ -33,7 +45,7 @@ export default function RootLayout({ children }) {
     return (
         <html
             lang="en"
-            className={`${geistSans.variable} ${geistMono.variable}`}
+            className={`${geistSans.variable} ${geistMono.variable} ${BoldHeadinFont.variable}`}
             suppressHydrationWarning
         >
             <body className="font-sans antialiased">

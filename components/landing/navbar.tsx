@@ -9,16 +9,15 @@ import Link from "next/link";
 export function Navbar() {  
 const [open, setOpen] = useState(false)
 return (
-  <header className="fixed inset-x-0 top-0 z-50 px-4 pt-3">
+  <header className="fixed bg-primary min-w-full inset-x-0 top-0 z-50 pt-1.5 rounded-b-lg">
     <div
-      className={cn('mx-auto flex max-w-6xl items-center justify-between rounded-2xl border border-transparent px-4 py-2.5 transition-all duration-300 sm:px-5')}
+      className={cn('flex w-full  p-4xl items-center justify-between rounded-2xl border border-transparent  py-2.5 transition-all duration-300')}
     >
-      <a href="#" className="flex items-center gap-2" aria-label="FreelanceHub home">
-        
-        <span className="text-lg font-semibold tracking-tight font-sans">HEMMA</span>
+      <a href="#" className="flex items-center w-fit" aria-label="FreelanceHub home">
+        <span className="text-lg font-semibold tracking-tight font-sans text-font-primary">HEMMA</span>
       </a>
 
-      <nav className="hidden items-center gap-1 md:flex" aria-label="Primary">
+      <nav className="hidden text-font-primary  w-fit items-center gap-1 md:flex" aria-label="Primary">
         {NAV_LINKS.map((link, index) => {
           const hasDropdown = index === 1 || index === 2;
           return (
@@ -33,7 +32,7 @@ return (
                 <div className="flex items-center gap-1.5">
                   <span className="mr-1">{link.label}</span>
                   {hasDropdown &&
-                  <span className="group-hover:rotate-180 transition-transform duration-300"><ChevronDown className={"text-black/40 group-hover:text-black transition-colors duration-300"}  strokeWidth={1.3} size={17}/></span>
+                  <span className="group-hover:rotate-180 transition-transform duration-300"><ChevronDown className={"text-font-primary group-hover:opacity-40 transition-opacity duration-300"}  strokeWidth={1.3} size={17}/></span>
                   }
                 </div>
                 
@@ -80,7 +79,7 @@ return (
                         href="/freelancers"
                         className="flex items-center gap-3 px-4 py-2"
                       >
-                        <p className="text-sm font-semibold text-[#FF7A00]">
+                        <p className="text-sm ">
                           Browse Freelancers
                         </p>
                       </a>
@@ -101,24 +100,25 @@ return (
         })}
       </nav>
 
-      <div className="flex items-center gap-1.5">
-        <Link
-          href="/choose-role"
-          className={cn(
-            buttonVariants({ variant: 'ghost' }),
-            'hidden h-9 px-3.5 sm:inline-flex',
-          )}
-        >
-          Sign in
-        </Link>
+      <div className="flex items-center  w-fit  gap-0.5 text-font-primary">
         <Link
           href="/login"
           className={cn(
-            buttonVariants({ variant: 'default' }),
-            'hidden h-9 px-4 shadow-sm shadow-primary/30 sm:inline-flex',
+            buttonVariants({ variant: 'ghost' }),
+            'hidden h-9 px-3.5 sm:inline-flex ',
           )}
         >
-          Get Started
+          Log in
+        </Link>
+        <Link
+          href="/choose-role"
+          className={cn(
+            buttonVariants({ variant: 'default' }),
+            'hidden h-9 px-4 text-primary bg-font-primary  sm:inline-flex',
+          )}
+          
+        >
+          Sign up
         </Link>
         <Button
           variant="ghost"

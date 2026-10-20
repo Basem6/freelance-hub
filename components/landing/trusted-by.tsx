@@ -11,12 +11,7 @@ const COMPANIES = [
   'Meridian',
 ]
 
-const STATS = [
-  { value: '100K+', label: 'Freelancers' },
-  { value: '15K+', label: 'Clients' },
-  { value: '1M+', label: 'Completed Projects' },
-  { value: '4.9/5', label: 'Average Rating' },
-]
+
 
 export function TrustedBy() {
   return (
@@ -40,22 +35,6 @@ export function TrustedBy() {
               </span>
             ))}
           </div>
-        </div>
-
-        {/* stats */}
-        <div className="mt-12 grid grid-cols-2 gap-6 sm:grid-cols-4">
-          {STATS.map((stat, i) => (
-            <Reveal key={stat.label} delay={i * 80}>
-              <div className="text-center">
-                <p className="bg-gradient-to-b from-foreground to-foreground/70 bg-clip-text text-3xl font-semibold tracking-tight text-transparent sm:text-4xl">
-                  {stat.value}
-                </p>
-                <p className="mt-1.5 text-sm text-muted-foreground">
-                  {stat.label}
-                </p>
-              </div>
-            </Reveal>
-          ))}
         </div>
       </div>
     </section>

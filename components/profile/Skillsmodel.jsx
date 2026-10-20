@@ -104,7 +104,7 @@ useEffect(()=>{
     if(document.querySelector(".mobile-nav")){
         gsap.to(".mobile-nav",{
             bottom:0,
-            duration:0.3
+            duration:0.18
         })
     }
 },[setmodel])
@@ -122,15 +122,12 @@ return (
     {/* Modal */}
     <motion.div
         initial={{
-        opacity: 0,
         y: 20,
         }}
         animate={{
-        opacity: 1,
         y: 0,
         }}
         exit={{
-        opacity: 0,
         y: 20,
         }}
         className={`${window.matchMedia("(max-width: 767px)").matches ? "mobile-nav" : "desktop-nav"} md:relative  absolute md:bottom-auto -bottom-1/3 rounded-t-2xl  z-9999 w-full max-w-3xl md:rounded-2xl bg-white shadow-sm`}

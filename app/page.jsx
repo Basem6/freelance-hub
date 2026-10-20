@@ -8,7 +8,7 @@ export default function LandingPage() {
         <main>
         <Navbar></Navbar>
         <Hero></Hero>
-        <FreelancerShowcase></FreelancerShowcase>
+        {/* <FreelancerShowcase></FreelancerShowcase> */}
         <TrustedBy></TrustedBy>
         <Testimonials></Testimonials>
         </main>
