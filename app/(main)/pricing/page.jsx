@@ -54,7 +54,7 @@ const PLANS = [
 
 export default function page() {
   return (
-    <section id="pricing" className="flex items-center mt-10 min-h-screen ">
+    <section id="pricing" className="flex items-center pt-20 min-h-screen ">
       <div className="mx-auto max-w-6xl px-4">
         <SectionHeading
           eyebrow="Pricing"
