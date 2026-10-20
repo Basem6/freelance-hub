@@ -89,7 +89,7 @@ export default function ChooseRolePage() {
                                     }}
                                     
                                     whileTap={reduceMotion ? undefined : { scale: 0.995 }}
-                                    className={`relative  flex group w-fit flex-col rounded-sm border p-3 text-start focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF7A00] focus-visible:ring-offset-2 `}
+                                    className={`relative  border-none flex group w-fit flex-col rounded-sm border p-3 text-start focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF7A00] focus-visible:ring-offset-2 `}
                                 >
                                     <span className={`inline-flex  opacity-80 hover:opacity-100 transition-opacity duration-200 size-30  md:size-50  bg-gradient-to-br from-orange-50/20 from-[0%] via-orange-300/90 via-[45%] to-orange-50/30 to-[100%] items-center justify-center rounded-lg`}>
                                         <Icon size={41} strokeWidth={1.4} aria-hidden="true" />

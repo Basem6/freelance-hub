@@ -11,7 +11,7 @@ const [open, setOpen] = useState(false)
 return (
   <header className="fixed bg-primary min-w-full inset-x-0 top-0 z-50 pt-1.5 rounded-b-lg">
     <div
-      className={cn('flex w-full  p-4xl items-center justify-between rounded-2xl border border-transparent  py-2.5 transition-all duration-300')}
+      className={cn('flex w-full px-2   md:px-4xl items-center justify-between rounded-2xl  py-2  transition-all duration-300')}
     >
       <a href="#" className="flex items-center w-fit" aria-label="FreelanceHub home">
         <span className="text-lg font-semibold tracking-tight font-sans text-font-primary">HEMMA</span>

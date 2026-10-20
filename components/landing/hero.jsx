@@ -3,37 +3,42 @@ import BounceCards from "./cards"
 import CircularText from "./circleText"
 import CountUp from "./count"
 import { ArrowRight, Plus } from "lucide-react"
+import Link from "next/link"
 export function Hero() {
   return (
-    <section className="relative p-4xl bg-primary overflow-hidden pt-28 min-h-screen max-h-screen">
+    <section className="relative px-2 md:px-4xl bg-primary overflow-hidden pt-28  min-h-screen max-h-screen">
 
       <div className="flex flex-col gap-2 items-center">
-            <h1 className=" text-center text-font-primary font-Heading uppercase  tracking-wide sm:text-5xl lg:text-7xl">
+            <h1 className=" text-center text-font-primary font-Heading uppercase  tracking-wide text-3xl md:text-7xl">
                 Find Top Freelancers.
             <br />
-            <span className="text-brand">Build Amazing Projects.</span>
+            <span className="">Build Amazing Projects.</span>
             </h1>
             <div className="flex flex-col gap-6.5 items-center">
-              <p className="text-font-primary text-center opacity-85 max-w-xl    leading-relaxed ">
+              <p className="text-font-primary text-center text-xs md:text-md opacity-85 md:max-w-xl max-w-lg    leading-relaxed ">
               FreelanceHub connects you with vetted professionals and gives you
               everything to hire, collaborate, and pay — all in one simple workspace
             </p>  
             <div className="mt-5 flex flex-col gap-2.5">
               <div className="flex gap-3">
-                  <button className="bg-orange-400  flex gap-1.5 justify-center items-center w-fit  text-font-primary  hover:bg-orange-700 duration-200 transition-colors rounded-4xl px-3.5 py-1.5  cursor-pointer">
+                  <Link href={'/choose-role'}>
+                  <button  className="bg-orange-400  flex gap-1.5 justify-center items-center w-fit  text-font-primary  hover:bg-orange-700 duration-200 transition-colors rounded-4xl px-3.5 py-1.5  cursor-pointer">
                     <span>Get Started</span>
                     <span><ArrowRight size={19} strokeWidth={1.5}></ArrowRight></span>
                   </button>
-                  <button className="bg-font-primary text-primary  flex gap-1.5 justify-center items-center w-fit    hover:opacity-65 duration-200 transition-opacity rounded-4xl px-3.5 py-1.5  cursor-pointer">
+                  </Link>
+                  <Link href={'/nx/findwork'}>
+                  <button  className="bg-font-primary text-primary  flex gap-1.5 justify-center items-center w-fit    hover:opacity-65 duration-200 transition-opacity rounded-4xl px-3.5 py-1.5  cursor-pointer">
                     <span>Find work</span>
                   </button>
+                  </Link>
               </div>
               <p className="text-font-primary text-xs text-center opacity-80 max-w-xl">Free to join · No credit card required</p>
             </div>
             </div>
             
-            <div className='flex min-w-full justify-between items-center'>
-              <div>
+            <div className='flex px-6 md:flex-row flex-col  min-w-full justify-between items-center'>
+              <div className="md:block hidden">
                 <CircularText 
                   onHover="speedUp"
                   direction="clockwise"
@@ -52,7 +57,7 @@ export function Hero() {
                   ring={true}
                 ></CircularText>
                 </div>
-              <div className="relative bottom-4"><BounceCards /></div>
+              <div className="relative md:bottom-4 "><BounceCards /></div>
               <div className="flex  items-center flex-col ">
                 <div className="flex gap-0 items-center">
                   <div>

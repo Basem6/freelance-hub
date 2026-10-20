@@ -3,6 +3,7 @@ import { Hero } from "@/components/landing/hero";
 import { Navbar } from "@/components/landing/navbar";
 import { Testimonials } from "@/components/landing/testimonials";
 import { TrustedBy } from "@/components/landing/trusted-by";
+import { Footer } from "@/components/landing/footer";
 export default function LandingPage() {
     return (
         <main>
@@ -11,6 +12,7 @@ export default function LandingPage() {
         {/* <FreelancerShowcase></FreelancerShowcase> */}
         <TrustedBy></TrustedBy>
         <Testimonials></Testimonials>
+        <Footer></Footer>
         </main>
     )
 }
