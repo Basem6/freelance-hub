@@ -178,7 +178,7 @@
 .nav-link{
   animation: shake 0.9s ease-in-out  both alternate-reverse ;
 }
-.noscrol{
+.noscrol , .noscroll{
   max-height: 100vh;
   overflow: hidden;
 }

@@ -48,7 +48,7 @@ export default function RootLayout({ children }) {
             className={`${geistSans.variable} ${geistMono.variable} ${BoldHeadinFont.variable}`}
             suppressHydrationWarning
         >
-            <body className="font-sans antialiased">
+            <body className="font-sans antialiased" suppressHydrationWarning>
                 <GoogleOAuthProvider
                     clientId={process.env.NEXT_APP_GOOGLE_CLIENT_ID}
                 >

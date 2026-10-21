@@ -1,13 +1,11 @@
-'use client'
 import {NAV_LINKS} from "@/app/lib/constants/NavItems"
-import { Button, buttonVariants } from '@/components/ui/button'
+import { buttonVariants } from '@/components/ui/button'
 import { cn } from '../../app/lib/utils'
-import {  Menu, X  ,ChevronDown} from 'lucide-react'
-import {  useState } from 'react'
+import { ChevronDown} from 'lucide-react'
 import Link from "next/link";
+import MobNav from "./mobNav"
 
 export function Navbar() {  
-const [open, setOpen] = useState(false)
 return (
   <header className="fixed bg-primary min-w-full inset-x-0 top-0 z-50 pt-1.5 rounded-b-lg">
     <div
@@ -120,49 +118,11 @@ return (
         >
           Sign up
         </Link>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="md:hidden"
-          aria-label="Toggle menu"
-          aria-expanded={open}
-          onClick={() => setOpen((v) => !v)}
-        >
-          {open ? <X className="size-5" /> : <Menu className="size-5" />}
-        </Button>
+        <MobNav></MobNav>
+          <div>
+          </div>
       </div>
     </div>
-
-    {open && (
-      <div className="mx-auto mt-2 max-w-6xl md:hidden">
-        <div className="glass flex flex-col gap-1 rounded-2xl border border-border/60 p-3 shadow-lg">
-          {NAV_LINKS.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              onClick={() => setOpen(false)}
-              className="rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-            >
-              {link.label}
-            </Link>
-          ))}
-          <div className="mt-1 flex gap-2 border-t border-border/60 pt-3">
-            <Link
-              href="/choose-role"
-              className={cn(buttonVariants({ variant: 'outline' }), 'h-9 flex-1')}
-            >
-              Sign in
-            </Link>
-            <Link
-              href="/login"
-              className={cn(buttonVariants({ variant: 'default' }), 'h-9 flex-1')}
-            >
-              Get Started
-            </Link>
-          </div>
-        </div>
-      </div>
-    )}
   </header>
 )
 }
