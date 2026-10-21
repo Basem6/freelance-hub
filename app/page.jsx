@@ -1,7 +1,6 @@
-import { FreelancerShowcase } from "@/components/landing/freelancer-showcase";
 import { Hero } from "@/components/landing/hero";
 import { Navbar } from "@/components/landing/navbar";
-import { Testimonials } from "@/components/landing/testimonials";
+import Promote  from "@/components/landing/Promote";
 import { TrustedBy } from "@/components/landing/trusted-by";
 import { Footer } from "@/components/landing/footer";
 export default function LandingPage() {
@@ -10,7 +9,7 @@ export default function LandingPage() {
         <Navbar></Navbar>
         <Hero></Hero>
         <TrustedBy></TrustedBy>
-        {/* <Testimonials></Testimonials> */}
+        <Promote></Promote>
         <Footer></Footer>
         </main>
     )
