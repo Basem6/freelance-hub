@@ -11,7 +11,6 @@ gsap.registerPlugin(ScrollTrigger, SplitText);
 
 // غيّر المسارات دي بملفاتك (جوه فولدر public)
 const IMAGE_SRC = "/photos/pexels-alphatradezone-5831517.jpg";
-const VIDEO_SRC = "/videos/5271732-hd_1920_1080_25fps.mp4";
 const VIDEO_POSTER = "/photos/pexels-pixabay-221043.jpg";
 
 const POINTS = [
@@ -112,7 +111,7 @@ return (
         <div className="promote-video relative mx-auto aspect-3/4 w-full max-w-7xl overflow-hidden bg-black sm:aspect-video">
         <video
             className="absolute inset-0 size-full object-cover"
-            src={VIDEO_SRC}
+            src={"https://res.cloudinary.com/dhmk6ap4o/video/upload/v1792582093/5271732-hd_1920_1080_25fps_hac6ha.mp4"}
             poster={VIDEO_POSTER}
             autoPlay
             muted
