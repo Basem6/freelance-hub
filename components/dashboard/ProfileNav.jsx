@@ -27,7 +27,7 @@ export default function ProfileNav({nav1Ref}){
         if(document.querySelector(".mobile-nav")){
             gsap.to(".mobile-nav",{
                 bottom:0,
-                duration:0.3
+                duration:0.2
             })
         }
     },[nav1Ref])
@@ -43,7 +43,7 @@ export default function ProfileNav({nav1Ref}){
                         alt="userphoto"
                         width={100}
                                 height={100}
-                                className="object-cover  object-center"
+                                className="object-cover  min-h-full object-center"
                             />
                             </div>
                             <div className="min-w-0 flex-1">
@@ -52,7 +52,9 @@ export default function ProfileNav({nav1Ref}){
                                 </p>
             
                                 <p className="truncate text-xs  text-gray-400  tracking-wide whitespace-nowrap">
-                                {user?.role[0].toUpperCase()}{user?.role.slice(1)} Basic
+                                {user?.role
+                                ? `${user.role.charAt(0).toUpperCase()}${user.role.slice(1)} Basic`
+                                : "Basic"}
                                 </p>
                             </div>
                     </li>

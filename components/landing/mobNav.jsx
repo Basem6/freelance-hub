@@ -112,9 +112,9 @@ export default function MobNav() {
         aria-label={open ? "Close menu" : "Open menu"}
         aria-expanded={open}
       >
-        <div className="z-50 flex size-9 flex-col items-center justify-center gap-1.5 rounded-full bg-white">
-          <div ref={bar1} className="h-0.5 w-5 bg-black" />
-          <div ref={bar2} className="h-0.5 w-5 bg-black" />
+        <div className="z-50 flex size-9 flex-col items-center justify-center gap-1.5 rounded-full bg-font-primary">
+          <div ref={bar1} className="h-0.5 w-5 bg-primary" />
+          <div ref={bar2} className="h-0.5 w-5 bg-primary" />
         </div>
       </button>
 

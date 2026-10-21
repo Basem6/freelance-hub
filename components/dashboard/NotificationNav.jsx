@@ -13,7 +13,7 @@ export default function NotificationNav({nav3Ref  , closeNav}){
         if(document.querySelector(".mobile-nav")){
             gsap.to(".mobile-nav",{
                 bottom:0,
-                duration:0.3
+                duration:0.2
             })
         }
     },[nav3Ref])

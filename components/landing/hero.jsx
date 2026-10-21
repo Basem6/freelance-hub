@@ -3,6 +3,8 @@ import CircularText from "./circleText"
 import CountUp from "./count"
 import { ArrowRight, Plus } from "lucide-react"
 import Link from "next/link"
+import { cn } from "@/app/lib/utils"
+import { buttonVariants } from "../ui/button"
 export function Hero() {
   return (
     <section className="relative px-2 md:px-4xl bg-primary overflow-hidden pt-28  min-h-screen max-h-screen">
@@ -20,16 +22,20 @@ export function Hero() {
             </p>  
             <div className="mt-5 flex flex-col gap-2.5">
               <div className="flex gap-3">
-                  <Link href={'/choose-role'}>
-                  <button  className="bg-orange-400  flex gap-1.5 justify-center items-center w-fit  text-font-primary  hover:bg-orange-700 duration-200 transition-colors rounded-4xl px-3.5 py-1.5  cursor-pointer">
-                    <span>Get Started</span>
-                    <span><ArrowRight size={19} strokeWidth={1.5}></ArrowRight></span>
-                  </button>
+                  <Link href={'/choose-role'}
+                      className={cn(
+                              buttonVariants({ variant: 'default' }),
+                              'h-10 px-4 flex gap-2 items-center text-secondary bg-secondary-foreground  sm:inline-flex',
+                            )}>
+                              <span>Get started</span>
+                              <span><ArrowRight size={19} strokeWidth={1.5}></ArrowRight></span>
                   </Link>
-                  <Link href={'/nx/search?type=jobs&sort=createdAt%3Aasc&page=1'}>
-                  <button  className="bg-font-primary text-primary  flex gap-1.5 justify-center items-center w-fit    hover:opacity-65 duration-200 transition-opacity rounded-4xl px-3.5 py-1.5  cursor-pointer">
-                    <span>Find work</span>
-                  </button>
+                  <Link href={'/nx/search?type=jobs&sort=createdAt%3Aasc&page=1'}
+                      className={cn(
+                              buttonVariants({ variant: 'default'  }),
+                              'h-10 px-4 text-primary bg-font-primary  sm:inline-flex',
+                            )}>
+                              Find work
                   </Link>
               </div>
               <p className="text-font-primary text-xs text-center opacity-80 max-w-xl">Free to join · No credit card required</p>
@@ -46,7 +52,7 @@ export function Hero() {
                   fontSize={15}
                   draggable
                   hoverTilt={20}
-                  className="text-orange-400"
+                  className="text-secondary-foreground"
                   tilt={0}
                   fontWeight={700}
                   letterSpacing={5}
@@ -78,7 +84,7 @@ export function Hero() {
                       style={{"fontSize":"3rem","fontWeight":700}}
                     ></CountUp> 
                   </div>
-                  < div><Plus size={30} strokeWidth={2.5} className="text-orange-400"></Plus></div>
+                  < div><Plus size={30} strokeWidth={2.5} className="text-secondary-foreground"></Plus></div>
                 </div>
                 <div className="text-font-primary">Verified freelancers</div>
               </div>

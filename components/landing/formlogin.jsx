@@ -2,13 +2,14 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useAppDispatch , useAppSelector } from "../../app/lib/hooks";
-import  {setShow , hideShow} from "../../app/lib/Features/showSlice.js";
 import { useRouter } from "next/navigation";
+import { cn } from "@/app/lib/utils"
+import { buttonVariants } from "../../components/ui/button.tsx"
 import { setUser } from '../../app/lib/Features/authSlice.js';
 import { useShowToast } from '../../app/hooks/showToast.js';
-import { LockKeyhole } from 'lucide-react';
-import { User } from 'lucide-react';
-import { Loader } from 'lucide-react';
+import { User, Loader , LockKeyhole } from 'lucide-react';
+import GoogleBtn from '../ui/googlebtn.jsx';
+import { handleChange } from '../../app/utils/handleChange.js';
 const Formlogin = () => {
 const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
 const router = useRouter();
@@ -24,13 +25,6 @@ useEffect(() => {
     }
 }, [isAuthenticated, router]);
 
-const handleChange = (e) => {
-    const { name, value } = e.target;
-    setData((prev) => ({
-    ...prev,
-    [name]: value,
-    }));
-};
 
 const handleSubmit = async (e) => {
     e.preventDefault();
@@ -93,7 +87,7 @@ const handleSubmit = async (e) => {
         });
 
     } catch (error) {
-        console.error("❌ Login error:", error);
+        console.error("Login error:", error);
         
         showToast({
         message: error.message || "error in server",
@@ -103,14 +97,6 @@ const handleSubmit = async (e) => {
     } finally {
         setLoading(false);
     }
-};
-const handleGoogleLogin = () => {
-    window.location.href =
-    `https://accounts.google.com/o/oauth2/v2/auth?` +
-    `client_id=206275470398-ks60mr8ume6jqmeckebfl7q36elrq9g2.apps.googleusercontent.com&` +
-    `redirect_uri=${encodeURIComponent(`${window.location.origin}/callback`)}&` +
-    `response_type=code&` +
-    `scope=openid email profile`;
 };
 return (
     <StyledWrapper>
@@ -123,16 +109,20 @@ return (
         <div className="input_container">
         <label className="input_label" htmlFor="email_field">Email</label>
         <User  strokeWidth={1.1} className="icon" />
-        <input placeholder="email" title="Inpit title" className="input_field focus:ring-1 focus:ring-black/60" value={data.email} name="email" onChange={handleChange} type="email" id="email" />
+        <input placeholder="email" title="Inpit title" className="input_field focus:ring-1 focus:ring-black/60" value={data.email} name="email" onChange={(e)=>handleChange(e , setData)} type="email" id="email" />
         </div>
         <div className="input_container">
         <label className="input_label" htmlFor="password_field">Password</label>
         <LockKeyhole  strokeWidth={1.1} className="icon" />
-        <input placeholder="Password" title="Inpit title" className="input_field focus:ring-1 focus:ring-black/60" value={data.password} name="password" onChange={handleChange} type="password" id="password" />
+        <input placeholder="Password" title="Inpit title" className="input_field focus:ring-1 focus:ring-black/60" value={data.password} name="password" onChange={(e)=>handleChange(e , setData)} type="password" id="password" />
         </div>
-        <button disabled={loading} title="Sign In" type="submit" className={`sign-in_btn ${loading ? 'opacity-50 cursor-no-drop' : 'opacity-100 cursor-pointer'}`}>
+        <button disabled={loading} title="Sign In" type="submit" 
+        className={cn(
+        buttonVariants({ variant: 'default' }),
+        'h-10 px-4 flex gap-2 items-center mt-3 text-primary bg-secondary-foreground min-w-full  sm:inline-flex' , loading ? 'opacity-50 cursor-no-drop' : 'opacity-100 cursor-pointer' ,
+    )}>
         <span className='flex justify-center items-center gap-2'>
-            <div>Sign In </div>
+            <div>Log in </div>
             <div>{loading ? <Loader size={16} className="animate-spin" />: ""}</div>
         </span>
         </button>
@@ -143,15 +133,7 @@ return (
         
         </div>
         <div>
-        <button className="button-google" type="button" onClick={handleGoogleLogin}>
-            <svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid" viewBox="0 0 256 262">
-            <path fill="#4285F4" d="M255.878 133.451c0-10.734-.871-18.567-2.756-26.69H130.55v48.448h71.947c-1.45 12.04-9.283 30.172-26.69 42.356l-.244 1.622 38.755 30.023 2.685.268c24.659-22.774 38.875-56.282 38.875-96.027"></path>
-            <path fill="#34A853" d="M130.55 261.1c35.248 0 64.839-11.605 86.453-31.622l-41.196-31.913c-11.024 7.688-25.82 13.055-45.257 13.055-34.523 0-63.824-22.773-74.269-54.25l-1.531.13-40.298 31.187-.527 1.465C35.393 231.798 79.49 261.1 130.55 261.1"></path>
-            <path fill="#FBBC05" d="M56.281 156.37c-2.756-8.123-4.351-16.827-4.351-25.82 0-8.994 1.595-17.697 4.206-25.82l-.073-1.73L15.26 71.312l-1.335.635C5.077 89.644 0 109.517 0 130.55s5.077 40.905 13.925 58.602l42.356-32.782"></path>
-            <path fill="#EB4335" d="M130.55 50.479c24.514 0 41.05 10.589 50.479 19.438l36.844-35.974C195.245 12.91 165.798 0 130.55 0 79.49 0 35.393 29.301 13.925 71.947l42.211 32.783c10.59-31.477 39.891-54.251 74.414-54.251"></path>
-            </svg>
-        Continue with Google
-        </button>
+        <GoogleBtn></GoogleBtn>
         </div>
         <p className="text-sm font-thin tracking-wide text-gray-600 mt-7 ">Don't have an Hemma account?</p>
         <button  type='button' onClick={(e)=>{e.preventDefault;router.push('choose-role')}} className="border border-orange-500/80  text-orange-400 p-2 rounded-sm min-w-1/2 hover:opacity-50 transition-opacity duration-200">Sign Up</button>
@@ -242,36 +224,7 @@ const StyledWrapper = styled.div`
     transition: all 0.3s cubic-bezier(0.15, 0.83, 0.66, 1);
 }
 
-.input_field:focus {
-}
 
-.sign-in_btn {
-    width: 100%;
-    height: 40px;
-    border: 0;
-    background: oklch(75.812% 0.15293 65.883);
-    border-radius: 7px;
-    outline: none;
-    color: #ffffff;
-    
-}
-
-.sign-in_ggl {
-    width: 100%;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    background: white;
-    border-radius: 7px;
-    outline: none;
-    color: black;
-    border: 1px solid #e5e5e5;
-    filter: drop-shadow(0px 1px 0px #efefef)
-    drop-shadow(0px 1px 0.5px rgba(239, 239, 239, 0.5));
-    cursor: pointer;
-}
 
 
 .separator {

@@ -121,7 +121,7 @@ export default function DashboardSidebar() {
             <TextAlignEnd  size={21} />
         </button>
         </div>
-        <div className={`top-0 left-0 relative z-9999`}>
+        <div className={`top-0  left-0 relative z-9999`}>
             {/* Mobile Overlay */}
             {isMobileOpen && (
                 <button
@@ -211,21 +211,27 @@ export default function DashboardSidebar() {
                 </div>
                 }
                 <div className="relative flex gap-3 items-center  px-3  text-gray-800 hover:bg-gray-300/60  py-2.5 rounded-md transition-all duration-200 hover:text-gray-900 cursor-pointer" onClick={() => {setIsMobileOpen(false); openNav(nav1Ref, "profile")}}>
-                    <div className='size-6.5 shrink-0 rounded-full overflow-hidden '>
+                    <div className='size-6.5  shrink-0 rounded-full overflow-hidden '>
                         <Image
                         src={user?.image || "/avatars/avatar-1.png"}
                         alt="User photo"
                         width={90}
                         height={90}
-                        quality={30}
-                        className="object-cover rounded-full"
+                        
+                        className="object-cover rounded-full object-center min-h-full"
                     />
                     
                     </div>
                     <div className='flex w-full link-text  justify-between items-center'>
                         <div className='flex flex-col gap-0.5 flex-1'>
                             <div className='text-sm font-semibold leading-3.5 whitespace-nowrap'>{user?.fullName}</div>
-                            <div className='text-gray-400 text-xs tracking-wide whitespace-nowrap'>{user?.role[0].toUpperCase()}{user?.role.slice(1)} Basic</div>
+                            
+                            <div className="text-gray-400 text-xs tracking-wide whitespace-nowrap">
+                            {user?.role
+                                ? `${user.role.charAt(0).toUpperCase()}${user.role.slice(1)} Basic`
+                                : "Basic"}
+                            </div>
+
                         </div>
                         <div><ChevronRight size={20} strokeWidth={1} /></div>
                     </div>

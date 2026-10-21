@@ -1,16 +1,19 @@
 "use client";
 import Link from "next/link";
 import { useState } from 'react';
+import { cn } from "@/app/lib/utils"
+import { buttonVariants } from "../../components/ui/button.tsx"
 import styled from 'styled-components';
 import { useRouter } from "next/navigation";
 import { useAppDispatch } from "../../app/lib/hooks";
 import { setUser } from "../../app/lib/Features/authSlice.js";
 import { useSearchParams } from "next/navigation";
 import { useShowToast } from "../../app/hooks/showToast.js";
-import { UserRound } from "lucide-react";
 import OptionSelect from '@/components/ui/OptionSelect';
 import { countryOptions } from '@/app/lib/constants/countryOptions';
-import { Mail ,Loader ,LockKeyhole } from "lucide-react";
+import { Mail ,Loader ,LockKeyhole , UserRound } from "lucide-react";
+import GoogleBtn from "../ui/googlebtn.jsx";
+import { handleChange } from "../../app/utils/handleChange.js";
 const Formsign = () => {
   const searchParams = useSearchParams();
   const role = searchParams.get("role");
@@ -25,15 +28,6 @@ const Formsign = () => {
       country:"",
       activeRole:role,
   });
-  const handleChange = (e) => {
-      const { name, value } = e.target;
-
-      setData((prev) => ({
-      ...prev,
-      [name]: value,
-      }));
-  };
-
   const handleSubmit =  async (e) => {
       e.preventDefault();
 
@@ -100,14 +94,6 @@ const Formsign = () => {
       setLoading(false);
       }
   };
-  const handleGoogleLogin = () => {
-    window.location.href =
-    `https://accounts.google.com/o/oauth2/v2/auth?` +
-    `client_id=206275470398-ks60mr8ume6jqmeckebfl7q36elrq9g2.apps.googleusercontent.com&` +
-    `redirect_uri=${encodeURIComponent(`${window.location.origin}/callback`)}&` +
-    `response_type=code&` +
-    `scope=openid email profile`;
-};
   return (
     <StyledWrapper>
       <form className="form md:w-130 w-full mt-10 md:border md:border-gray-600/20 flex flex-col gap-2 bg-[#ffffff]  rounded-sm py-5 px-10" onSubmit={handleSubmit} >
@@ -117,21 +103,21 @@ const Formsign = () => {
         </div>
         <div className="inputForm">
           <UserRound strokeWidth={1} />
-          <input type="text" className="input" name="userName" value={data.userName} onChange={handleChange} placeholder="Enter your Name" />
+          <input type="text" className="input" name="userName" value={data.userName} onChange={(e)=>handleChange(e , setData)} placeholder="Enter your Name" />
         </div>
         <div className="flex-column">
           <label>Email </label>
         </div>
         <div className="inputForm">
           <Mail strokeWidth={1} />
-          <input type="email" className="input" onChange={handleChange} name="email" value={data.email} placeholder="Enter your Email" />
+          <input type="email" className="input" onChange={(e)=>handleChange(e , setData)} name="email" value={data.email} placeholder="Enter your Email" />
         </div>
         <div className="flex-column">
           <label>Password </label>
         </div>
         <div className="inputForm">
           <LockKeyhole strokeWidth={1} />
-          <input type="password" className="input" onChange={handleChange} name="password" value={data.password} placeholder="Enter your Password" />
+          <input type="password" className="input" onChange={(e)=>handleChange(e , setData)} name="password" value={data.password} placeholder="Enter your Password" />
         </div>
           <div className="space-y-1.5">
               <label className="block text-sm font-semibold text-gray-700">Country</label>
@@ -143,7 +129,11 @@ const Formsign = () => {
               isSearch={true}
               />
           </div>
-        <button disabled={loading} className={`button-submit ${loading ? 'opacity-50 cursor-no-drop' : 'cursor-pointer opacity-100'}`} type="submit">
+        <button disabled={loading} 
+            className={cn(
+                buttonVariants({ variant: 'default' }),
+                'h-10 px-4 flex gap-2 items-center text-primary hover:bg-black/70 mt-3 bg-secondary-foreground min-w-full  sm:inline-flex' , loading ? 'opacity-50 cursor-no-drop' : 'opacity-100 cursor-pointer' ,
+          )}>
           <div className='flex justify-center items-center gap-2'>
           <div>Sign Up</div>
           <div>{loading ? <Loader size={16} className="animate-spin" /> : ""}</div>
@@ -154,15 +144,7 @@ const Formsign = () => {
         </div>
         <div>
         <div className="min-w-full flex justify-center">
-        <button className="button-google" type="button" onClick={handleGoogleLogin}>
-            <svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid" viewBox="0 0 256 262">
-            <path fill="#4285F4" d="M255.878 133.451c0-10.734-.871-18.567-2.756-26.69H130.55v48.448h71.947c-1.45 12.04-9.283 30.172-26.69 42.356l-.244 1.622 38.755 30.023 2.685.268c24.659-22.774 38.875-56.282 38.875-96.027"></path>
-            <path fill="#34A853" d="M130.55 261.1c35.248 0 64.839-11.605 86.453-31.622l-41.196-31.913c-11.024 7.688-25.82 13.055-45.257 13.055-34.523 0-63.824-22.773-74.269-54.25l-1.531.13-40.298 31.187-.527 1.465C35.393 231.798 79.49 261.1 130.55 261.1"></path>
-            <path fill="#FBBC05" d="M56.281 156.37c-2.756-8.123-4.351-16.827-4.351-25.82 0-8.994 1.595-17.697 4.206-25.82l-.073-1.73L15.26 71.312l-1.335.635C5.077 89.644 0 109.517 0 130.55s5.077 40.905 13.925 58.602l42.356-32.782"></path>
-            <path fill="#EB4335" d="M130.55 50.479c24.514 0 41.05 10.589 50.479 19.438l36.844-35.974C195.245 12.91 165.798 0 130.55 0 79.49 0 35.393 29.301 13.925 71.947l42.211 32.783c10.59-31.477 39.891-54.251 74.414-54.251"></path>
-            </svg>
-        Continue with Google
-        </button>
+        <GoogleBtn></GoogleBtn>
         </div>
         </div>
         <p className="p">Already have a account? <Link className="span" href='/login'>login</Link></p>
@@ -231,23 +213,6 @@ const StyledWrapper = styled.div`
     color: #2d79f3;
     font-weight: 500;
     cursor: pointer;
-  }
-
-  .button-submit {
-    margin: 20px 0 10px 0;
-    background-color: oklch(75.812% 0.15293 65.883);
-    border: none;
-    color: white;
-    font-size: 15px;
-    font-weight: 500;
-    border-radius: 10px;
-    height: 50px;
-    width: 100%;
-    cursor: pointer;
-  }
-
-  .button-submit:hover {
-    background-color: #252727;
   }
 
   .p {

@@ -70,12 +70,12 @@ export default function page() {
                   className={cn(
                     'relative flex h-full flex-col rounded-2xl border bg-card p-7 transition-all duration-300',
                     plan.highlighted
-                      ? 'border-primary/60 shadow-2xl shadow-primary/15 lg:-translate-y-3'
-                      : 'border-border/70 hover:border-primary/30 hover:shadow-lg',
+                      ? 'border-secondary-foreground/60 lg:-translate-y-3'
+                      : 'border-secondary-foreground/70 hover:border-secondary-foreground/30 ',
                   )}
                 >
                   {plan.highlighted && (
-                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground shadow-md shadow-primary/30">
+                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-secondary-foreground px-3 py-1 text-xs font-semibold text-primary ">
                       Most popular
                     </span>
                   )}
@@ -110,7 +110,7 @@ export default function page() {
                   <ul className="mt-7 space-y-3">
                     {plan.features.map((feat) => (
                       <li key={feat} className="flex items-start gap-2.5 text-sm">
-                        <span className="mt-0.5 inline-flex size-4 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                        <span className="mt-0.5 inline-flex size-4 shrink-0 items-center justify-center rounded-full bg-secondary-foreground/10 text-font-primary">
                           <Check className="size-3" />
                         </span>
                         <span className="text-muted-foreground">{feat}</span>

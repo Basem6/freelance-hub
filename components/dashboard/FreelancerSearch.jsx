@@ -91,7 +91,7 @@ export default function FreelancerSearch({ nav2Ref, closeNav }) {
         <>
             <section
                 aria-label="Search jobs or freelancers"
-                className="fixed left-1/2 top-10 z-[60] w-[90%] -translate-x-1/2 rounded-2xl bg-white p-5 shadow-xl md:w-[50%] md:p-6"
+                className="fixed left-1/2 top-10 z-99999 w-[90%] -translate-x-1/2 rounded-2xl bg-white p-5 shadow-xl md:w-[50%] md:p-6"
             >
                 <div className="mb-4 flex gap-2" role="group" aria-label="Search for">
                     {["jobs", "freelancers"].map((option) => (
@@ -172,7 +172,7 @@ export default function FreelancerSearch({ nav2Ref, closeNav }) {
                 type="button"
                 onClick={closeSearch}
                 aria-label="Close search"
-                className="overlay fixed inset-0 z-[59] h-screen w-full bg-black/30"
+                className="overlay fixed inset-0 z-9999 h-screen w-full bg-black/30"
             />
         </>
     );

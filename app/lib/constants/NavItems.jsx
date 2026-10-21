@@ -47,3 +47,27 @@ export const NAV_Mob_LINKS= [
     { label: 'Hire talent', href:"/nx/search"},
     { label: 'Pricing', href: '/pricing' },
 ]
+export const LINK_GROUPS = [
+{
+    title: 'For freelancers',
+    links: [
+    { label: 'Browse projects', href: '/nx/search?type=jobs&sort=createdAt%3Aasc&page=1' },
+    { label: 'Create a profile', href: '/choose-role' },
+    ],
+},
+{
+    title: 'For clients',
+    links: [
+    { label: 'Browse freelancers', href: '/nx/search' },
+    { label: 'Post a project', href: '/nx/post-job' },
+    ],
+},
+{
+    title: 'Hemma',
+    links: [
+    { label: 'Home', href: '/' },
+    { label: 'Pricing', href: '/pricing' },
+    { label: 'Log in', href: '/login' },
+    ],
+},
+]

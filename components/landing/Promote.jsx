@@ -6,11 +6,13 @@ import { SplitText } from "gsap/SplitText";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
+import { buttonVariants } from "../ui/button";
+import { cn } from "@/app/lib/utils";
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
 
 // غيّر المسارات دي بملفاتك (جوه فولدر public)
-const IMAGE_SRC = "/photos/pexels-alphatradezone-5831517.jpg";
+const IMAGE_SRC = "/photos/pexels-cottonbro-5081916.jpg";
 const VIDEO_POSTER = "/photos/pexels-pixabay-221043.jpg";
 
 const POINTS = [
@@ -106,9 +108,9 @@ useEffect(() => {
 }, []);
 
 return (
-    <div ref={rootRef} className="bg-white text-black">
-    <section className="px-4 pb-20 sm:px-6 lg:pb-28">
-        <div className="promote-video relative mx-auto aspect-3/4 w-full max-w-7xl overflow-hidden bg-black sm:aspect-video">
+    <div ref={rootRef} className="bg-primary text-font-primary overflow-hidden">
+    <section className="px-4 pb-20 sm:px-6 lg:pb-28 overflow-hidden">
+        <div className="promote-video relative mx-auto aspect-3/4 w-full max-w-7xl overflow-hidden bg-font-primary sm:aspect-video">
         <video
             className="absolute inset-0 size-full object-cover"
             src={"https://res.cloudinary.com/dhmk6ap4o/video/upload/v1792582093/5271732-hd_1920_1080_25fps_hac6ha.mp4"}
@@ -119,21 +121,23 @@ return (
             playsInline
             preload="metadata"
         />
-        <div className="absolute inset-0 bg-black/45" />
+        <div className="absolute inset-0 bg-font-primary/45" />
 
-        <div className="promote-group absolute inset-0 flex flex-col justify-end gap-5 p-6 text-white sm:p-12 lg:max-w-3xl">
+        <div className="promote-group absolute inset-0 flex flex-col justify-end gap-5 p-6 text-primary sm:p-12 lg:max-w-3xl">
             <h2 className="promote-title font-heading text-4xl leading-tight sm:text-5xl lg:text-6xl">
             Work without limits
             </h2>
-            <p className="promote-fade max-w-xl text-base text-white/85 sm:text-lg">
+            <p className="promote-fade max-w-xl text-base text-primary/85 sm:text-lg">
             Hire, collaborate and pay in one place. Your next great
             collaboration is one conversation away.
             </p>
             <div className="promote-fade">
             <Link
                 href="/login"
-                className="inline-block rounded-full bg-white px-8 py-3 font-semibold text-black transition-opacity duration-300 hover:opacity-80"
-            >
+                className={cn(
+                buttonVariants({ variant: 'default' }),
+                'h-9 px-4 text-font-primary bg-primary  sm:inline-flex',
+            )}>
                 Join now
             </Link>
             </div>
@@ -141,14 +145,14 @@ return (
         </div>
     </section>
     
-    <section className="mx-auto grid max-w-7xl items-center gap-10 px-6 py-20 lg:grid-cols-2 lg:gap-16 lg:py-28">
-        <div className="promote-image relative aspect-square w-full overflow-hidden rounded-3xl bg-neutral-200">
+    <section className="mx-auto px-3 md:px-0 grid max-w-7xl items-center gap-10 py-20 lg:grid-cols-2 lg:gap-16 lg:py-28 overflow-hidden">
+        <div className="promote-image relative w-full md:w-130 h-70 overflow-hidden  rounded-3xl bg-amber-200">
         <Image
             src={IMAGE_SRC}
             alt="Freelancer working with a client"
             fill
-            sizes="(min-width: 1024px) 50vw, 100vw"
-            className="object-cover"
+            loading="lazy"
+            className=" rounded-3xl w-full h-full"
         />
         </div>
 
@@ -178,8 +182,10 @@ return (
         <div className="promote-fade">
             <Link
             href="/choose-role"
-            className="inline-block rounded-full bg-black px-8 py-3 font-semibold text-white transition-opacity duration-300 hover:opacity-80"
-            >
+            className={cn(
+                buttonVariants({ variant: 'default' }),
+                'h-9 px-4 text-primary bg-font-primary  sm:inline-flex',
+            )}>
             Get started
             </Link>
         </div>
