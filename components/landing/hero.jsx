@@ -1,4 +1,3 @@
-import Image from "next/image"
 import BounceCards from "./cards"
 import CircularText from "./circleText"
 import CountUp from "./count"

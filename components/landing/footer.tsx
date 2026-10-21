@@ -30,7 +30,7 @@ const LINK_GROUPS = [
 
 export function Footer() {
   return (
-    <footer className="bg-primary text-font-primary">
+    <footer className="bg-black/90 text-font-primary">
       <div className="mx-auto max-w-7xl px-5 py-14 sm:px-8 sm:py-16 lg:px-10">
         <div className="grid gap-12 border-b border-white/15 pb-12 sm:grid-cols-2 lg:grid-cols-[1.5fr_repeat(3,minmax(0,1fr))] lg:gap-10">
           <div className="sm:col-span-2 lg:col-span-1">
@@ -46,13 +46,6 @@ export function Footer() {
               Good work starts with the right people. Find your next project or
               build your next great team with Hemma.
             </p>
-            <Link
-              href="/choose-role"
-              className="mt-6 inline-flex items-center gap-2 rounded-full bg-orange-400 px-4 py-2.5 text-sm font-semibold text-primary transition-colors hover:bg-orange-300"
-            >
-              Get started
-              <ArrowUpRight aria-hidden="true" className="size-4" />
-            </Link>
           </div>
 
           {LINK_GROUPS.map((group) => (
