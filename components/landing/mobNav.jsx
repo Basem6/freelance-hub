@@ -1,6 +1,6 @@
 "use client";
 
-import { NAV_LINKS } from "@/app/lib/constants/NavItems";
+import { NAV_Mob_LINKS } from "@/app/lib/constants/NavItems";
 import gsap from "gsap";
 import { SplitText } from "gsap/SplitText";
 import Link from "next/link";
@@ -124,9 +124,9 @@ export default function MobNav() {
         style={{ clipPath: "inset(0 0 0 100%)", visibility: "hidden" }}
       >
         <nav ref={navRef} className="fixed flex flex-col gap-7 px-8 pt-22 text-3xl">
-          {NAV_LINKS.map((link) => (
+          {NAV_Mob_LINKS.map((link, index) => (
             <Link
-              key={link.href}
+              key={index}
               href={link.href}
               onClick={() => setOpen(false)}
               className="mobile-link text-black transition-opacity duration-300 hover:opacity-50"

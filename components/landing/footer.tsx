@@ -5,17 +5,15 @@ const LINK_GROUPS = [
   {
     title: 'For freelancers',
     links: [
-      { label: 'Find work', href: '/findwork' },
-      { label: 'Browse projects', href: '/findwork' },
+      { label: 'Browse projects', href: '/nx/search?type=jobs&sort=createdAt%3Aasc&page=1' },
       { label: 'Create a profile', href: '/choose-role' },
     ],
   },
   {
     title: 'For clients',
     links: [
-      { label: 'Find talent', href: '/freelancers' },
-      { label: 'Browse freelancers', href: '/freelancers' },
-      { label: 'Post a project', href: '/choose-role' },
+      { label: 'Browse freelancers', href: '/nx/search' },
+      { label: 'Post a project', href: '/nx/post-job' },
     ],
   },
   {

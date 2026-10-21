@@ -268,7 +268,7 @@ export default function SearchPage({ initialType = "freelancers" }) {
     }
 
     return (
-        <main className="mx-auto w-full   max-w-7xl p-4 sm:px-6 lg:px-8">
+        <main className="mx-auto w-full md:pt-15   max-w-7xl p-4 sm:px-6 lg:px-8">
 
             <section className="mb-6 md:p-4 px-1  flex items-center  gap-4">
                 <div className="relative md:w-120 md:grow-0 grow">

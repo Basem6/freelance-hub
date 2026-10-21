@@ -21,7 +21,9 @@ const protectedRoutes = [
     '/earnings',
     '/hire',
     '/findwork',
+    '/findworks',
     '/nx/findwork',
+    '/nx/post-job',
     '/nx/client/dashboard',
     '/nx/browse/talent'
 ]
@@ -116,7 +118,9 @@ export const config = {
         '/messages/:path*',
         '/earnings/:path*',
         '/hire/:path*',
+        '/nx/post-job',
         '/findwork/:path*',
+        '/findworks/:path*',
         '/nx/:path*',
     ],
 }

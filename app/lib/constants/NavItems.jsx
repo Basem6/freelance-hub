@@ -37,7 +37,13 @@ export const FreelancerNavItems = (notifications = []) => [
 
 export const NAV_LINKS= [
     { label: 'Home', href: '/' },
-    { label: 'Find work', href: '/findwork' },
-    { label: 'Hire talent', href: '/hire' },
+    { label: 'Find work' },
+    { label: 'Hire talent'},
+    { label: 'Pricing', href: '/pricing' },
+]
+export const NAV_Mob_LINKS= [
+    { label: 'Home', href: '/' },
+    { label: 'Find work', href:"/nx/search?type=jobs&sort=createdAt%3Aasc&page=1" },
+    { label: 'Hire talent', href:"/nx/search"},
     { label: 'Pricing', href: '/pricing' },
 ]

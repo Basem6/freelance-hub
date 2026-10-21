@@ -20,10 +20,13 @@ return (
           const hasDropdown = index === 1 || index === 2;
           return (
             <div
-              key={link.href}
+              key={index}
               className="relative group"
             >
-              <a
+              {link.href &&
+              
+              <a 
+                
                 href={link.href}
                 className="flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-medium   duration-300"
               > 
@@ -38,7 +41,24 @@ return (
                 {hasDropdown && (
                   <i className="fa-solid fa-angle-down text-xs text-gray-500 dark:text-gray-500 duration-300 group-hover:-rotate-180 group-hover:text-black dark:group-hover:text-white" />
                 )}
-              </a>
+              </a>}
+              {!link.href &&
+              
+              <button 
+                className="flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-medium   duration-300"
+              > 
+                <div className="flex items-center gap-1.5">
+                  <span className="mr-1">{link.label}</span>
+                  {hasDropdown &&
+                  <span className="group-hover:rotate-180 transition-transform duration-300"><ChevronDown className={"text-font-primary group-hover:opacity-40 transition-opacity duration-300"}  strokeWidth={1.3} size={17}/></span>
+                  }
+                </div>
+                
+
+                {hasDropdown && (
+                  <i className="fa-solid fa-angle-down text-xs text-gray-500 dark:text-gray-500 duration-300 group-hover:-rotate-180 group-hover:text-black dark:group-hover:text-white" />
+                )}
+              </button>}
 
               {/* Find Work Dropdown */}
               {index === 1 && (
@@ -46,7 +66,7 @@ return (
                   <ul className="flex flex-col">
                     <li className="rounded-t-md hover:bg-gray-100">
                       <a
-                        href="/findwork"
+                        href={`/nx/search?type=jobs&sort=createdAt%3Aasc&page=1`}
                         className="flex items-center gap-3 px-4 py-2"
                       >
                         <p className="text-sm">Browse Projects</p>
@@ -74,7 +94,7 @@ return (
                   <ul className="flex flex-col">
                     <li className="rounded-t-md hover:bg-gray-100">
                       <a
-                        href="/freelancers"
+                        href="/nx/search"
                         className="flex items-center gap-3 px-4 py-2"
                       >
                         <p className="text-sm ">

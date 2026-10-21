@@ -13,6 +13,7 @@ import { ClientNavItems, FreelancerNavItems } from '../../app/lib/constants/NavI
 import { usePathname } from 'next/navigation';
 import NotificationNav from './NotificationNav';
 import FreelancerSearch from './FreelancerSearch';
+import { Navbar } from '../landing/navbar';
 
 export default function DashboardSidebar() {
     const [activeMenu,setActiveMenu]=useState("")
@@ -97,6 +98,7 @@ export default function DashboardSidebar() {
     }
     return (
         <>
+        <div className={`${user?"block":"hidden"}`}>
         <div className="navMob md:hidden   fixed justify-between min-w-full h-14 bg-white items-center px-4 border-b border-gray-400/60 pb-2  flex z-50 ">
             <div className="logo relative">
                 <Image
@@ -288,6 +290,11 @@ export default function DashboardSidebar() {
             {activeMenu==="search" && <FreelancerSearch nav2Ref={nav2Ref} closeNav={closeNav}  ></FreelancerSearch> }
             {activeMenu==="notification" && <NotificationNav nav3Ref={nav3Ref} closeNav={closeNav}  ></NotificationNav> }
         </div>
+        </div>
+        <div  className={`${!user?"block":"hidden"}`}>
+            <Navbar></Navbar>
+        </div>
         </>
+
     );
 }
