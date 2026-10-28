@@ -57,12 +57,7 @@ export async function proxyAuth(
   { clearOnUnauthorized = true } = {}
 ) {
   const body = request.method === 'GET' ? undefined : await request.text();
-  console.log("🍪 COOKIES:", request.cookies.getAll());
-
   const token = request.cookies.get('authToken')?.value;
-
-  console.log("🔑 TOKEN:", token ? "FOUND" : "NOT FOUND");
-
   const headers = {};
   if (body) {
     headers['Content-Type'] =
