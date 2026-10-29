@@ -1,8 +1,10 @@
+import { refreshProject } from "./actions";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { AlertTriangle, Loader2, MessageCircle, X } from "lucide-react";
 import Image from "next/image";
 import OptionSelect from "@/components/ui/OptionSelect";
+
 
 export function ProposalDetailsModal({ proposal, user, onClose, onMessage }) {
   const freelancer = proposal?.freelancer || {};
@@ -93,6 +95,8 @@ export function ProposalModal({ project, proposal, isEditing = false, onClose  ,
           data.message || "Failed to submit proposal"
         );
       }
+
+      await refreshProject(data.proposal.project.id);
       setProposals((prev) => isEditing
         ? prev.map((item) => item._id === proposal._id ? { ...item, ...data.proposal } : item)
         : [data.proposal, ...prev]);

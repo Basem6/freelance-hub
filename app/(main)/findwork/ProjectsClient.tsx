@@ -1,11 +1,9 @@
 'use client'
 import {  useMemo, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { SlidersHorizontal, X, Bookmark,AlertCircle, MapPin, Clock, Search} from 'lucide-react'
+import { SlidersHorizontal, X, Bookmark,AlertCircle, MapPin, Search} from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { specialtyOptions } from '@/app/lib/constants/specialtyOptions';
-import OptionSelect from '@/components/ui/OptionSelect'
 import AutoSlide from '@/components/ui/AutoSlide'
 import Radio from "@/components/ui/rating"
 import {timeAgo} from "@/app/utils/handletime"

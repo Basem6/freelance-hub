@@ -2,25 +2,23 @@ import { NextResponse } from 'next/server'
 import { jwtDecode } from 'jwt-decode'
 
 // صفحة الـ freelancer الرئيسية
-const FREELANCER_HOME = 'nx/findwork'
+const FREELANCER_HOME = '/nx/findwork'
 const CLIENT_HOME = '/nx/client/dashboard'
 
 // صفحات الـ freelancer بس
 const freelancerOnly = ['/earnings','/profile']
 
 // صفحات الـ client بس
-const clientOnly = ['nx/client/dashboard','nx/browse/talent']
+const clientOnly = ['/nx/client/dashboard','/nx/browse/talent' ,'/nx/post-job/title']
 
 // الصفحات المحمية (محتاجة توكن)
 const protectedRoutes = [
     '/profile',
-    '/projects',
     '/settings',
-    '/my-works',
     '/messages',
+    '/notifications',
     '/earnings',
     '/hire',
-    '/findwork',
     '/findworks',
     '/nx/findwork',
     '/nx/post-job',
@@ -40,15 +38,14 @@ export function proxy(request) {
     const isFreelancerRoute = matches(freelancerOnly)
     const isClientRoute = matches(clientOnly)
     const isAuthPage = authPages.includes(pathname)
-    const isHomePage = pathname === '/'  || pathname === '/findwork' // مقارنة مباشرة مش startsWith
-
+    const isHomePage = pathname === '/' 
     // صفحة محمية بدون توكن
     if (isProtectedRoute && !token) {
         return NextResponse.redirect(new URL('/login', request.url))
     }
 
     if (token) {
-        let decoded
+        let decoded;
 
         try {
             decoded = jwtDecode(token)
@@ -68,7 +65,6 @@ export function proxy(request) {
         }
 
         const userRole = decoded.role
-
         // Client بيحاول يدخل صفحات الـ Freelancer
         if (userRole === 'client' && isFreelancerRoute) {
             return NextResponse.redirect(new URL(CLIENT_HOME, request.url))
@@ -109,16 +105,16 @@ export function proxy(request) {
 export const config = {
     matcher: [
         '/', // ضروري عشان الـ middleware يشتغل على الرئيسية
-        '/profile/:path*',
-        '/projects/:path*',
-        '/settings/:path*',
+        '/profile',
+        '/settings',
         '/login',
         '/register',
         '/my-works/:path*',
         '/messages/:path*',
         '/earnings/:path*',
         '/hire/:path*',
-        '/nx/post-job',
+        '/nx/post-job/title',
+        '/nx/client/dashboard',
         '/findwork/:path*',
         '/findworks/:path*',
         '/nx/:path*',

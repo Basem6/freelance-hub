@@ -70,7 +70,7 @@
   --primary: #ffffff;
   --secondary: #101010;
   --primary-foreground: oklch(0.99 0.005 260);
-  --secondary-foreground: oklch(75.836% 0.15307 61.178);
+  --secondary-foreground: #f59638;
   --muted: oklch(0.965 0.01 260);
   --muted-foreground: oklch(0.52 0.03 262);
   --accent: oklch(89.594% 0.1766 104.886);

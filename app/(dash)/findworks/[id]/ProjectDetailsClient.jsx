@@ -21,7 +21,7 @@ import {
 export default function ProjectDetailsClient({ project }) {
   const router = useRouter();
   const showToast = useShowToast()
-  const [proposals, setProposals] = useState(project.proposals || []);
+  const [proposals, setProposals] = useState(project?.proposals || []);
   const user = useAppSelector((state) => state.auth.user);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [showProposal, setShowProposal] = useState(false);
@@ -125,7 +125,8 @@ export default function ProjectDetailsClient({ project }) {
             proposal={proposalDialog.proposal}
             isLoading={selectedProposal === proposalDialog.proposal._id}
             onClose={() => setProposalDialog(null)}
-            onSubmit={handleReportProposal}
+            on
+            ={handleReportProposal}
           />
         )}
       </AnimatePresence>

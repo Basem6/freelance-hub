@@ -1,32 +1,34 @@
-import { cookies } from 'next/headers'
-import ProjectDetailsClient from './ProjectDetailsClient'
+import { cookies } from "next/headers";
+import ProjectDetailsClient from "./ProjectDetailsClient";
 
 async function getProject(id) {
-  const cookieStore = await cookies()
-  const authToken = cookieStore.get('authToken')?.value
+  const cookieStore = await cookies();
+  const authToken = cookieStore.get("authToken")?.value;
 
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_APP_URL}/api/backend/projects/${id}`,
+    `${process.env.NEXT_PUBLIC_APP_URL}/api/backend/projects/${encodeURIComponent(id)}`,
     {
       headers: {
-        Cookie: `authToken=${authToken || ''}`,
+        Cookie: `authToken=${authToken || ""}`,
       },
       next: {
         revalidate: 300,
+        tags: [`project-${id}`],
       },
-    
     }
-  )
+  );
+
   if (!res.ok) {
-    return null
+    return null;
   }
-  const data = await res.json()
-  return data.project
+
+  const data = await res.json();
+  return data.project;
 }
 
 export default async function Page({ params }) {
-  const { id } = await params
+  const { id } = await params;
 
-  const project = await getProject(id)
-  return <ProjectDetailsClient project={project}  />
+  const project = await getProject(id);
+  return <ProjectDetailsClient project={project} />;
 }
