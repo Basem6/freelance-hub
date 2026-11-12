@@ -1,4 +1,4 @@
-import { Geist, Geist_Mono } from "next/font/google";
+
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import localFont from "next/font/local";
 import "./globals.css";
@@ -10,15 +10,7 @@ import StoreProvider from "./lib/StoreProvider";
 import { Analytics } from "@vercel/analytics/react";
 import Toast from "../components/ui/Toast";
 
-const geistSans = Geist({
-    subsets: ["latin"],
-    variable: "--font-geist-sans",
-});
 
-const geistMono = Geist_Mono({
-    subsets: ["latin"],
-    variable: "--font-geist-mono",
-});
 
 const BoldHeadinFont = localFont({
     src: [
@@ -45,7 +37,7 @@ export default function RootLayout({ children }) {
     return (
         <html
             lang="en"
-            className={`${geistSans.variable} ${geistMono.variable} ${BoldHeadinFont.variable}`}
+            className={` ${BoldHeadinFont.variable}`}
             suppressHydrationWarning
         >
             <body className="font-sans antialiased" suppressHydrationWarning>
