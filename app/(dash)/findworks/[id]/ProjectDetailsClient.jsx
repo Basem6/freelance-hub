@@ -19,6 +19,7 @@ import {
 
 
 export default function ProjectDetailsClient({ project }) {
+  console.log(project)
   const router = useRouter();
   const showToast = useShowToast()
   const [proposals, setProposals] = useState(project?.proposals || []);
